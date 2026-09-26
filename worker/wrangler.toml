@@ -36,11 +36,21 @@ name = "waystroke-track"
 main = "track.js"
 compatibility_date = "2026-09-26"
 
+# Собственное имя Worker'а: Cloudflare сам создаёт под него сертификат и
+# запись DNS, поэтому сайт и Worker больше не зависят от одной записи.
+#
+# Ключи верхнего уровня обязаны идти ДО любой таблицы: стоявшее после
+# [[d1_databases]] `routes` молча становилось полем этой таблицы, wrangler
+# предупреждал «Unexpected fields», а деплой уезжал на workers.dev.
+routes = [{ pattern = "track.waystroke.online", custom_domain = true }]
+
+# workers.dev и превью-ссылки здесь не нужны: приём событий идёт только с
+# waystroke.online через track.waystroke.online. Без этих строк wrangler
+# включает workers.dev по умолчанию и оставляет Worker открытым ещё и там.
+workers_dev = false
+preview_urls = false
+
 [[d1_databases]]
 binding = "DB"
 database_name = "waystroke-events"
 database_id = "6b6411a9-745f-4207-8403-bac0850ff72e"
-
-# Собственное имя Worker'а: Cloudflare сам создаёт под него сертификат и
-# запись DNS, поэтому сайт и Worker больше не зависят от одной записи.
-routes = [{ pattern = "track.waystroke.online", custom_domain = true }]
