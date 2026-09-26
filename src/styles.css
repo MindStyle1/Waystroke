@@ -676,6 +676,8 @@ app-root .services__grid {
 app-root .service {
   flex: 1 1 270px;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
   background: var(--surface);
   border: 1px solid var(--line-soft);
   border-radius: var(--radius-md);
@@ -816,6 +818,81 @@ app-root .service__text {
   font-size: 14.5px;
   line-height: 1.55;
   color: var(--ink-2);
+}
+
+/*
+ * Ориентиры по стоимости. Цена читается сразу, срок остаётся спокойной
+ * подписью. Блок прижат к низу карточки, поэтому ценовые зоны всех трёх
+ * карточек выравниваются по нижнему краю, а текст сверху может быть разной
+ * длины.
+ */
+app-root .service__rates {
+  display: flex;
+  flex-direction: column;
+  margin: auto 0 0;
+  padding: 14px 0 0;
+  list-style: none;
+}
+
+app-root .rate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  column-gap: 14px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+app-root .service__rates .rate:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+app-root .rate__name {
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+app-root .rate__term {
+  grid-column: 1;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+
+app-root .rate__value {
+  grid-column: 2;
+  grid-row: 1;
+  font-size: 15.5px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* Строка-оговорка под карточками: текст и спокойная кнопка рядом. */
+app-root .services__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px clamp(16px, 2vw, 28px);
+  margin-top: clamp(18px, 2.2vw, 26px);
+  padding-top: clamp(14px, 1.8vw, 20px);
+  border-top: 1px solid var(--line);
+}
+
+app-root .services__disclaimer {
+  max-width: 62ch;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+app-root .services__cta {
+  min-height: 44px;
+  padding: 0 22px;
+  font-size: 14.5px;
 }
 
 app-root .approach {
@@ -1314,7 +1391,7 @@ app-root .cal__foot a {
 
 @media (max-width: 1040px) {
   .hero__grid,
-  .services__head {
+  app-root .services__head {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1392,6 +1469,30 @@ app-root .cal__foot a {
 
   app-root .step__rail-fill {
     transform-origin: top center;
+  }
+}
+
+@media (max-width: 560px) {
+  /* Цена и срок остаются читаемыми, строка-оговорка складывается вертикально. */
+  app-root .services__foot {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  app-root .rate {
+    padding: 11px 0;
+  }
+
+  app-root .rate__name {
+    font-size: 14.5px;
+  }
+
+  app-root .rate__value {
+    font-size: 16.5px;
+  }
+
+  app-root .rate__term {
+    font-size: 13px;
   }
 }
 
