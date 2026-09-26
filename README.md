@@ -32,8 +32,9 @@ npm test           # unit-тесты (vitest)
 | `src/app/design-demo/concepts/` | шесть независимых концептов, каждому по три файла (`<имя>.ts|html|css`) |
 | `src/app/motion.ts` | секционные анимации с учётом `prefers-reduced-motion` |
 | `src/styles.css` | дизайн-токены, сетки, мотив линии, адаптив и `prefers-reduced-motion` |
-| `public/images/` | четыре фотографии концептов (WebP, CC0) — см. «Фотографии» ниже |
-| `src/index.html` | `lang`, мета, favicon, ранний скрипт `no-js → js` |
+| `public/images/` | четыре фотографии концептов (WebP, CC0) и OG-картинка — см. «Фотографии» и «Превью ссылки» ниже |
+| `public/robots.txt`, `public/sitemap.xml` | индексация: разрешение роботам и единственный реальный адрес сайта |
+| `src/index.html` | `lang`, мета, canonical, Open Graph, Twitter Card, favicon, ранний скрипт `no-js → js` |
 | `server.js` | локальный статический сервер (`npm run serve`, порт из `PORT`) |
 | `scripts/postbuild.mjs` | копирует `index.html` в `404.html` — SPA-fallback для Cloudflare Pages |
 | `.nvmrc` | версия Node для облачной сборки (Angular 22 требует ≥ 22.22.3) |
@@ -112,6 +113,30 @@ npm test           # unit-тесты (vitest)
 На фотографиях нет чужих логотипов и читаемых надписей; концепт «СДВИГ»
 обходится без внешних картинок (только CSS/SVG), а в «saldo» использованы
 вымышленные магазины и суммы.
+
+## Превью ссылки и индексация
+
+Картинка для ссылок — `public/images/og-waystroke.png`, ровно **1200×630, PNG**
+(собрана из тех же токенов и шрифтов Inter/Playfair, что и сайт: фон `#ece9df`,
+тёмный текст, лаймовый акцент `#c8f054`, фирменный мазок линии). Читается и в
+маленьком превью Telegram — проверено на уменьшении до 420 px и 200 px.
+
+В `<head>` (`src/index.html`):
+
+- `link rel="canonical"` → `https://waystroke.online/`;
+- `meta name="robots"` → `index, follow, max-image-preview:large`;
+- Open Graph: `og:type=website`, `og:site_name=Waystroke`, `og:locale=ru_RU`,
+  `og:title`, `og:description`, `og:url=https://waystroke.online/`,
+  абсолютный `og:image` + `og:image:type/width/height/alt`;
+- Twitter Card: `summary_large_image` (+ `twitter:title/description/image`).
+
+Все URL в метаданных абсолютные и ведут на `https://waystroke.online` — с
+`<base href="/">` относительные пути в превью ломались бы.
+
+- `public/robots.txt` — `User-agent: *`, `Allow: /`, ссылка на sitemap;
+- `public/sitemap.xml` — единственный реально существующий адрес
+  `https://waystroke.online/` (сайт одностраничный, якорей и роутинга нет,
+  выдуманных маршрутов в карте нет).
 
 ## Навигация без якорей
 
