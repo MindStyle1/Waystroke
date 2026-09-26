@@ -362,13 +362,43 @@ export function initTeamScene(host: HTMLElement): Dispose {
     balls.forEach((ball) => ball.removeAttribute('style'));
   };
 
-  /** Один случайный бросок и планирование следующего. */
+  /**
+   * Один случайный бросок и планирование следующего.
+   *
+   * Двигается `translateX`, а не `left`. `left` — свойство раскладки: пока
+   * шарик ехал, каждый кадр пересчитывал геометрию, а сам блок линейки
+   * перерисовывался. Замерено на телефоне: за 73 кадра `left` принял 54
+   * разных значения, `transform` не менялся ни разу. С `translateX` кадр
+   * уходит композитору, раскладка не трогается, а картинка та же.
+   *
+   * Чтобы `translateX` считался от текущего места, позиция шарика один раз
+   * «запекается» в `left` в пикселях, и дальше едет только смещение. Печём мы
+   * не чаще одного раза на бросок (3–7 с), а не раз в кадр.
+   */
   const wander = (ball: HTMLElement): void => {
     if (stopped || !inView || walking.has(ball)) return;
 
+    const stripBox = strip.getBoundingClientRect();
+    const ballBox = ball.getBoundingClientRect();
+    if (stripBox.width <= 0) return;
+
     walking.add(ball);
+
+    // Куда шарик едет в этот раз: та же логика 12–88 %, что и раньше.
+    const targetPx = (randomBetween(12, 88) / 100) * stripBox.width;
+
+    // Текущее место в пикселях от левого края линейки, включая уже наложенное
+    // смещение, — от него и считаем расстояние. Так бросок корректен и после
+    // поворота экрана, когда ширина полосы изменилась.
+    const halfBall = ballBox.width / 2;
+    const currentPx = ballBox.left - stripBox.left + halfBall;
+
+    // Печём позицию и обнуляем смещение: дальше анимируется только transform.
+    ball.style.left = `${currentPx}px`;
+    ball.style.transform = 'translateX(0px)';
+
     const step = animate(ball, {
-      left: () => `${randomBetween(12, 88).toFixed(2)}%`,
+      translateX: targetPx - currentPx,
       duration: () => Math.round(randomBetween(3200, 7200)),
       ease: 'inOutSine',
       onComplete: (): void => {

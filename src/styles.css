@@ -1126,6 +1126,9 @@ app-root .team__ball {
   margin: -4px 0 0 -4px;
   border-radius: 50%;
   background: var(--accent);
+  /* Два шарика держатся на композиторе всё время броска: движение идёт через
+     transform и не трогает раскладку. */
+  will-change: transform;
 }
 
 app-root .team__ball--a {
@@ -1553,6 +1556,17 @@ app-root .cal__foot a {
     opacity 0.75s var(--ease),
     transform 0.75s var(--ease);
   transition-delay: var(--d, 0ms);
+}
+
+/*
+ * will-change — только пока блок ждёт своего появления.
+ *
+ * Раньше он стоял здесь безусловно, и все 31 .reveal навсегда оставались
+ * выделенными в отдельные слои compositor'а. На телефоне это память GPU,
+ * которую нечему возвращать: анимация разовая, отыграла и всё. Теперь слой
+ * появляется вместе с блоком и освобождается, как только тот показался.
+ */
+.js .reveal:not(.is-visible) {
   will-change: opacity, transform;
 }
 
@@ -1720,10 +1734,12 @@ app-root .cal__foot a {
   }
 
   .js .reveal,
+  .js .reveal:not(.is-visible),
   .js .reveal.is-visible {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+    will-change: auto !important;
   }
 
   .js .stroke__path {

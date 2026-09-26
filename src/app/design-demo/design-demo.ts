@@ -47,6 +47,18 @@ const PAIRS: Pair[] = [
 ];
 
 /**
+ * Сколько пикселей нужно пройти по горизонтали, прежде чем жест признан
+ * перетаскиванием границы. Ниже — просто дрожание пальца в начале свайпа.
+ */
+const DRAG_THRESHOLD = 8;
+
+/**
+ * Допуск на «чистое касание»: пока указатель не ушёл дальше, нажатие считается
+ * касанием без перемещения, и граница встаёт под ним.
+ */
+const TAP_SLOP = 4;
+
+/**
  * Секция «Разные задачи. Разный характер.»
  *
  * Три переключателя открывают по паре совершенно разных сайтов: слева — один
@@ -54,9 +66,10 @@ const PAIRS: Pair[] = [
  * контейнер принимает высоту большего слоя и оба видны целиком: ползунок не
  * сжимает их, а открывает один поверх другого через обрезку (`clip-path`).
  *
- * Управление — Pointer Events на рамке сравнения: нажатие в любом месте
- * области сразу ставит границу в эту точку и продолжает перетаскивание,
- * а захват указателя удерживает drag, даже когда курсор уходит за пределы блока.
+ * Управление — Pointer Events на рамке сравнения. Мышь и перо двигают границу
+ * сразу, как и раньше. Касание сначала остаётся браузеру: жест переходит к
+ * ползунку только когда движение оказалось преимущественно горизонтальным,
+ * поэтому вертикальный свайп по рамке прокручивает страницу как обычно.
  */
 @Component({
   selector: 'app-design-demo',
@@ -91,6 +104,17 @@ export class DesignDemo {
   private pointerId: number | null = null;
   /** Положение границы на момент pointerdown — его возвращаем при pointercancel. */
   private splitAtDown = 50;
+  /** Точка, где палец (или мышь) коснулся рамки. */
+  private downX = 0;
+  private downY = 0;
+  /**
+   * Жест признан горизонтальным и передан ползунку. Для мыши и пера — сразу,
+   * для касания — только после того, как движение оказалось преимущественно
+   * горизонтальным: до этого момента жест остаётся за браузером.
+   */
+  private engaged = false;
+  /** Указатель заметно сместился — значит это не чистое касание. */
+  private moved = false;
 
   constructor() {
     this.destroyRef.onDestroy(() => {
@@ -106,6 +130,14 @@ export class DesignDemo {
     this.split.set(50);
   }
 
+  /**
+   * Касание: НЕ отменяем событие и НЕ берём жест себе. Раньше здесь стоял
+   * `preventDefault()`, и вертикальный свайп по рамке вообще не прокручивал
+   * страницу: отмена на pointerdown отбирает у браузера начало жеста
+   * прокрутки. Замерено — свайп на 150 px давал 0 px прокрутки, тогда как по
+   * нейтральному месту те же 150 px давали 256 px. Сейчас жест остаётся
+   * браузеру, а ползунок подхватывает его позже и только по горизонтали.
+   */
   protected onFramePointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse' && event.button !== 0) return;
     if (this.pointerId !== null) return;
@@ -115,35 +147,63 @@ export class DesignDemo {
 
     this.pointerId = event.pointerId;
     this.splitAtDown = this.split();
+    this.downX = event.clientX;
+    this.downY = event.clientY;
+    this.moved = false;
 
-    try {
-      frame.setPointerCapture(event.pointerId);
-    } catch {
-      /* Захват может быть недоступен — события всё равно всплывают до рамки. */
+    if (event.pointerType === 'touch') {
+      // Ждём подтверждения намерения — см. onFramePointerMove.
+      this.engaged = false;
+    } else {
+      // Мышь и перо двигают границу сразу: горизонтальной прокрутки тут нет,
+      // а ждать движения незачем.
+      this.engaged = true;
+      this.capture(event.pointerId);
+      this.moveTo(event.clientX);
     }
-
-    // Мышь, перо и касание ведут себя одинаково: граница сразу встает под указателем.
-    event.preventDefault();
 
     const target = event.target;
     if (target instanceof Element && target.closest('.cmp__handle')) {
       this.handleElement()?.focus({ preventScroll: true });
     }
-
-    this.moveTo(event.clientX);
   }
 
   protected onFramePointerMove(event: PointerEvent): void {
     if (event.pointerId !== this.pointerId) return;
+
+    const dx = event.clientX - this.downX;
+    const dy = event.clientY - this.downY;
+    if (Math.abs(dx) > TAP_SLOP || Math.abs(dy) > TAP_SLOP) this.moved = true;
+
+    if (!this.engaged) {
+      // Пока не признано, что это горизонтальный drag: не вмешиваемся ни во
+      // что. Диагональ и вертикаль — прокрутка страницы.
+      if (Math.abs(dx) < DRAG_THRESHOLD || Math.abs(dx) <= Math.abs(dy)) return;
+      this.engaged = true;
+      this.capture(event.pointerId);
+    }
+
     this.moveTo(event.clientX);
   }
 
   protected onFramePointerUp(event: PointerEvent): void {
     if (event.pointerId !== this.pointerId) return;
+    // Касание без заметного смещения — граница встаёт под пальцем. Этот жест
+    // не начал ничего скроллить, поэтому отдавать его некому.
+    if (!this.engaged && !this.moved) this.moveTo(event.clientX);
     this.endDrag(event.pointerId, false);
   }
 
-  /** Указатель отменён браузером (например, начался скролл страницы). */
+  /**
+   * Указатель отменён браузером — он забрал жест себе (например, пошла
+   * прокрутка страницы). Только это и означает отмену.
+   *
+   * Сюда же раньше был привязан lostpointercapture, и это ломало перетаскивание:
+   * событие приходит при ЛЮБОЙ смене владельца захвата, в том числе когда
+   * захват переходит к рамке по ходу жеста и когда мы снимаем его сами. Каждая
+   * такая смена трактовалась как отмена, граница возвращалась на место, а
+   * указатель переставал отслеживаться — ползунок не двигался вообще.
+   */
   protected onFramePointerCancel(event: PointerEvent): void {
     if (event.pointerId !== this.pointerId) return;
     this.endDrag(event.pointerId, true);
@@ -190,6 +250,8 @@ export class DesignDemo {
 
   private endDrag(pointerId: number, restore: boolean): void {
     this.pointerId = null;
+    this.engaged = false;
+    this.moved = false;
 
     const frame = this.frameElement();
     if (frame?.hasPointerCapture(pointerId)) {
@@ -200,8 +262,23 @@ export class DesignDemo {
       }
     }
 
-    // Граница, поставленная касанием «по дороге» к скроллу, не должна остаться.
+    // Граница, поставленная касанием «по дороге» к прокрутке, не должна
+    // остаться — но при отмене мы её и не сдвигали, так что это страховка.
     if (restore) this.split.set(this.splitAtDown);
+  }
+
+  /**
+   * Захват указателя — только когда жест уже наш. Раньше он брался сразу на
+   * pointerdown, и палец, начавший прокрутку, оставался «нашим» до конца.
+   */
+  private capture(pointerId: number): void {
+    const frame = this.frameElement();
+    if (!frame) return;
+    try {
+      frame.setPointerCapture(pointerId);
+    } catch {
+      /* Захват может быть недоступен — события всё равно всплывают до рамки. */
+    }
   }
 
   private moveTo(clientX: number): void {
