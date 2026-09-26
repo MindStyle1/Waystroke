@@ -1,0 +1,58 @@
+<article class="mock">
+  <header class="nav">
+    <span class="nav__brand">СДВИГ</span>
+
+    <span class="nav__links" aria-hidden="true">
+      <span class="nav__link">Релизы</span>
+      <span class="nav__link">Артисты</span>
+      <span class="nav__link">Журнал</span>
+      <span class="nav__link">Контакты</span>
+    </span>
+
+    <span class="nav__pill">Слушать</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="hero__kicker">Независимый лейбл · Москва</p>
+      <h3 class="hero__title">Звук<br />вне правил<span class="hero__dot">.</span></h3>
+      <p class="hero__lead">
+        Электроника, экспериментальный хип-хоп и ночные релизы — без жанровых
+        границ.
+      </p>
+      <div class="hero__actions">
+        <span class="btn btn--lime">Все релизы</span>
+        <span class="btn btn--ghost">Расписание</span>
+      </div>
+    </div>
+
+    <div class="hero__visual" aria-hidden="true">
+      <span class="deco chrome">2026</span>
+
+      <span class="deco disc">
+        <span class="deco disc__label">СДВИГ<b>004</b></span>
+      </span>
+
+      <ul class="covers">
+        <li class="cover cover--1"></li>
+        <li class="cover cover--2"></li>
+        <li class="cover cover--3"></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band">
+    <p class="band__label">Свежие релизы</p>
+
+    <ul class="releases">
+      @for (item of releases; track item.num) {
+        <li class="release">
+          <span class="release__num">{{ item.num }}</span>
+          <span class="release__title">{{ item.title }}</span>
+          <span class="release__meta">{{ item.meta }}</span>
+          <span class="release__play" aria-hidden="true"></span>
+        </li>
+      }
+    </ul>
+  </section>
+</article>

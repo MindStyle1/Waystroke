@@ -1,6 +1,6 @@
 /* ==========================================================================
-   «Одна идея. Два впечатления» — тёмная карточка Waystroke с сравнением
-   базового корпоративного решения и одного из трёх авторских стилей.
+   «Разные задачи. Разный характер» — тёмная карточка Waystroke со сравнением
+   двух независимых концептов одной пары: слева один сайт, справа другой.
    ========================================================================== */
 
 :host {
@@ -42,13 +42,13 @@
 }
 
 .demo__note {
-  max-width: 30ch;
+  max-width: 34ch;
   padding-bottom: 0.5em;
   font-size: clamp(14.5px, 1.4vw, 17px);
   color: rgba(244, 242, 234, 0.68);
 }
 
-/* --- Переключатель стилей ------------------------------------------------ */
+/* --- Переключатель пар ---------------------------------------------------- */
 
 .demo__switch {
   display: flex;
@@ -104,9 +104,17 @@
   margin-top: clamp(16px, 2.4vw, 30px);
 }
 
-/* Рамка сравнения: линия и ручка живут ровно в размере сцены. */
+/*
+ * Рамка сравнения — элемент, относительно которого считается положение границы.
+ * Вертикальный скролл страницы разрешён (pan-y), горизонтальное движение
+ * достаётся ползунку; у ручки touch-action: none, её жест всегда наш.
+ */
 .cmp__frame {
   position: relative;
+  touch-action: pan-y;
+  cursor: col-resize;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .cmp__stage {
@@ -119,7 +127,7 @@
 
 /*
  * Оба слоя занимают одну ячейку 1/1: строка растягивается до более высокого
- * содержимого, поэтому варианты сравниваются в полный размер, а не вполсилы.
+ * содержимого, поэтому концепты сравниваются в полный размер, а не вполсилы.
  */
 .cmp__layer {
   grid-area: 1 / 1;
@@ -133,6 +141,8 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: clamp(10px, 1.2vw, 16px);
+  /* Подписи выше рамки и не перехватывают нажатия. */
+  pointer-events: none;
 }
 
 .cmp__badge {
@@ -145,8 +155,8 @@
   text-transform: uppercase;
 }
 
-/* Правая подпись подсвечивает выбранный стиль — тем же лаймом, что и вкладка. */
-.cmp__badge:last-child {
+/* Левый концепт открывается лаймовой границей — подсвечиваем его тем же цветом. */
+.cmp__badge--left {
   border-color: rgba(200, 240, 84, 0.55);
   color: var(--accent);
 }
@@ -163,40 +173,62 @@
   pointer-events: none;
 }
 
+/*
+ * Ручка: прозрачная колонка от верха до низа рамки — её hit-area целиком
+ * покрывает видимую линию и не уже 44 px, поэтому нажатие «на ручку» всегда
+ * попадает в ползунок, а не рядом с ним.
+ */
 .cmp__handle {
   position: absolute;
-  top: 50%;
+  top: 0;
+  bottom: 0;
+  left: 0;
   z-index: 4;
   display: grid;
   place-items: center;
-  width: clamp(46px, 4.6vw, 58px);
-  height: clamp(46px, 4.6vw, 58px);
+  width: clamp(44px, 4vw, 56px);
+  min-width: 44px;
   margin: 0;
   padding: 0;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   border: 0;
-  border-radius: 50%;
-  background: var(--accent);
+  background: transparent;
   color: var(--ink);
-  cursor: ew-resize;
-  /* Ручка — единственное место, где касание не запускает скролл страницы. */
+  cursor: col-resize;
   touch-action: none;
-  transition: box-shadow 0.25s var(--ease);
-  box-shadow: 0 8px 22px rgba(10, 12, 10, 0.4);
 }
 
-.cmp__handle:hover {
-  box-shadow: 0 10px 26px rgba(10, 12, 10, 0.5);
+.cmp__grip {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: clamp(58px, 7vw, 84px);
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow:
+    0 8px 22px rgba(10, 12, 10, 0.42),
+    inset 0 0 0 1px rgba(20, 22, 20, 0.14);
+  transition: box-shadow 0.25s var(--ease);
+}
+
+.cmp__handle:hover .cmp__grip {
+  box-shadow:
+    0 10px 26px rgba(10, 12, 10, 0.5),
+    inset 0 0 0 1px rgba(20, 22, 20, 0.2);
 }
 
 .cmp__handle:focus-visible {
+  outline: none;
+}
+
+.cmp__handle:focus-visible .cmp__grip {
   outline: 3px solid #f6f4ec;
   outline-offset: 4px;
 }
 
 .cmp__handle-glyph {
-  width: 58%;
-  height: 58%;
+  width: 62%;
+  height: 62%;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;

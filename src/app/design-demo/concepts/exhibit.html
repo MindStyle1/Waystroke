@@ -1,0 +1,84 @@
+<article class="mock">
+  <header class="nav">
+    <span class="nav__brand">
+      ВНЕ<span class="nav__brand-dot">·</span>РАМКИ
+      <span class="nav__sub">Москва · павильон 4</span>
+    </span>
+
+    <span class="nav__links" aria-hidden="true">
+      <span class="nav__link">Выставка</span>
+      <span class="nav__link">Программа</span>
+      <span class="nav__link">Артисты</span>
+      <span class="nav__link">Билеты</span>
+    </span>
+
+    <span class="nav__dates">12.09 — 30.11</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="hero__kicker">Выставка современного искусства</p>
+      <h3 class="hero__title">
+        Вне<br /><span class="hero__title-accent">рамки</span><span
+          class="hero__title-dot"
+          >.</span
+        >
+      </h3>
+      <p class="hero__lead">
+        Три зала, двадцать два автора и одна идея: искусство не заканчивается
+        на краю холста.
+      </p>
+
+      <div class="hero__meta">
+        <span class="meta">
+          <b>Где</b>
+          Гараж, павильон 4
+        </span>
+        <span class="meta">
+          <b>Когда</b>
+          Ежедневно 11:00 — 21:00
+        </span>
+      </div>
+
+      <span class="btn">Купить билет</span>
+    </div>
+
+    <div class="hero__visual">
+      <figure class="frame">
+        <img
+          src="images/concept-exhibit-960.webp"
+          srcset="images/concept-exhibit-480.webp 480w, images/concept-exhibit-960.webp 960w"
+          sizes="(max-width: 700px) 92vw, 40vw"
+          width="960"
+          height="720"
+          alt="Стена галереи с сеткой одинаковых рам"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        />
+      </figure>
+
+      <span class="shape shape--circle" aria-hidden="true"></span>
+      <span class="shape shape--bar" aria-hidden="true"></span>
+      <span class="shape shape--square" aria-hidden="true"></span>
+      <span class="shape shape--caption" aria-hidden="true">зал 3</span>
+    </div>
+  </section>
+
+  <section class="band">
+    <p class="band__label">
+      Куратор
+      <b>Вера Лисицына</b>
+    </p>
+
+    <ul class="sections">
+      @for (item of sections; track item.num) {
+        <li class="section">
+          <span class="section__num">{{ item.num }}</span>
+          <span class="section__title">{{ item.title }}</span>
+          <span class="section__text">{{ item.text }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+</article>

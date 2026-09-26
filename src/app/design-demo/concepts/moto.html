@@ -1,0 +1,64 @@
+<article class="mock">
+  <header class="hero">
+    <div class="nav">
+      <span class="nav__brand">
+        ТОЧКА·МОТОР
+        <span class="nav__sub">Профессиональный автосервис</span>
+      </span>
+
+      <span class="nav__links" aria-hidden="true">
+        <span class="nav__link">Услуги</span>
+        <span class="nav__link">Мастерская</span>
+        <span class="nav__link">Контакты</span>
+      </span>
+
+      <span class="nav__mark" aria-hidden="true"></span>
+    </div>
+
+    <div class="hero__photo">
+      <img
+        src="images/concept-moto-960.webp"
+        srcset="images/concept-moto-480.webp 480w, images/concept-moto-960.webp 960w"
+        sizes="(max-width: 700px) 100vw, 70vw"
+        width="960"
+        height="640"
+        alt="Автомобиль в защитной плёнке внутри покрасочной камеры автосервиса"
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+      />
+      <span class="hero__shade" aria-hidden="true"></span>
+    </div>
+
+    <div class="hero__body">
+      <div class="hero__copy">
+        <p class="hero__kicker">Москва · обслуживание всех марок</p>
+        <h3 class="hero__title">
+          Точность,<br />в каждой<br />детали<span class="hero__accent">.</span>
+        </h3>
+        <p class="hero__lead">
+          Экспертное обслуживание современных автомобилей: диагностика,
+          двигатель, ходовая, кузов.
+        </p>
+        <span class="btn">
+          Записаться в сервис
+          <span class="btn__arrow" aria-hidden="true">→</span>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <section class="band">
+    @for (item of services; track item.num) {
+      <article class="service">
+        <span class="service__num">{{ item.num }}</span>
+        <svg class="service__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path [attr.d]="item.icon" />
+        </svg>
+        <h4 class="service__title">{{ item.title }}</h4>
+        <p class="service__text">{{ item.text }}</p>
+        <span class="service__arrow" aria-hidden="true">→</span>
+      </article>
+    }
+  </section>
+</article>

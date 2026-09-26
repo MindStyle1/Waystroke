@@ -1,0 +1,63 @@
+<article class="mock">
+  <header class="nav">
+    <span class="nav__brand">miora</span>
+
+    <span class="nav__links" aria-hidden="true">
+      <span class="nav__link">Уход</span>
+      <span class="nav__link">Макияж</span>
+      <span class="nav__link">Ритуалы</span>
+      <span class="nav__link">Журнал</span>
+    </span>
+
+    <span class="nav__cart">Корзина · 0</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero__copy">
+      <p class="hero__kicker">Уход за кожей</p>
+      <h3 class="hero__title">Кожа<br />дышит<span class="hero__dot">.</span></h3>
+      <p class="hero__lead">
+        Мягкие формулы без отдушек: сыворотки, кремы и масла для ежедневного
+        ритуала.
+      </p>
+      <span class="btn">Подобрать ритуал</span>
+
+      <ul class="chips">
+        <li class="chip">Дерматолог-протестировано</li>
+        <li class="chip">Без отдушек</li>
+        <li class="chip">0 % спирта</li>
+      </ul>
+    </div>
+
+    <figure class="visual">
+      <img
+        class="visual__img"
+        src="images/concept-beauty-960.webp"
+        srcset="images/concept-beauty-480.webp 480w, images/concept-beauty-960.webp 960w"
+        sizes="(max-width: 700px) 92vw, 42vw"
+        width="960"
+        height="640"
+        alt="Крупный план: нанесение сыворотки для лица капельным пипеточным аппликатором"
+        loading="lazy"
+        decoding="async"
+        draggable="false"
+      />
+      <figcaption class="visual__tag">Новый состав</figcaption>
+      <span class="visual__ring" aria-hidden="true"></span>
+    </figure>
+  </section>
+
+  <section class="band">
+    <p class="band__label">Базовый уход</p>
+
+    <ul class="products">
+      @for (item of products; track item.name) {
+        <li class="product">
+          <span class="product__name">{{ item.name }}</span>
+          <span class="product__note">{{ item.note }}</span>
+          <span class="product__price">{{ item.price }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+</article>

@@ -1,0 +1,294 @@
+/* Концепт «крошка» — кофейня: сливочные тона, антиква, фото слева, меню снизу. */
+
+:host {
+  display: block;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.mock {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: clamp(500px, 56cqw, 740px);
+  overflow: hidden;
+  background: #fbf5ea;
+  color: #3a2a1c;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Арты внутри концепта ничего не перехватывают: drag живёт на рамке сравнения. */
+.mock,
+.mock :where(*) {
+  pointer-events: none;
+}
+
+.mock :is(img) {
+  -webkit-user-drag: none;
+}
+
+/* --- Навигация ----------------------------------------------------------- */
+
+.nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.6cqw, 26px);
+  min-height: clamp(48px, 5.6cqw, 74px);
+  padding: clamp(6px, 0.8cqw, 10px) clamp(14px, 2.4cqw, 34px);
+  border-bottom: 1px dashed rgba(58, 42, 28, 0.28);
+}
+
+.nav__brand {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(19px, 2.4cqw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.nav__links {
+  display: flex;
+  gap: clamp(12px, 2cqw, 30px);
+  margin-left: auto;
+  font-size: clamp(10.5px, 1.05cqw, 14px);
+  color: rgba(58, 42, 28, 0.72);
+  white-space: nowrap;
+}
+
+.nav__pill {
+  padding: 0.55em 1.2em;
+  border-radius: 999px;
+  background: #c9691f;
+  color: #fff6e9;
+  font-size: clamp(10px, 1cqw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* --- Первый экран: фото слева, подача справа ----------------------------- */
+
+.hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(16px, 2.8cqw, 44px);
+  min-height: clamp(330px, 34cqw, 460px);
+  padding: clamp(22px, 3.4cqw, 48px) clamp(14px, 2.4cqw, 34px);
+}
+
+.visual {
+  position: relative;
+  margin: 0;
+}
+
+.visual__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: clamp(18px, 3cqw, 42px);
+  background: #efe3d2;
+  box-shadow: 0 26px 52px rgba(58, 42, 28, 0.2);
+}
+
+.sticker {
+  position: absolute;
+  top: clamp(-14px, -1.4cqw, -8px);
+  right: clamp(6px, 1cqw, 16px);
+  display: grid;
+  place-items: center;
+  width: clamp(58px, 8cqw, 112px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #3a2a1c;
+  color: #fbf5ea;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(9.5px, 1.1cqw, 15px);
+  text-align: center;
+  line-height: 1.3;
+  transform: rotate(-9deg);
+}
+
+.visual__stripe {
+  position: absolute;
+  left: clamp(-10px, -1cqw, -4px);
+  bottom: clamp(10px, 1.6cqw, 22px);
+  width: clamp(46px, 7cqw, 96px);
+  height: clamp(8px, 1.1cqw, 15px);
+  border-radius: 999px;
+  background: #c9691f;
+}
+
+.hero__kicker {
+  font-size: clamp(9.5px, 0.95cqw, 12px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(58, 42, 28, 0.55);
+}
+
+.hero__title {
+  margin-top: clamp(6px, 1cqw, 14px);
+  font-family: var(--font-serif);
+  font-size: clamp(34px, 5.4cqw, 74px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+
+.hero__lead {
+  max-width: 34ch;
+  margin-top: clamp(10px, 1.6cqw, 22px);
+  font-size: clamp(12px, 1.24cqw, 16.5px);
+  color: rgba(58, 42, 28, 0.74);
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(10px, 1.6cqw, 22px);
+  margin-top: clamp(16px, 2.4cqw, 32px);
+}
+
+.btn {
+  padding: 0.9em 1.8em;
+  border-radius: 999px;
+  background: #3a2a1c;
+  color: #fbf5ea;
+  font-size: clamp(10.5px, 1.05cqw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hours {
+  padding: 0.6em 1.2em;
+  border: 1px dashed rgba(58, 42, 28, 0.4);
+  border-radius: 999px;
+  font-size: clamp(10px, 1cqw, 13px);
+  letter-spacing: 0.04em;
+  color: rgba(58, 42, 28, 0.78);
+  white-space: nowrap;
+}
+
+/* --- Полоса «Меню дня» ---------------------------------------------------- */
+
+.band {
+  flex: none;
+  display: grid;
+  grid-template-columns: auto repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: clamp(12px, 2cqw, 32px);
+  min-height: clamp(150px, 15cqw, 210px);
+  padding: clamp(16px, 2.4cqw, 34px) clamp(14px, 2.4cqw, 34px);
+  background: #f3e7d6;
+  border-top: 1px solid rgba(58, 42, 28, 0.18);
+}
+
+.band__label {
+  font-size: clamp(9.5px, 0.95cqw, 12px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(58, 42, 28, 0.55);
+}
+
+.menu {
+  display: contents;
+}
+
+.menu__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: clamp(12px, 1.6cqw, 24px);
+  border-left: 1px solid rgba(58, 42, 28, 0.2);
+}
+
+.menu__name {
+  font-family: var(--font-serif);
+  font-size: clamp(16px, 2cqw, 27px);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.menu__note {
+  font-size: clamp(10px, 1cqw, 13px);
+  color: rgba(58, 42, 28, 0.6);
+}
+
+.menu__price {
+  margin-top: 4px;
+  font-size: clamp(13px, 1.5cqw, 20px);
+  font-weight: 700;
+  color: #c9691f;
+}
+
+/* --- Телефон -------------------------------------------------------------- */
+
+@container (max-width: 700px) {
+  .mock {
+    min-height: 0;
+  }
+
+  .nav {
+    min-height: 46px;
+    padding: 8px 16px;
+  }
+
+  .nav__links {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 24px 16px 12px;
+  }
+
+  .visual {
+    margin-top: 14px;
+  }
+
+  .hero__title {
+    font-size: clamp(34px, 11cqw, 52px);
+  }
+
+  .band {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 18px 16px 22px;
+  }
+
+  .menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+  }
+
+  .menu__item {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 12px;
+    padding: 10px 0 0;
+    border-left: 0;
+    border-top: 1px solid rgba(58, 42, 28, 0.2);
+  }
+
+  .menu__note {
+    order: 3;
+    width: 100%;
+  }
+
+  .menu__price {
+    margin-top: 0;
+    margin-left: auto;
+  }
+}

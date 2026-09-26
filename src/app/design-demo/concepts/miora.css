@@ -1,0 +1,275 @@
+/* Концепт «miora» — косметика: тёплая слоновая кость, антиква, мягкие формы. */
+
+:host {
+  display: block;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.mock {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: clamp(500px, 56cqw, 740px);
+  overflow: hidden;
+  background: #f5efe8;
+  color: #33271f;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Арты внутри концепта ничего не перехватывают: drag живёт на рамке сравнения. */
+.mock,
+.mock :where(*) {
+  pointer-events: none;
+}
+
+.mock :is(img) {
+  -webkit-user-drag: none;
+}
+
+/* --- Навигация ----------------------------------------------------------- */
+
+.nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.6cqw, 26px);
+  min-height: clamp(48px, 5.6cqw, 74px);
+  padding: clamp(6px, 0.8cqw, 10px) clamp(14px, 2.4cqw, 34px);
+  border-bottom: 1px solid rgba(51, 39, 31, 0.14);
+}
+
+.nav__brand {
+  font-family: var(--font-serif);
+  font-size: clamp(17px, 2.1cqw, 27px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.nav__links {
+  display: flex;
+  gap: clamp(12px, 2cqw, 30px);
+  margin-left: auto;
+  font-size: clamp(10.5px, 1.05cqw, 14px);
+  letter-spacing: 0.06em;
+  color: rgba(51, 39, 31, 0.7);
+  white-space: nowrap;
+}
+
+.nav__cart {
+  padding: 0.5em 1.1em;
+  border: 1px solid rgba(51, 39, 31, 0.3);
+  border-radius: 999px;
+  font-size: clamp(10px, 1cqw, 13px);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* --- Первый экран -------------------------------------------------------- */
+
+.hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  align-items: center;
+  gap: clamp(16px, 2.8cqw, 44px);
+  min-height: clamp(330px, 34cqw, 460px);
+  padding: clamp(22px, 3.4cqw, 48px) clamp(14px, 2.4cqw, 34px);
+}
+
+.hero__kicker {
+  font-size: clamp(9.5px, 0.95cqw, 12px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(51, 39, 31, 0.55);
+}
+
+.hero__title {
+  margin-top: clamp(6px, 1cqw, 14px);
+  font-family: var(--font-serif);
+  font-size: clamp(46px, 7.6cqw, 104px);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: -0.03em;
+}
+
+.hero__dot {
+  color: #b8543a;
+}
+
+.hero__lead {
+  max-width: 32ch;
+  margin-top: clamp(10px, 1.6cqw, 22px);
+  font-size: clamp(12px, 1.24cqw, 16.5px);
+  color: rgba(51, 39, 31, 0.76);
+}
+
+.btn {
+  display: inline-block;
+  margin-top: clamp(14px, 2.2cqw, 30px);
+  padding: 0.9em 1.9em;
+  border-radius: 999px;
+  background: #33271f;
+  color: #f7f1ea;
+  font-size: clamp(10.5px, 1.05cqw, 14px);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(6px, 1cqw, 12px);
+  margin-top: clamp(14px, 2.2cqw, 28px);
+}
+
+.chip {
+  padding: 0.45em 1em;
+  border: 1px solid rgba(51, 39, 31, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: clamp(9.5px, 0.95cqw, 12.5px);
+  letter-spacing: 0.04em;
+  color: rgba(51, 39, 31, 0.72);
+  white-space: nowrap;
+}
+
+/* --- Фото продукта ------------------------------------------------------- */
+
+.visual {
+  position: relative;
+  margin: 0;
+}
+
+.visual__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: clamp(60px, 12cqw, 160px) clamp(12px, 1.6cqw, 22px);
+  background: #e7ddd2;
+}
+
+.visual__tag {
+  position: absolute;
+  left: clamp(-10px, -1cqw, -6px);
+  bottom: clamp(10px, 1.6cqw, 22px);
+  padding: 0.7em 1.3em;
+  border-radius: 999px;
+  background: #fffdfa;
+  box-shadow: 0 12px 26px rgba(51, 39, 31, 0.16);
+  font-family: var(--font-serif);
+  font-size: clamp(12px, 1.35cqw, 18px);
+  color: #33271f;
+}
+
+.visual__ring {
+  position: absolute;
+  top: clamp(-14px, -1.4cqw, -8px);
+  right: clamp(8px, 1.4cqw, 20px);
+  width: clamp(46px, 6cqw, 84px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(184, 84, 58, 0.7);
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0));
+}
+
+/* --- Нижняя полоса: продукты --------------------------------------------- */
+
+.band {
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 2.2fr);
+  align-items: center;
+  gap: clamp(12px, 2cqw, 30px);
+  min-height: clamp(150px, 15cqw, 210px);
+  padding: clamp(16px, 2.4cqw, 34px) clamp(14px, 2.4cqw, 34px);
+  border-top: 1px solid rgba(51, 39, 31, 0.16);
+  background: #efe6dc;
+}
+
+.band__label {
+  font-size: clamp(9.5px, 0.95cqw, 12px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(51, 39, 31, 0.55);
+}
+
+.products {
+  display: flex;
+  flex-direction: column;
+}
+
+.product {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(10px, 1.6cqw, 24px);
+  padding: clamp(8px, 1.1cqw, 14px) 0;
+  border-bottom: 1px solid rgba(51, 39, 31, 0.14);
+  font-size: clamp(11px, 1.15cqw, 15px);
+}
+
+.product:last-child {
+  border-bottom: 0;
+}
+
+.product__name {
+  font-family: var(--font-serif);
+  font-size: clamp(13px, 1.5cqw, 19px);
+}
+
+.product__note {
+  color: rgba(51, 39, 31, 0.55);
+  font-size: clamp(10px, 1cqw, 13px);
+  white-space: nowrap;
+}
+
+.product__price {
+  margin-left: auto;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* --- Телефон -------------------------------------------------------------- */
+
+@container (max-width: 700px) {
+  .mock {
+    min-height: 0;
+  }
+
+  .nav {
+    min-height: 46px;
+    padding: 8px 16px;
+  }
+
+  .nav__links {
+    display: none;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 26px 16px 10px;
+  }
+
+  .hero__title {
+    font-size: clamp(52px, 17cqw, 76px);
+  }
+
+  .visual {
+    margin-top: 6px;
+  }
+
+  .band {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 18px 16px 22px;
+  }
+
+  .product__note {
+    display: none;
+  }
+}

@@ -1,0 +1,351 @@
+/* Концепт «ВНЕ РАМКИ» — арт-выставка: бумага, плотный гротеск, синий акцент. */
+
+:host {
+  display: block;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.mock {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: clamp(500px, 56cqw, 740px);
+  overflow: hidden;
+  background: #f3f1ea;
+  color: #0b0b0c;
+  font-family: var(--font-sans);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Арты внутри концепта ничего не перехватывают: drag живёт на рамке сравнения. */
+.mock,
+.mock :where(*) {
+  pointer-events: none;
+}
+
+.mock :is(img) {
+  -webkit-user-drag: none;
+}
+
+/* --- Навигация ----------------------------------------------------------- */
+
+.nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.6cqw, 26px);
+  min-height: clamp(48px, 5.6cqw, 74px);
+  padding: clamp(6px, 0.8cqw, 10px) clamp(14px, 2.4cqw, 34px);
+  border-bottom: 3px solid #0b0b0c;
+}
+
+.nav__brand {
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(13px, 1.6cqw, 21px);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.nav__brand-dot {
+  color: #1b3cff;
+}
+
+.nav__sub {
+  font-size: clamp(8px, 0.72cqw, 10px);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: rgba(11, 11, 12, 0.55);
+}
+
+.nav__links {
+  display: flex;
+  gap: clamp(12px, 2cqw, 30px);
+  margin-left: auto;
+  font-size: clamp(10.5px, 1.05cqw, 14px);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.7);
+  white-space: nowrap;
+}
+
+.nav__dates {
+  padding: 0.45em 0.9em;
+  background: #1b3cff;
+  color: #ffffff;
+  font-size: clamp(10px, 1cqw, 13px);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+/* --- Первый экран -------------------------------------------------------- */
+
+.hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(18px, 3cqw, 48px);
+  min-height: clamp(330px, 34cqw, 460px);
+  padding: clamp(24px, 3.6cqw, 52px) clamp(14px, 2.4cqw, 34px);
+}
+
+.hero__kicker {
+  font-size: clamp(9.5px, 0.95cqw, 12px);
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.55);
+}
+
+.hero__title {
+  margin-top: clamp(8px, 1.2cqw, 16px);
+  font-size: clamp(52px, 9cqw, 128px);
+  font-weight: 800;
+  line-height: 0.84;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+.hero__title-accent {
+  color: #1b3cff;
+}
+
+.hero__title-dot {
+  color: #0b0b0c;
+}
+
+.hero__lead {
+  max-width: 32ch;
+  margin-top: clamp(12px, 1.8cqw, 26px);
+  font-size: clamp(12px, 1.24cqw, 16.5px);
+  color: rgba(11, 11, 12, 0.72);
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(12px, 2cqw, 30px);
+  margin-top: clamp(14px, 2cqw, 28px);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: clamp(11px, 1.1cqw, 14.5px);
+}
+
+.meta b {
+  font-size: clamp(9px, 0.85cqw, 11px);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1b3cff;
+}
+
+.btn {
+  display: inline-block;
+  margin-top: clamp(16px, 2.4cqw, 32px);
+  padding: 0.9em 1.9em;
+  background: #0b0b0c;
+  color: #f3f1ea;
+  font-size: clamp(10.5px, 1.05cqw, 14px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* --- Кадр с геометрией, выходящей за рамку -------------------------------- */
+
+.hero__visual {
+  position: relative;
+}
+
+.frame {
+  position: relative;
+  margin: 0;
+  border: clamp(3px, 0.45cqw, 6px) solid #0b0b0c;
+  background: #ffffff;
+}
+
+.frame img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.shape {
+  position: absolute;
+  display: block;
+}
+
+.shape--circle {
+  top: clamp(-22px, -2.4cqw, -14px);
+  right: clamp(-14px, -1.6cqw, -6px);
+  width: clamp(44px, 7.4cqw, 104px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #1b3cff;
+}
+
+.shape--bar {
+  left: clamp(-18px, -2.2cqw, -8px);
+  bottom: clamp(16px, 2.4cqw, 34px);
+  width: clamp(76px, 13cqw, 180px);
+  height: clamp(10px, 1.4cqw, 20px);
+  background: #0b0b0c;
+  transform: rotate(-5deg);
+}
+
+.shape--square {
+  right: clamp(18px, 3cqw, 44px);
+  bottom: clamp(-20px, -2.2cqw, -12px);
+  width: clamp(38px, 5.6cqw, 78px);
+  aspect-ratio: 1;
+  background: #f3f1ea;
+  box-shadow: inset 0 0 0 clamp(3px, 0.45cqw, 6px) #1b3cff;
+}
+
+.shape--caption {
+  top: clamp(10px, 1.6cqw, 22px);
+  left: clamp(-30px, -3.2cqw, -18px);
+  padding: 0.4em 0.9em;
+  background: #1b3cff;
+  color: #ffffff;
+  font-size: clamp(9px, 0.9cqw, 12px);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+/* --- Нижняя полоса -------------------------------------------------------- */
+
+.band {
+  flex: none;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(14px, 2.4cqw, 36px);
+  min-height: clamp(150px, 15cqw, 210px);
+  padding: clamp(16px, 2.4cqw, 34px) clamp(14px, 2.4cqw, 34px);
+  border-top: 3px solid #0b0b0c;
+}
+
+.band__label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: clamp(9px, 0.85cqw, 11px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(11, 11, 12, 0.55);
+}
+
+.band__label b {
+  font-family: var(--font-serif);
+  font-size: clamp(15px, 1.8cqw, 24px);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #0b0b0c;
+}
+
+.sections {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 2cqw, 30px);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(5px, 0.8cqw, 10px);
+  padding-left: clamp(10px, 1.4cqw, 20px);
+  border-left: 1px solid rgba(11, 11, 12, 0.22);
+}
+
+.section__num {
+  font-size: clamp(10px, 1cqw, 13px);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #1b3cff;
+}
+
+.section__title {
+  font-size: clamp(13px, 1.5cqw, 20px);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+.section__text {
+  font-size: clamp(11px, 1.1cqw, 14px);
+  color: rgba(11, 11, 12, 0.66);
+}
+
+/* --- Телефон -------------------------------------------------------------- */
+
+@container (max-width: 700px) {
+  .mock {
+    min-height: 0;
+  }
+
+  .nav {
+    min-height: 46px;
+    padding: 8px 16px;
+    gap: 8px;
+  }
+
+  .nav__links {
+    display: none;
+  }
+
+  .nav__dates {
+    margin-left: auto;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 24px 16px 14px;
+  }
+
+  .hero__title {
+    font-size: clamp(54px, 19cqw, 84px);
+  }
+
+  .hero__visual {
+    margin-top: 10px;
+  }
+
+  .shape--caption {
+    display: none;
+  }
+
+  .band {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 0;
+    padding: 18px 16px 22px;
+  }
+
+  .sections {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .section {
+    padding: 8px 0 0;
+    border-left: 0;
+    border-top: 1px solid rgba(11, 11, 12, 0.22);
+  }
+}
