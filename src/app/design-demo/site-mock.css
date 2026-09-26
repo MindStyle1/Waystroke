@@ -1,0 +1,676 @@
+/* ==========================================================================
+   Демонстрационный сайт архитектурного бюро «Ателье»
+   Одна и та же разметка и тексты — четыре кардинально разных подачи.
+   Размеры заданы через clamp() с cqw: контейнер одинаковый у обоих слоёв,
+   поэтому сайт не «сжимается в половинку», а просто масштабируется.
+   ========================================================================== */
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.mock {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--m-bg);
+  color: var(--m-ink);
+  font-family: var(--font-sans);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Общие элементы (подача задаётся переменными стиля) ------------------ */
+
+.mock__nav {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2cqw, 26px);
+  min-height: clamp(46px, 5.8cqw, 78px);
+  padding: clamp(6px, 0.9cqw, 12px) var(--m-pad);
+}
+
+.mock__brand {
+  font-size: clamp(13px, 1.55cqw, 20px);
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mock__menu {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 2.4cqw, 34px);
+  margin-left: auto;
+  font-size: clamp(11px, 1.12cqw, 14.5px);
+}
+
+.mock__link {
+  white-space: nowrap;
+}
+
+.mock__burger {
+  display: none;
+  margin-left: auto;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 26px;
+  height: 20px;
+}
+
+.mock__burger i {
+  display: block;
+  height: 1.5px;
+  background: currentColor;
+}
+
+.mock__hero {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-areas: 'copy figure';
+  align-items: stretch;
+  gap: clamp(14px, 2.6cqw, 36px);
+  padding: clamp(16px, 2.8cqw, 40px) var(--m-pad);
+}
+
+.mock__copy {
+  grid-area: copy;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(9px, 1.4cqw, 18px);
+  min-width: 0;
+}
+
+.mock__kicker {
+  font-size: clamp(10px, 1cqw, 13px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.mock__title {
+  margin: 0;
+  font-size: clamp(30px, 4.2cqw, 54px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.mock__lead {
+  max-width: 34ch;
+  font-size: clamp(13px, 1.35cqw, 16.5px);
+  color: var(--m-ink-2);
+}
+
+.mock__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: clamp(34px, 3.6cqw, 46px);
+  padding: 0 clamp(14px, 1.8cqw, 24px);
+  background: var(--m-accent);
+  color: var(--m-accent-ink);
+  border-radius: 8px;
+  font-size: clamp(12.5px, 1.3cqw, 16px);
+  font-weight: 600;
+}
+
+.mock__figure {
+  grid-area: figure;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mock__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mock__services {
+  flex: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(8px, 1.5cqw, 18px);
+  padding: 0 var(--m-pad) clamp(16px, 3cqw, 40px);
+}
+
+.mock__service {
+  min-width: 0;
+}
+
+.mock__num {
+  display: block;
+  font-size: clamp(10px, 1cqw, 12.5px);
+  letter-spacing: 0.16em;
+}
+
+.mock__service-title {
+  margin: clamp(3px, 0.5cqw, 8px) 0 clamp(3px, 0.5cqw, 7px);
+  font-size: clamp(13px, 1.5cqw, 18px);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.mock__service-text {
+  font-size: clamp(11px, 1.1cqw, 13.5px);
+  color: var(--m-ink-2);
+}
+
+/* --- 01 · Базовый корпоративный ------------------------------------------ */
+
+.mock[data-style='base'] {
+  --m-bg: #f4f7fb;
+  --m-ink: #0f2340;
+  --m-ink-2: #4c5c74;
+  --m-line: rgba(15, 35, 64, 0.16);
+  --m-accent: #1a56d6;
+  --m-accent-ink: #ffffff;
+  --m-pad: clamp(14px, 3.2cqw, 40px);
+}
+
+.mock[data-style='base'] .mock__nav {
+  background: var(--m-accent);
+  color: #fff;
+}
+
+.mock[data-style='base'] .mock__brand {
+  letter-spacing: 0.22em;
+}
+
+.mock[data-style='base'] .mock__menu {
+  gap: clamp(6px, 1.4cqw, 18px);
+}
+
+.mock[data-style='base'] .mock__link {
+  padding: clamp(4px, 0.5cqw, 8px) clamp(8px, 1cqw, 14px);
+  border-radius: 6px;
+}
+
+.mock[data-style='base'] .mock__link:first-child {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.mock[data-style='base'] .mock__hero {
+  align-items: center;
+}
+
+.mock[data-style='base'] .mock__kicker {
+  color: var(--m-accent);
+}
+
+.mock[data-style='base'] .mock__title {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.26em 0.42em;
+  background: var(--m-accent);
+  color: #fff;
+  border-radius: 8px;
+}
+
+.mock[data-style='base'] .mock__figure {
+  align-self: center;
+  height: clamp(150px, 26cqw, 330px);
+  border: 1px solid var(--m-line);
+  border-radius: 10px;
+  box-shadow: 0 10px 26px rgba(15, 35, 64, 0.12);
+}
+
+.mock[data-style='base'] .mock__services {
+  gap: clamp(8px, 1.4cqw, 18px);
+}
+
+.mock[data-style='base'] .mock__service {
+  padding: clamp(10px, 1.6cqw, 22px);
+  background: #fff;
+  border: 1px solid var(--m-line);
+  border-radius: 10px;
+}
+
+.mock[data-style='base'] .mock__num {
+  color: var(--m-accent);
+}
+
+/* --- 02 · Редакционный --------------------------------------------------- */
+
+.mock[data-style='editorial'] {
+  --m-bg: #f4ecdd;
+  --m-ink: #211c15;
+  --m-ink-2: #62594a;
+  --m-line: rgba(33, 28, 21, 0.22);
+  --m-accent: #8c4a2f;
+  --m-accent-ink: #fdf8ef;
+  --m-pad: clamp(16px, 4.2cqw, 56px);
+}
+
+.mock[data-style='editorial'] .mock__nav {
+  min-height: clamp(52px, 6.6cqw, 90px);
+  border-bottom: 1px solid var(--m-line);
+}
+
+.mock[data-style='editorial'] .mock__brand {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: 0.5em;
+}
+
+.mock[data-style='editorial'] .mock__menu {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: clamp(10px, 1.05cqw, 13.5px);
+}
+
+.mock[data-style='editorial'] .mock__hero {
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-areas: 'figure copy';
+  padding-left: 0;
+  gap: clamp(18px, 3.4cqw, 46px);
+}
+
+.mock[data-style='editorial'] .mock__kicker {
+  color: var(--m-accent);
+}
+
+.mock[data-style='editorial'] .mock__title {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(34px, 6.6cqw, 86px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  max-width: 12ch;
+}
+
+.mock[data-style='editorial'] .mock__lead {
+  max-width: 30ch;
+  font-size: clamp(13px, 1.45cqw, 17.5px);
+  line-height: 1.7;
+}
+
+.mock[data-style='editorial'] .mock__cta {
+  min-height: auto;
+  padding: 0 0 0.32em;
+  background: none;
+  color: var(--m-ink);
+  border-bottom: 1px solid var(--m-ink);
+  border-radius: 0;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.mock[data-style='editorial'] .mock__cta::after {
+  content: '→';
+  margin-left: 0.6em;
+}
+
+.mock[data-style='editorial'] .mock__figure {
+  align-self: stretch;
+}
+
+.mock[data-style='editorial'] .mock__photo {
+  filter: sepia(0.16) saturate(0.94) contrast(1.03);
+  object-position: 50% 55%;
+}
+
+.mock[data-style='editorial'] .mock__services {
+  gap: clamp(14px, 2.6cqw, 36px);
+  padding-top: clamp(4px, 0.8cqw, 12px);
+}
+
+.mock[data-style='editorial'] .mock__service {
+  padding-top: clamp(10px, 1.6cqw, 22px);
+  border-top: 1px solid var(--m-line);
+}
+
+.mock[data-style='editorial'] .mock__num {
+  font-family: var(--font-serif);
+  font-size: clamp(18px, 2.4cqw, 32px);
+  letter-spacing: 0;
+  color: rgba(33, 28, 21, 0.36);
+}
+
+.mock[data-style='editorial'] .mock__service-title {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: clamp(16px, 2cqw, 25px);
+}
+
+/* --- 03 · Бруталистский --------------------------------------------------- */
+
+.mock[data-style='brutal'] {
+  --m-bg: #f6f4ee;
+  --m-ink: #0b0b0b;
+  --m-ink-2: #0b0b0b;
+  --m-line: #0b0b0b;
+  --m-accent: #0b0b0b;
+  --m-accent-ink: #f6f4ee;
+  --m-pad: clamp(14px, 2.6cqw, 34px);
+}
+
+.mock[data-style='brutal'] .mock__nav {
+  flex-direction: row-reverse;
+  min-height: clamp(46px, 5.8cqw, 74px);
+  border-bottom: 2px solid var(--m-line);
+}
+
+.mock[data-style='brutal'] .mock__brand {
+  font-size: clamp(16px, 2.4cqw, 32px);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.mock[data-style='brutal'] .mock__menu {
+  margin-left: 0;
+  margin-right: auto;
+  gap: clamp(6px, 1cqw, 14px);
+}
+
+.mock[data-style='brutal'] .mock__link {
+  padding: clamp(3px, 0.45cqw, 7px) clamp(7px, 0.9cqw, 13px);
+  border: 2px solid var(--m-line);
+  font-size: clamp(10px, 1.05cqw, 13.5px);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.mock[data-style='brutal'] .mock__hero {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  grid-template-areas: 'figure copy';
+  align-items: center;
+  gap: clamp(14px, 2.2cqw, 30px);
+}
+
+.mock[data-style='brutal'] .mock__kicker {
+  padding: 0.45em 0.7em;
+  background: #ff4b1f;
+  color: #fff;
+  font-weight: 700;
+}
+
+.mock[data-style='brutal'] .mock__title {
+  font-size: clamp(30px, 5.6cqw, 74px);
+  font-weight: 700;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  overflow-wrap: break-word;
+}
+
+.mock[data-style='brutal'] .mock__lead {
+  max-width: 30ch;
+  font-weight: 500;
+}
+
+.mock[data-style='brutal'] .mock__cta {
+  border-radius: 0;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-size: clamp(11.5px, 1.2cqw, 15px);
+}
+
+.mock[data-style='brutal'] .mock__figure {
+  align-self: center;
+  height: clamp(150px, 25cqw, 320px);
+  border: 3px solid var(--m-line);
+}
+
+.mock[data-style='brutal'] .mock__photo {
+  filter: grayscale(1) contrast(1.18);
+}
+
+.mock[data-style='brutal'] .mock__services {
+  gap: 0;
+  padding-bottom: clamp(16px, 3cqw, 40px);
+}
+
+.mock[data-style='brutal'] .mock__service {
+  padding: clamp(10px, 1.6cqw, 22px);
+  border: 2px solid var(--m-line);
+  margin-left: -2px;
+}
+
+.mock[data-style='brutal'] .mock__service:first-child {
+  margin-left: 0;
+}
+
+.mock[data-style='brutal'] .mock__service:nth-child(2) {
+  background: var(--m-line);
+  color: var(--m-accent-ink);
+}
+
+.mock[data-style='brutal'] .mock__service:nth-child(2) .mock__service-text {
+  color: rgba(246, 244, 238, 0.78);
+}
+
+.mock[data-style='brutal'] .mock__num {
+  font-size: clamp(24px, 4cqw, 54px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.mock[data-style='brutal'] .mock__service-title {
+  margin-top: clamp(6px, 0.9cqw, 14px);
+  font-size: clamp(13px, 1.6cqw, 20px);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.mock[data-style='brutal'] .mock__service-text {
+  font-weight: 500;
+  font-size: clamp(11px, 1.1cqw, 13.5px);
+}
+
+/* --- 04 · Тёмный минимализм ---------------------------------------------- */
+
+.mock[data-style='dark'] {
+  --m-bg: #16181a;
+  --m-ink: #f1efea;
+  --m-ink-2: rgba(241, 239, 234, 0.68);
+  --m-line: rgba(241, 239, 234, 0.2);
+  --m-accent: rgba(241, 239, 234, 0.9);
+  --m-accent-ink: #16181a;
+  --m-pad: clamp(16px, 3.4cqw, 44px);
+}
+
+.mock[data-style='dark'] .mock__nav {
+  min-height: clamp(48px, 6.2cqw, 84px);
+  border-bottom: 1px solid var(--m-line);
+}
+
+.mock[data-style='dark'] .mock__brand {
+  font-weight: 300;
+  letter-spacing: 0.5em;
+}
+
+.mock[data-style='dark'] .mock__menu {
+  display: none;
+}
+
+.mock[data-style='dark'] .mock__burger {
+  display: flex;
+}
+
+.mock[data-style='dark'] .mock__hero {
+  position: relative;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: 'copy';
+  padding-block: clamp(24px, 4cqw, 56px);
+}
+
+.mock[data-style='dark'] .mock__figure {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.mock[data-style='dark'] .mock__photo {
+  filter: brightness(0.62) saturate(0.72);
+}
+
+.mock[data-style='dark'] .mock__figure::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    270deg,
+    rgba(16, 18, 20, 0.97) 0%,
+    rgba(16, 18, 20, 0.86) 45%,
+    rgba(16, 18, 20, 0.32) 100%
+  );
+}
+
+.mock[data-style='dark'] .mock__copy {
+  position: relative;
+  z-index: 1;
+  max-width: 56ch;
+  margin-left: auto;
+}
+
+.mock[data-style='dark'] .mock__kicker {
+  color: #b9a17c;
+}
+
+.mock[data-style='dark'] .mock__title {
+  font-weight: 300;
+  font-size: clamp(32px, 5.4cqw, 70px);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  max-width: 14ch;
+}
+
+.mock[data-style='dark'] .mock__lead {
+  max-width: 38ch;
+  font-weight: 300;
+  font-size: clamp(13px, 1.4cqw, 17px);
+  color: rgba(241, 239, 234, 0.74);
+}
+
+.mock[data-style='dark'] .mock__cta {
+  background: none;
+  color: var(--m-ink);
+  border: 1px solid rgba(241, 239, 234, 0.45);
+  border-radius: 999px;
+  font-weight: 400;
+}
+
+.mock[data-style='dark'] .mock__services {
+  border-top: 1px solid var(--m-line);
+  padding-top: clamp(12px, 2cqw, 26px);
+}
+
+.mock[data-style='dark'] .mock__service {
+  padding-left: clamp(12px, 1.8cqw, 24px);
+  border-left: 1px solid var(--m-line);
+}
+
+.mock[data-style='dark'] .mock__service:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.mock[data-style='dark'] .mock__num {
+  color: #b9a17c;
+  letter-spacing: 0.2em;
+}
+
+.mock[data-style='dark'] .mock__service-title {
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.mock[data-style='dark'] .mock__service-text {
+  color: rgba(241, 239, 234, 0.55);
+}
+
+/* --- Узкий контейнер (телефон) -------------------------------------------- */
+/* Контейнерные запросы: сценка становится «мобильной версией» сайта,
+   независимо от того, на каком устройстве открыта страница. */
+
+@container (max-width: 700px) {
+  .mock__menu {
+    display: none;
+  }
+
+  .mock__burger {
+    display: flex;
+  }
+
+  /* Все светлые стили складываются в одну колонку: текст сверху, фото снизу. */
+  .mock[data-style='base'] .mock__hero,
+  .mock[data-style='editorial'] .mock__hero,
+  .mock[data-style='brutal'] .mock__hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'copy' 'figure';
+    align-items: start;
+    gap: clamp(12px, 4cqw, 20px);
+    padding: clamp(14px, 5cqw, 24px) var(--m-pad);
+  }
+
+  .mock__hero {
+    gap: clamp(12px, 4cqw, 20px);
+    padding-block: clamp(14px, 5cqw, 24px);
+  }
+
+  .mock__figure {
+    align-self: auto;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .mock[data-style='base'] .mock__figure,
+  .mock[data-style='editorial'] .mock__figure,
+  .mock[data-style='brutal'] .mock__figure {
+    align-self: auto;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .mock__title {
+    max-width: 16ch;
+  }
+
+  .mock__services {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(8px, 3cqw, 14px);
+  }
+
+  .mock__service {
+    padding-top: clamp(8px, 3cqw, 14px);
+  }
+
+  /* Тёмный вариант остаётся с фоновой фотографией — это его суть. */
+  .mock[data-style='dark'] .mock__hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'copy';
+    min-height: clamp(250px, 82vw, 340px);
+    padding-inline: var(--m-pad);
+  }
+
+  .mock[data-style='dark'] .mock__copy {
+    max-width: none;
+    margin-left: 0;
+  }
+
+  .mock[data-style='dark'] .mock__service {
+    padding: clamp(8px, 3cqw, 14px) 0 0;
+    border-left: 0;
+    border-top: 1px solid var(--m-line);
+  }
+
+  .mock[data-style='dark'] .mock__service:first-child {
+    border-top: 0;
+  }
+}

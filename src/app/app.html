@@ -7,7 +7,7 @@
     </button>
 
     <nav class="nav" aria-label="Основная навигация">
-      <button class="nav__link" type="button" data-scroll-to="works">Работы</button>
+      <button class="nav__link" type="button" data-scroll-to="design">Дизайн</button>
       <button class="nav__link" type="button" data-scroll-to="services">Услуги</button>
       <button class="nav__link" type="button" data-scroll-to="contact">Контакты</button>
     </nav>
@@ -37,7 +37,7 @@
     [class.is-instant]="instantMenu()"
   >
     <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
-      <button class="mobile-menu__link" type="button" data-scroll-to="works">Работы</button>
+      <button class="mobile-menu__link" type="button" data-scroll-to="design">Дизайн</button>
       <button class="mobile-menu__link" type="button" data-scroll-to="services">Услуги</button>
       <button class="mobile-menu__link" type="button" data-scroll-to="contact">Контакты</button>
     </nav>
@@ -76,8 +76,8 @@
             <button class="btn btn--dark" type="button" data-scroll-to="contact">
               Обсудить проект
             </button>
-            <button class="link-arrow link-arrow--down" type="button" data-scroll-to="works">
-              Смотреть работы
+            <button class="link-arrow link-arrow--down" type="button" data-scroll-to="design">
+              Смотреть дизайн
             </button>
           </div>
         </div>
@@ -124,73 +124,15 @@
     </div>
   </section>
 
-  <!-- 3. Мои работы -->
+  <!-- 3. Дизайн: одна задача в четырёх подачах -->
   <section
-    class="works"
-    data-section="works"
+    class="design"
+    data-section="design"
     tabindex="-1"
-    aria-labelledby="works-title"
+    aria-labelledby="design-title"
   >
     <div class="container">
-      <div class="works__panel">
-        <div class="works__head-main reveal">
-          <p class="label label--accent">Избранные работы</p>
-          <h2 class="heading heading--light" id="works-title">
-            Проекты, в которых видно внимание к деталям.
-          </h2>
-          <p class="works__note">
-            Ниже — четыре авторских концепта: визуальные решения, собранные для
-            витрины. Это не выполненные клиентские заказы, отзывы и цифры
-            результатов к ним не придумывались.
-          </p>
-        </div>
-
-        <div class="works__carousel reveal">
-          <div
-            class="works__scroll"
-            data-carousel-scroll
-            tabindex="0"
-            role="region"
-            aria-label="Проекты — карусель"
-          >
-            <div class="works__track" data-carousel-track>
-              @for (card of workCards; track card.key) {
-                <article
-                  class="project"
-                  [class.reveal]="!card.clone"
-                  [attr.data-concept]="card.project.concept"
-                  [attr.aria-hidden]="card.clone ? 'true' : null"
-                >
-                  <p class="project__label">
-                    <span>{{ card.project.label }}</span>
-                    @if (card.project.demo) {
-                      <span class="project__demo">Концепт</span>
-                    }
-                  </p>
-
-                  <!-- Превью — главный элемент карточки: мини-версия концепта. -->
-                  <figure class="project__shot">
-                    <span class="project__bar">
-                      <span class="project__dots" aria-hidden="true"><i></i><i></i><i></i></span>
-                      <span class="project__frame-note">{{ card.project.frameNote }}</span>
-                    </span>
-                    <app-project-preview
-                      [concept]="card.project.concept"
-                      [title]="card.project.title"
-                    />
-                  </figure>
-
-                  <div class="project__body">
-                    <h3 class="project__title">{{ card.project.title }}</h3>
-                    <p class="project__desc">{{ card.project.description }}</p>
-                    <p class="project__meta">{{ card.project.meta }}</p>
-                  </div>
-                </article>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
+      <app-design-demo />
     </div>
   </section>
 

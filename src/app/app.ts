@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, inject, signal } from '@angular/core';
-import { initServiceScenes, initStepsSequence, initWorksCarousel, type Dispose } from './motion';
-import { projects } from '../data/projects';
-import { ProjectPreview } from './project-preview/project-preview';
+import { initServiceScenes, initStepsSequence, type Dispose } from './motion';
+import { DesignDemo } from './design-demo/design-demo';
 
 /** Прокрутка без анимации, когда пользователь просит уменьшить движение. */
 const prefersReduced = (): boolean =>
@@ -17,7 +16,7 @@ const prefersReduced = (): boolean =>
  */
 @Component({
   selector: 'app-root',
-  imports: [ProjectPreview],
+  imports: [DesignDemo],
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
@@ -27,15 +26,6 @@ export class App implements AfterViewInit, OnDestroy {
   protected readonly scrolled = signal(false);
   protected readonly calendarLoaded = signal(false);
   protected readonly calendarFailed = signal(false);
-
-  /**
-   * Лента проектов: четыре карточки плюс их копии: копии делают петлю
-   * автопрокрутки незаметной и скрыты от скринридеров.
-   */
-  protected readonly workCards = [
-    ...projects.map((project) => ({ key: project.id, project, clone: false })),
-    ...projects.map((project) => ({ key: `${project.id}-copy`, project, clone: true })),
-  ];
 
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
@@ -56,11 +46,7 @@ export class App implements AfterViewInit, OnDestroy {
     this.initReveal();
     this.initBooking();
     this.updateHeader();
-    this.motionDisposers.push(
-      initServiceScenes(host),
-      initStepsSequence(host),
-      initWorksCarousel(host),
-    );
+    this.motionDisposers.push(initServiceScenes(host), initStepsSequence(host));
 
     window.addEventListener('scroll', this.handleScroll, { passive: true });
     window.addEventListener('resize', this.handleResize);

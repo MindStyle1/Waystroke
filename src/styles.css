@@ -629,197 +629,23 @@ button {
   color: var(--ink-3);
 }
 
-/* --- Работы -------------------------------------------------------------- */
+/* --- Дизайн (секция сравнения) -------------------------------------------- */
 
-.works {
+.design {
   padding-bottom: var(--section);
 }
 
-.works__panel {
-  background: var(--dark);
-  color: #f4f2ea;
-  border-radius: var(--radius-lg);
-  padding: clamp(26px, 4vw, 68px);
-}
-
-/* Лента проектов: медленно едет сама, всегда доступна ручная прокрутка. */
-.works__carousel {
-  position: relative;
-  margin-top: clamp(28px, 4vw, 56px);
-}
-
-/* Пояснение: карточки — авторские концепты, а не клиентские заказы. */
-.works__note {
-  margin-top: clamp(14px, 1.6vw, 22px);
-  max-width: 58ch;
-  font-size: 14.5px;
-  color: rgba(244, 242, 234, 0.66);
-}
-
-/* Мягкие края: лента продолжается за пределами панели. */
-.works__carousel::before,
-.works__carousel::after {
-  content: '';
+/* Текст только для скринридера: пояснение к ползунку и к слоям сравнения. */
+.visually-hidden {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: clamp(20px, 3vw, 56px);
-  pointer-events: none;
-  z-index: 2;
-}
-
-.works__carousel::before {
-  left: 0;
-  background: linear-gradient(to right, var(--dark), rgba(20, 22, 20, 0));
-}
-
-.works__carousel::after {
-  right: 0;
-  background: linear-gradient(to left, var(--dark), rgba(20, 22, 20, 0));
-}
-
-.works__scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-}
-
-.works__scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.works__scroll:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: -2px;
-}
-
-.works__track {
-  display: flex;
-  align-items: stretch;
-  gap: clamp(16px, 2vw, 26px);
-  width: max-content;
-}
-
-.project {
-  flex: 0 0 clamp(264px, 78vw, 372px);
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(12px, 1.4vw, 18px);
-  padding: clamp(16px, 1.8vw, 24px);
-  border-radius: 22px;
-  color: var(--ink);
-  background: var(--surface);
-}
-
-/* У каждой концепции свой оттенок карточки — цвета живут внутри превью. */
-.project[data-concept='bakery'] {
-  background: #f6e3c8;
-}
-
-.project[data-concept='ceramics'] {
-  background: #e6e0d5;
-}
-
-.project[data-concept='accounting'] {
-  background: #dbe3ec;
-}
-
-.project[data-concept='sailing'] {
-  background: #d3e6e5;
-}
-
-.project__label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(23, 25, 26, 0.62);
-}
-
-.project__demo {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(23, 25, 26, 0.1);
-  letter-spacing: 0.1em;
-}
-
-/* Превью — главный элемент карточки: окно браузера с концептом сайта. */
-.project__shot {
-  display: flex;
-  flex-direction: column;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
   overflow: hidden;
-  border-radius: 16px;
-  background: var(--surface);
-  box-shadow: 0 14px 34px rgba(23, 25, 26, 0.12);
-  /* Контейнер для cqw-единиц внутри превью. */
-  container-type: inline-size;
-  transition:
-    transform 0.4s var(--ease),
-    box-shadow 0.4s var(--ease);
-}
-
-.project:hover .project__shot {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 44px rgba(23, 25, 26, 0.2);
-}
-
-.project__bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  background: #f4f2ea;
-  border-bottom: 1px solid rgba(23, 25, 26, 0.08);
-}
-
-.project__dots {
-  display: flex;
-  gap: 5px;
-}
-
-.project__dots i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: rgba(23, 25, 26, 0.18);
-}
-
-.project__frame-note {
-  font-size: 9.5px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.project__body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.project__title {
-  font-size: clamp(1.3rem, 1.9vw, 1.7rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
-}
-
-.project__desc {
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--ink-2);
-}
-
-.project__meta {
-  font-size: 10.5px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(23, 25, 26, 0.55);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* --- Услуги и подход ----------------------------------------------------- */
@@ -1431,7 +1257,7 @@ app-root .cal__foot a {
 
 /*
  * Задержки появления заданы здесь же (в разметке их больше нет):
- * карточки проектов и шаги получают сдвиг по nth-child.
+ * карточки услуг и шаги получают сдвиг по nth-child.
  */
 .hero__aside {
   --d: 140ms;
@@ -1463,18 +1289,6 @@ app-root .cal__foot a {
 
 .steps .step:nth-child(4) {
   --d: 180ms;
-}
-
-.works__track .project:nth-child(2) {
-  --d: 120ms;
-}
-
-.works__track .project:nth-child(3) {
-  --d: 240ms;
-}
-
-.works__track .project:nth-child(4) {
-  --d: 360ms;
 }
 
 .cal {
@@ -1582,12 +1396,8 @@ app-root .cal__foot a {
 }
 
 @media (max-width: 700px) {
-  .works .container {
+  .design .container {
     width: 100%;
-  }
-
-  .works__panel {
-    border-radius: 0;
   }
 
   .hero__title {

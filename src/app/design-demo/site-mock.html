@@ -1,0 +1,47 @@
+<article class="mock" [attr.data-style]="variant()">
+  <header class="mock__nav">
+    <span class="mock__brand">Ателье</span>
+
+    <span class="mock__menu" aria-hidden="true">
+      <span class="mock__link">О студии</span>
+      <span class="mock__link">Проекты</span>
+      <span class="mock__link">Услуги</span>
+      <span class="mock__link">Контакты</span>
+    </span>
+
+    <span class="mock__burger" aria-hidden="true"><i></i><i></i><i></i></span>
+  </header>
+
+  <div class="mock__hero">
+    <div class="mock__copy">
+      <p class="mock__kicker">Архитектурное бюро</p>
+      <h3 class="mock__title">Пространство для жизни.</h3>
+      <p class="mock__lead">
+        Создаём дома, в которых хочется быть. Архитектура, интерьер и забота о деталях.
+      </p>
+      <span class="mock__cta">Обсудить проект</span>
+    </div>
+
+    <figure class="mock__figure">
+      <img
+        class="mock__photo"
+        [src]="photo().src"
+        [alt]="photo().alt"
+        [attr.width]="photo().width"
+        [attr.height]="photo().height"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+  </div>
+
+  <ul class="mock__services">
+    @for (item of services; track item.num) {
+      <li class="mock__service">
+        <span class="mock__num" aria-hidden="true">{{ item.num }}</span>
+        <h4 class="mock__service-title">{{ item.title }}</h4>
+        <p class="mock__service-text">{{ item.text }}</p>
+      </li>
+    }
+  </ul>
+</article>

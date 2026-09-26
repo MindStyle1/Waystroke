@@ -1,0 +1,95 @@
+<div class="panel">
+  <div class="demo__head">
+    <p class="label label--accent reveal">Дизайн в действии</p>
+
+    <div class="demo__title-row">
+      <h2 class="demo__title reveal" id="design-title">
+        <span class="demo__title-line">Одна идея.</span>
+        <span class="demo__title-line demo__title-line--serif">Два впечатления.</span>
+      </h2>
+      <p class="demo__note reveal">Двигайте границу — почувствуйте разницу.</p>
+    </div>
+  </div>
+
+  <div
+    class="demo__switch reveal"
+    role="group"
+    aria-label="Стиль для сравнения с базовым вариантом"
+  >
+    <span class="demo__switch-label">Сравнить базовый с</span>
+    @for (option of options; track option.key) {
+      <button
+        class="demo__tab"
+        type="button"
+        [class.is-active]="selected() === option.key"
+        [attr.aria-pressed]="selected() === option.key"
+        (click)="select(option.key)"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+
+  <div class="cmp reveal">
+    <div class="cmp__labels" aria-hidden="true">
+      <span class="cmp__badge">Базовый</span>
+      <span class="cmp__badge">{{ selectedLabel() }}</span>
+    </div>
+
+    <p class="visually-hidden" id="cmp-hint">
+      Слева — базовый корпоративный вариант, справа — выбранный стиль. Тексты и
+      структура совпадают, меняется подача: типографика, композиция, масштаб,
+      навигация и фотографии.
+    </p>
+
+    <div class="cmp__frame">
+      <div
+        class="cmp__stage"
+        #stage
+        (pointerdown)="onStagePointerDown($event)"
+        (pointermove)="onStagePointerMove($event)"
+        (pointerup)="onStagePointerUp($event)"
+        (pointercancel)="onStagePointerUp($event)"
+      >
+        <!-- Нижний слой: выбранный авторский стиль, виден справа. -->
+        <div class="cmp__layer">
+          <app-site-mock [variant]="selected()" />
+        </div>
+
+        <!-- Верхний слой: базовый вариант, обрезается ползунком слева. -->
+        <div class="cmp__layer cmp__layer--base" aria-hidden="true" [style.clip-path]="clipPath()">
+          <app-site-mock variant="base" />
+        </div>
+      </div>
+
+      <span class="cmp__rule" aria-hidden="true" [style.left.%]="split()"></span>
+
+      <button
+        class="cmp__handle"
+        type="button"
+        #handle
+        role="slider"
+        aria-label="Граница сравнения дизайнов"
+        aria-orientation="horizontal"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        [attr.aria-valuenow]="split()"
+        [attr.aria-valuetext]="valueText()"
+        aria-describedby="cmp-hint"
+        [style.left.%]="split()"
+        (keydown)="onHandleKeydown($event)"
+      >
+        <svg class="cmp__handle-glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M9.5 6.5 5 12l4.5 5.5M14.5 6.5 19 12l-4.5 5.5" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <ul class="demo__foot reveal">
+    <li class="demo__point"><span class="demo__point-num">01</span>Композиция</li>
+    <li class="demo__point"><span class="demo__point-num">02</span>Типографика</li>
+    <li class="demo__point"><span class="demo__point-num">03</span>Акценты</li>
+    <li class="demo__caption">Концепт: одна задача в разных стилях</li>
+  </ul>
+</div>
