@@ -1,10 +1,17 @@
 /**
  * Секционные анимации Waystroke.
  *
- * Покой — законченное состояние: разметка уже показывает собранный результат.
+ * Покой — законченное состояние: разметка уже показывает собранный результат,
+ * поэтому пустой рисунок невозможен даже без единой строки скрипта.
  * Сцена услуги играет ровно один раз — при первом наведении (и один раз при
  * появлении на устройствах без hover) — и дальше не запускается снова.
  * Этапы работы стартуют сами, при прокрутке.
+ *
+ * Стартовые скрывающие значения (`opacity`, `transform`, `stroke-dashoffset`)
+ * ставит только сценарий — в момент подготовки конкретной сцены и только
+ * чтобы тут же улучшить уже готовую картинку. Если анимация не пошла (движок
+ * не получил кадров, страница свёрнута, сцена упала, компонент уничтожен),
+ * сцена снимается и остаётся статичный финал из разметки.
  * Каждая функция возвращает диспозер — он снимает слушатели и наблюдатели
  * и останавливает анимации вместе с компонентом.
  */
@@ -14,11 +21,24 @@ export type Dispose = () => void;
 
 interface Scene {
   tl: Timeline;
+  /** Страховочные таймеры: ожидание первого кадра и ожидание финала. */
+  timers: number[];
 }
 
 type SceneBuilder = (card: HTMLElement) => Scene;
 
 const noop: Dispose = () => {};
+
+/** Заглушка для колбэков таймлайна: сцена снята, слушать больше нечего. */
+const noopCb = (): void => {};
+
+/**
+ * Сколько ждём первого кадра движка и сколько — финала после старта, прежде
+ * чем снять сцену и показать готовую картинку. Оба окна заведомо больше
+ * штатной длительности сцены, поэтому в обычном случае не срабатывают.
+ */
+const SCENE_START_GRACE = 700;
+const SCENE_FINISH_GRACE = 2600;
 
 /**
  * Безопасный matchMedia: в тестах и старых окружениях его может не быть —
@@ -75,7 +95,7 @@ const buildSiteScene: SceneBuilder = (card) => {
       1160,
     );
 
-  return { tl };
+  return { tl, timers: [] };
 };
 
 /* --- Сцена 02: широкий экран → планшет → телефон -------------------------- */
@@ -127,7 +147,7 @@ const buildResponsiveScene: SceneBuilder = (card) => {
     .add(col3, { ...phone.cols[2], duration: 700, ease: 'inOutQuad' }, 960)
     .add(badge, { ...phone.badge, duration: 700, ease: 'inOutQuad' }, 960);
 
-  return { tl };
+  return { tl, timers: [] };
 };
 
 /* --- Сцена 03: отступы выравниваются, появляется новый элемент ----------- */
@@ -156,10 +176,22 @@ const buildRefineScene: SceneBuilder = (card) => {
     .add(added, { opacity: 1, scale: 1, duration: 340, ease: 'outQuad' }, 960)
     .add(accent, { strokeDashoffset: 0, duration: 460, ease: 'inOutQuad' }, 1240);
 
-  return { tl };
+  return { tl, timers: [] };
 };
 
 /* --- Управление сценами услуг -------------------------------------------- */
+
+/**
+ * Готовый статичный рисунок: снимаем со сцены всё, что ставил Anime.js, и
+ * возвращаем её к состоянию из разметки. Инлайновых стилей у сцен в разметке
+ * нет, поэтому снятие атрибута `style` — это и есть возврат к финалу.
+ */
+const settle = (card: HTMLElement): void => {
+  const nodes = all<SVGElement>(card, '.service__scene .scene *');
+  if (nodes.length === 0) return;
+  utils.remove(nodes);
+  nodes.forEach((node) => node.removeAttribute('style'));
+};
 
 export function initServiceScenes(host: HTMLElement): Dispose {
   const cards = all<HTMLElement>(host, '.service[data-scene]');
@@ -174,11 +206,51 @@ export function initServiceScenes(host: HTMLElement): Dispose {
   const states = new Map<HTMLElement, Scene>();
   const cleanups: Dispose[] = [];
 
-  const drop = (card: HTMLElement): void => {
-    const state = states.get(card);
-    if (!state) return;
-    state.tl.revert();
+  const clearTimers = (scene: Scene): void => {
+    scene.timers.forEach((timer) => window.clearTimeout(timer));
+    scene.timers = [];
+  };
+
+  /**
+   * Снимает сцену с карточки. С флагом `finish` рисунок дополнительно
+   * возвращается в готовый статичный вид — так же поступаем при уничтожении
+   * компонента и при любой неудаче, потому что `revert()` откатил бы картинку
+   * к скрытым значениям, заданным вне таймлайна.
+   */
+  const drop = (card: HTMLElement, finish: boolean): void => {
+    const scene = states.get(card);
+    if (!scene) return;
+    clearTimers(scene);
+    scene.tl.onBegin = noopCb;
+    scene.tl.onComplete = noopCb;
+    scene.tl.pause();
     states.delete(card);
+    if (finish) settle(card);
+  };
+
+  /**
+   * Страховка поверх основной логики: если движок не отдал первый кадр или
+   * таймлайн не дошёл до конца, сцена снимается и остаётся готовая картинка.
+   */
+  const arm = (card: HTMLElement, scene: Scene): void => {
+    const watchFinish = (): void => {
+      scene.timers.push(
+        window.setTimeout(() => {
+          if (!scene.tl.completed) drop(card, true);
+        }, SCENE_FINISH_GRACE),
+      );
+    };
+
+    if (scene.tl.began) watchFinish();
+    else scene.tl.onBegin = watchFinish;
+
+    scene.timers.push(
+      window.setTimeout(() => {
+        if (!scene.tl.began && !scene.tl.completed) drop(card, true);
+      }, SCENE_START_GRACE),
+    );
+
+    scene.tl.onComplete = (): void => clearTimers(scene);
   };
 
   const play = (card: HTMLElement): void => {
@@ -186,11 +258,23 @@ export function initServiceScenes(host: HTMLElement): Dispose {
     if (states.has(card)) return;
 
     const builder = builders[card.dataset['scene'] ?? ''];
-    if (!builder) return;
+    if (!builder) {
+      settle(card);
+      return;
+    }
 
-    const scene = builder(card);
-    states.set(card, scene);
-    scene.tl.play();
+    let scene: Scene | null = null;
+    try {
+      // Только здесь и только для этой карточки ставятся скрывающие стартовые
+      // значения — и сразу же запускается улучшающая их анимация.
+      scene = builder(card);
+      scene.tl.play();
+      states.set(card, scene);
+      arm(card, scene);
+    } catch {
+      if (scene) drop(card, true);
+      else settle(card);
+    }
   };
 
   const hoverable =
@@ -210,13 +294,17 @@ export function initServiceScenes(host: HTMLElement): Dispose {
       return;
     }
 
+    // Порог заметно ниже прежних 40 %: на телефоне карточка с иллюстрацией
+    // часто выше вьюпорта, и 40 % могли не набраться никогда — сцена просто
+    // не запускалась. Если пересечение всё же пропущено (быстрая прокрутка),
+    // рисунок остаётся готовым, потому что покой задан разметкой.
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries.some((entry) => entry.isIntersecting)) return;
         observer.disconnect();
         play(card);
       },
-      { threshold: 0.4 },
+      { threshold: 0.12, rootMargin: '0px 0px -4% 0px' },
     );
     observer.observe(card);
     cleanups.push(() => observer.disconnect());
@@ -224,7 +312,7 @@ export function initServiceScenes(host: HTMLElement): Dispose {
 
   return () => {
     cleanups.forEach((dispose) => dispose());
-    Array.from(states.keys()).forEach(drop);
+    Array.from(states.keys()).forEach((card) => drop(card, true));
   };
 }
 
