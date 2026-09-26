@@ -263,12 +263,6 @@
   color: rgba(244, 242, 234, 0.45);
 }
 
-.demo__caption {
-  margin-left: auto;
-  font-size: 13.5px;
-  color: rgba(244, 242, 234, 0.55);
-}
-
 /* --- Телефон -------------------------------------------------------------- */
 
 @media (max-width: 700px) {
@@ -285,10 +279,5 @@
     flex: 1 1 auto;
     padding: 0 14px;
     font-size: 14px;
-  }
-
-  .demo__caption {
-    margin-left: 0;
-    width: 100%;
   }
 }
