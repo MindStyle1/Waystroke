@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Build Angular
-        run: npm run build -- --base-href=/waystroke/
+        run: npm run build -- --base-href=/Waystroke/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
