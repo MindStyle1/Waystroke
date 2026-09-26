@@ -7,9 +7,20 @@
 # Деплой (нужен токен с Workers Scripts:Edit):
 #   npx wrangler deploy --config worker/wrangler.toml
 #
-# Маршрут в зоне создаётся один раз и привязывает /api/track к Worker'у:
-#   POST /client/v4/zones/{zone_id}/workers/routes
-#   { "pattern": "waystroke.online/api/track", "script": "waystroke-track" }
+# Маршрут в зоне создаётся один раз и отдаёт Worker'у все пути /api/*:
+#   PUT /client/v4/zones/{zone_id}/workers/routes/{route_id}
+#   { "pattern": "waystroke.online/api/*", "script": "waystroke-track" }
+#
+# Так сводка лежит рядом с /api/track и не конфликтует с Pages: отдельный
+# маршрут на /stats Cloudflare отдавала страницей сайта (404), потому что
+# путь без префикса /api перехватывался раздачей статики.
+#
+# Секрет STATS_TOKEN ставится один раз и в репозиторий не попадает:
+#   npx wrangler secret put STATS_TOKEN --config worker/wrangler.toml
+#   # или через API: PUT /accounts/{id}/workers/scripts/waystroke-track/secrets
+#
+# Адрес страницы:  https://waystroke.online/api/stats?key=<STATS_TOKEN>
+# Данные для неё:  https://waystroke.online/api/stats.json (тот же ключ)
 #
 # Схема таблицы (создаётся один раз):
 #   CREATE TABLE IF NOT EXISTS conversions (
