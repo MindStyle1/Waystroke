@@ -1614,6 +1614,17 @@ app-root .cal__foot a {
     flex-direction: column;
   }
 
+  /*
+   * В колонке главная ось становится вертикальной, и flex-basis из правила
+   * выше начинает задавать высоту каждой строки — по 240px пустоты на
+   * карточку. Поэтому на телефоне basis сбрасываем, а строка определяется
+   * контентом. На десктопе правило не действует.
+   */
+  .feature {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+
   .feature + .feature {
     border-left: 0;
     border-top: 1px solid var(--line-soft);
