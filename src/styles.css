@@ -281,6 +281,219 @@ button {
   box-shadow: 0 0 0 3px rgba(200, 240, 84, 0.4);
 }
 
+/* --- Брендовый загрузчик: «первый штрих» ---------------------------------- */
+
+/*
+ * Сцена живёт в разметке документа, а не в Angular: первый кадр рисуется до
+ * бутстрапа, поэтому под загрузчиком не бывает белого экрана.
+ *
+ * Покой — законченный кадр: точка на месте, штрих прорисован целиком, слово
+ * видно. Ничего не дорисовывает скрипт — если движок не отдал кадров, зритель
+ * всё равно видит готовую запись, а сцена просто уходит по таймеру.
+ */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  background: var(--bg);
+  transition: opacity 460ms var(--ease);
+}
+
+/* Скрытый загрузчик не должен перекрывать страницу, а `display: grid` выше
+   перебивает обычное правило для [hidden] — гасим его явно. */
+.boot[hidden] {
+  display: none;
+}
+
+.boot__scene {
+  width: min(100%, 460px);
+  transition: transform 520ms var(--ease);
+}
+
+.boot__svg {
+  width: 100%;
+  height: auto;
+}
+
+.boot__dot {
+  fill: var(--accent);
+}
+
+.boot__line {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+}
+
+.boot__word {
+  fill: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Точки роста фигур — их собственные центры, чтобы масштаб не уводил точку
+   и слово из своих мест. */
+.boot__dot,
+.boot__word {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+/*
+ * Штрих и проявляющая его маска — одна и та же линия, поэтому и штриховый
+ * рисунок у них общий: `pathLength="1"` нормализует длину, а разрыв в 1.5
+ * (больше длины пути) не даёт второму отрезку-повтору появиться на пути и
+ * оставить круглую шапку у финиша.
+ *
+ * Скрытое значение — 1: узор штрихов смещается назад, и нарисованным на пути
+ * остаётся только круглая шапка у старта, которую закрывает точка. Уменьшая
+ * смещение до 0, штрих растёт от старта к финишу.
+ */
+.boot__line,
+.boot__sweep {
+  stroke-dasharray: 1 1.5;
+}
+
+/* Пока сцена не началась, кадр не показываем: первая отрисовка должна быть
+   пустой, а не готовым кадром, который тут же сбросится в ноль. */
+html.boot-on {
+  overflow: hidden;
+}
+
+html.boot-on .boot__dot {
+  transform: scale(0);
+}
+
+html.boot-on .boot__line,
+html.boot-on .boot__sweep {
+  stroke-dashoffset: 1;
+}
+
+html.boot-on .boot__word {
+  opacity: 0.9;
+  transform: translateY(1.6px);
+}
+
+.boot__replay {
+  position: absolute;
+  right: var(--gutter);
+  bottom: var(--gutter);
+  min-height: 44px;
+  padding: 0 22px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.45);
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  transition:
+    color 0.25s var(--ease),
+    border-color 0.25s var(--ease),
+    background-color 0.25s var(--ease);
+}
+
+.boot__replay:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: var(--surface);
+}
+
+.boot__replay[hidden] {
+  display: none;
+}
+
+/* --- Сцена: точка → штрих → слово ---------------------------------------- */
+
+/*
+ * Кадр 1500 мс: 9 % — точка, 9–55 % — штрих, 55–68 % — короткий занос в
+ * конце (он заметно быстрее начала — начало и конец разной динамики),
+ * 66–88 % — слово оседает. Обе линии, штрих и маска, играют по одному
+ * списку кадров: они не могут разойтись.
+ *
+ * Длина кадра — 1500 мс, а не «сколько получится»: на телефоне сцена
+ * полностью закрывает страницу, и каждая лишняя сотня миллисекунд — это
+ * лишнее ожидание до первого касания. Проверено на медленной сети с
+ * замедленным процессором: приложение там готово к ~1 с, а интро обязано
+ * уйти раньше, чем страница покажется, но не позже, чем покажется вовремя.
+ */
+.boot.is-playing .boot__dot {
+  animation: boot-dot 1500ms linear both;
+}
+
+.boot.is-playing .boot__line,
+.boot.is-playing .boot__sweep {
+  animation: boot-draw 1500ms linear both;
+}
+
+.boot.is-playing .boot__word {
+  animation: boot-word 1500ms linear both;
+}
+
+@keyframes boot-dot {
+  0% {
+    transform: scale(0);
+    animation-timing-function: cubic-bezier(0.18, 0.86, 0.28, 1);
+  }
+  9% {
+    transform: scale(1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  24%,
+  100% {
+    transform: scale(0.92);
+  }
+}
+
+@keyframes boot-draw {
+  0%,
+  9% {
+    stroke-dashoffset: 1;
+    animation-timing-function: cubic-bezier(0.46, 0.04, 0.3, 1);
+  }
+  55% {
+    stroke-dashoffset: 0.18;
+    animation-timing-function: cubic-bezier(0.1, 0.72, 0.2, 1);
+  }
+  68%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes boot-word {
+  0%,
+  66% {
+    opacity: 0.9;
+    transform: translateY(1.6px);
+  }
+  88%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Уход: кадр слегка приподнимается и растворяется, страница проступает. */
+.boot.is-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot.is-out .boot__scene {
+  transform: translateY(-8px);
+}
+
+/* Пропуск по решению из `<head>`: повторный визит в сессии и просьба
+   уменьшить движение. */
+html.boot-skip .boot,
+.no-js .boot {
+  display: none;
+}
+
 /* --- Шапка --------------------------------------------------------------- */
 
 .site-header {

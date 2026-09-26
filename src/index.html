@@ -148,6 +148,40 @@
 
     <script>
       document.documentElement.classList.replace('no-js', 'js');
+
+      /*
+       * Решение по загрузчику принимается до первой отрисовки, иначе
+       * страница мигнёт готовым кадром. Повторный визит в той же сессии
+       * идёт без загрузчика, `?preview=loader` оставляет сцену на экране
+       * вместе с кнопкой повтора.
+       */
+      (function () {
+        var root = document.documentElement;
+
+        if (/[?&]preview=loader(?:&|$)/.test(window.location.search)) {
+          root.classList.add('boot-review');
+          // Служебный кадр не должен попасть в индекс.
+          var meta = document.createElement('meta');
+          meta.name = 'robots';
+          meta.content = 'noindex, nofollow';
+          document.head.appendChild(meta);
+          return;
+        }
+
+        try {
+          if (window.sessionStorage.getItem('waystroke:booted')) {
+            root.classList.add('boot-skip');
+          }
+        } catch (err) {
+          // Хранилище может быть недоступно (приватный режим, отключённые
+          // куки). Тогда загрузчик просто покажется — он уходит по таймеру.
+        }
+
+        var reduced =
+          typeof window.matchMedia === 'function' &&
+          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduced) root.classList.add('boot-skip');
+      })();
     </script>
 
     <!-- Cloudflare Web Analytics. Тот же токен, что раньше вставлял сам
@@ -161,6 +195,193 @@
     ></script>
   </head>
   <body>
+    <!--
+      Брендовый загрузчик «первый штрих». Разметка лежит в документе, а не в
+      Angular, поэтому первый кадр рисуется до бутстрапа и под сценой не
+      бывает белого экрана.
+
+      Покой задан этой же разметкой: точка на месте, штрих прорисован целиком,
+      слово видно. Скрипт ниже только запускает сцену и убирает её — если
+      движок не отдал кадров, зритель всё равно видит готовую запись.
+
+      Устройство кадра: точка — начало штриха, а не украшение рядом с ним;
+      штрих — одна непрерывная линия с пологим подъёмом и коротким заносом в
+      конце; «WAYSTROKE» лежит в `<g>` под маской, а по маске идёт та же
+      линия, но намного толще, — так слово проявляется ровно там, где прошёл
+      штрих, а сами буквы разрывают эту линию. Точка нарисована после
+      маскированной группы и закрывает начало штриха.
+    -->
+    <div class="boot" data-boot>
+      <p class="visually-hidden" role="status">Waystroke загружается</p>
+
+      <div class="boot__scene">
+        <svg
+          class="boot__svg"
+          viewBox="0 0 360 116"
+          width="360"
+          height="116"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <defs>
+            <mask
+              id="boot-reveal"
+              maskUnits="userSpaceOnUse"
+              x="-20"
+              y="-20"
+              width="400"
+              height="160"
+            >
+              <path
+                class="boot__sweep"
+                d="M16 94C44 90 62 88 84 86C108 83 126 81 148 78C172 75 194 71 216 68C238 65 258 63 278 62C300 61 320 46 340 16"
+                pathLength="1"
+                fill="none"
+                stroke="#fff"
+                stroke-width="42"
+                stroke-linecap="round"
+              />
+            </mask>
+          </defs>
+
+          <g mask="url(#boot-reveal)">
+            <path
+              class="boot__line"
+              d="M16 94C44 90 62 88 84 86C108 83 126 81 148 78C172 75 194 71 216 68C238 65 258 63 278 62C300 61 320 46 340 16"
+              pathLength="1"
+              fill="none"
+              stroke-linecap="round"
+            />
+            <text
+              class="boot__word"
+              x="171"
+              y="84"
+              text-anchor="middle"
+              textLength="196"
+              lengthAdjust="spacing"
+            >
+              WAYSTROKE
+            </text>
+          </g>
+
+          <circle class="boot__dot" cx="16" cy="94" r="4.6" />
+        </svg>
+      </div>
+
+      <button class="boot__replay" type="button" data-boot-replay hidden>Повторить штрих</button>
+    </div>
+
     <app-root></app-root>
+
+    <!--
+      Сцена загрузчика. Решения приняты в `<head>` (boot-skip / boot-review),
+      здесь остаётся только запуск и уход.
+
+      Порядок такой: лаймовая точка → штрих из неё → штрих полностью
+      прорисован → проявляется WAYSTROKE → сцена уходит. Уходит она позже
+      из двух: когда сцена отыграла (1560 мс) и когда приложение отдало
+      первый кадр (`waystroke:app-ready`). Если приложение собралось быстрее
+      сцены, ждать его нечего — обрывать штрих на середине нельзя, а если
+      приложение зависло, экран освобождает страховка (4600 мс).
+
+      Страница, в свою очередь, стартует по `waystroke:boot-done`.
+    -->
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var boot = document.querySelector('[data-boot]');
+        var app = document.querySelector('app-root');
+        var review = root.classList.contains('boot-review');
+        var timers = [];
+        var released = false;
+        var played = false;
+        var appReady = false;
+
+        function later(fn, ms) {
+          timers.push(window.setTimeout(fn, ms));
+        }
+
+        function stopTimers() {
+          timers.forEach(function (id) {
+            window.clearTimeout(id);
+          });
+          timers = [];
+        }
+
+        /* Отдаёт экран странице: сначала событие, потом уход сцены. */
+        function release() {
+          if (released) return;
+          released = true;
+          stopTimers();
+          if (app) app.removeAttribute('inert');
+          root.classList.remove('boot-on');
+          // Событие на окне, а не на документе:CustomEvent без `bubbles`
+          // до окна не доходит, и страница ждала бы только страховки.
+          window.dispatchEvent(new CustomEvent('waystroke:boot-done'));
+
+          // В режиме просмотра кадр остаётся на экране — его снимает повтор.
+          if (review) return;
+
+          try {
+            window.sessionStorage.setItem('waystroke:booted', '1');
+          } catch (err) {
+            // Хранилище недоступно: следующий визит покажет загрузчик снова.
+          }
+
+          boot.classList.add('is-out');
+          later(function () {
+            boot.hidden = true;
+          }, 640);
+        }
+
+        /* Уходим не раньше, чем отыграла сцена: готовность приложения без
+           кадра ничего не значит, а кадр без приложения показывать нечем. */
+        function finish() {
+          if (played && appReady) release();
+        }
+
+        /* Без сцены и пропускать нечего: сразу отдаём экран. */
+        if (!boot || root.classList.contains('boot-skip')) {
+          window.dispatchEvent(new CustomEvent('waystroke:boot-done'));
+          return;
+        }
+
+        var replay = boot.querySelector('[data-boot-replay]');
+        if (replay) {
+          replay.addEventListener('click', function () {
+            // Сцены на элементе четыре, и все они уже отыграли: возвращаем их
+            // в начало и продолжаем играть, не пересобирая разметку.
+            boot.getAnimations({ subtree: true }).forEach(function (step) {
+              step.currentTime = 0;
+              step.play();
+            });
+          });
+          // Кнопка повтора — только для просмотра сцены, в обычной загрузке
+          // её на экране быть не должно.
+          replay.hidden = !review;
+        }
+
+        if (app) app.setAttribute('inert', '');
+        root.classList.add('boot-on');
+
+        window.addEventListener('waystroke:app-ready', function () {
+          appReady = true;
+          finish();
+        });
+
+        // Первый кадр сцены — на следующем кадре после разбора документа,
+        // иначе браузер успеет показать готовый покой и мигнёт им.
+        window.requestAnimationFrame(function () {
+          boot.classList.add('is-playing');
+          later(function () {
+            played = true;
+            finish();
+          }, 1560);
+        });
+
+        // Страховка: приложение так и не отрисовалось, экран освобождаем.
+        later(release, 4600);
+      })();
+    </script>
   </body>
 </html>

@@ -46,8 +46,17 @@ export class App implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const host = this.host.nativeElement as HTMLElement;
 
-    this.initReveal();
-    this.initBooking();
+    // Первый кадр отрисован — загрузчику можно уходить. Событие нужно всегда:
+    // без загрузчика его никто не слушает, но и лишним оно не будет.
+    window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
+
+    // Пока брендовый кадр на экране, страница не показывается: появление
+    // блоков стартует в момент, когда загрузчик освобождает экран.
+    this.onBootDone(() => {
+      this.initReveal();
+      this.initBooking();
+    });
+
     this.updateHeader();
     this.motionDisposers.push(
       initServiceScenes(host),
@@ -181,6 +190,36 @@ export class App implements AfterViewInit, OnDestroy {
 
   private updateHeader(): void {
     this.scrolled.set(window.scrollY > 12);
+  }
+
+  /**
+   * Ждём, пока загрузчик отдаст экран.
+   *
+   * Без этого появление блоков играет под брендовым кадром и к моменту его
+   * ухода уже отыграно — страница показывается готовой, без жеста. Если
+   * загрузчика нет (или он снят разметкой) либо он по какой-то причине не
+   * отдал экран, стартуем сразу: пустой первый экран хуже, чем лишний жест.
+   */
+  private onBootDone(run: () => void): void {
+    const boot = document.querySelector('[data-boot]');
+    if (!boot || boot.hasAttribute('hidden')) {
+      run();
+      return;
+    }
+
+    let started = false;
+    let timer = 0;
+
+    const start = (): void => {
+      if (started) return;
+      started = true;
+      window.clearTimeout(timer);
+      run();
+    };
+
+    timer = window.setTimeout(start, 3600);
+    window.addEventListener('waystroke:boot-done', start, { once: true });
+    this.destroyRef.onDestroy(() => window.clearTimeout(timer));
   }
 
   private syncMenu(): void {
