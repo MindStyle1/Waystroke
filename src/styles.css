@@ -1147,6 +1147,55 @@ app-root .role__text {
   color: var(--ink-2);
 }
 
+/*
+ * Мягкое появление команды: линия прорисовывается слева направо, и на её
+ * конце оседает лаймовая точка — сначала 01, потом 02. Один раз, при первом
+ * попадании блока в экран, силами CSS. Стартовые значения живут только
+ * внутри prefers-reduced-motion: no-preference, поэтому при отключённой
+ * анимации линии и точки просто нарисованы, а «залипнуть» в пустом виде
+ * блок не может: финал — это обычные стили.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  app-root .team__list .role::before {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  app-root .team__list .role::after {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+
+  app-root .team__list .role::before,
+  app-root .team__list .role::after {
+    transition:
+      transform 0.55s var(--ease),
+      opacity 0.35s var(--ease);
+  }
+
+  /* Точка оседает в конце прорисованной линии, вторая роль отвечает позже. */
+  app-root .team__list .role:first-child::after {
+    transition-delay: 0.45s;
+  }
+
+  app-root .team__list .role:nth-child(2)::before {
+    transition-delay: 0.22s;
+  }
+
+  app-root .team__list .role:nth-child(2)::after {
+    transition-delay: 0.67s;
+  }
+
+  app-root .team__list.is-visible .role::before {
+    transform: scaleX(1);
+  }
+
+  app-root .team__list.is-visible .role::after {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* --- Условия работы (FAQ) ------------------------------------------------- */
 
 app-root .faq {
@@ -1520,6 +1569,10 @@ app-root .cal__foot a {
 
 .services__grid .service:nth-child(3) {
   --d: 220ms;
+}
+
+.team__list {
+  --d: 100ms;
 }
 
 .steps .step:nth-child(2) {
