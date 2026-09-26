@@ -6,7 +6,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "postbuild": "node scripts/postbuild.mjs",
     "build:prod": "ng build --configuration production",
+    "postbuild:prod": "node scripts/postbuild.mjs",
     "serve": "node server.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
