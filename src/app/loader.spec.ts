@@ -1,13 +1,28 @@
 /**
  * Брендовый загрузчик живёт в разметке документа, а не в Angular, поэтому
- * проверяем его по исходному `index.html`: устройство кадра и то, как сцена
- * договаривается с приложением.
+ * проверяем его по исходным файлам: устройство кадра, исходное состояние и
+ * то, как сцена договаривается с приложением.
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+const source = (name: string): string => readFileSync(join(process.cwd(), 'src', name), 'utf8');
+
 /** Исходная разметка документа: загрузчик живёт именно в ней. */
-const indexHtml = (): string => readFileSync(join(process.cwd(), 'src/index.html'), 'utf8');
+const indexHtml = (): string => source('index.html');
+
+/**
+ * Правила загрузчика из таблицы стилей — отрезок между двумя заголовками
+ * секций. Исходное состояние кадра проверяем по ним, а не по разметке:
+ * браузер тоже берёт его оттуда, до того как выполнит хоть один скрипт.
+ */
+const loaderCss = (): string => {
+  const css = source('styles.css');
+  const from = css.indexOf('/* --- Брендовый загрузчик');
+  const to = css.indexOf('/* --- Шапка');
+  if (from < 0 || to < 0) throw new Error('в styles.css нет секции загрузчика');
+  return css.slice(from, to);
+};
 
 /** Разобранный документ: сцена берётся оттуда, скрипты не исполняются. */
 const parsed = (): Document => new DOMParser().parseFromString(indexHtml(), 'text/html');
@@ -62,11 +77,56 @@ describe('Загрузчик: устройство кадра', () => {
     expect(masked.compareDocumentPosition(dot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it('показывает в покое законченный кадр, а не пустоту', () => {
-    // Скрывающие значения (dashoffset, масштаб точки) ставит только сценарий,
-    // и только чтобы тут же улучшить готовую картинку.
+  it('не рисует кадр разметкой и не прячет его скриптом', () => {
+    // Скрывающие значения (dashoffset, прозрачность, масштаб) задаёт только
+    // таблица стилей: браузер применяет её до первой отрисовки, иначе на
+    // холодной загрузке успевает показаться кадр «как в разметке».
     expect(indexHtml()).not.toMatch(/stroke-dashoffset/);
     expect(indexHtml()).not.toMatch(/style="[^"]*(opacity|transform)/);
+  });
+});
+
+describe('Загрузчик: исходное состояние', () => {
+  beforeEach(() => {
+    const style = document.createElement('style');
+    style.textContent = loaderCss();
+    document.head.appendChild(style);
+    document.body.innerHTML = '';
+    document.body.appendChild(parsed().querySelector('[data-boot]') as HTMLElement);
+  });
+
+  afterEach(() => {
+    document.querySelectorAll('style').forEach((style) => style.remove());
+    document.body.innerHTML = '';
+  });
+
+  it('не показывает WAYSTROKE до запуска анимации', () => {
+    const word = document.querySelector('.boot__word') as SVGElement;
+    const before = word.getAttribute('opacity');
+    word.removeAttribute('opacity');
+
+    // Класс `is-playing` ещё не на загрузчике — сцена не началась.
+    expect(document.querySelector('[data-boot]')?.classList.contains('is-playing')).toBe(false);
+    expect(before).toBeNull();
+    expect(getComputedStyle(word).opacity).toBe('0');
+  });
+
+  it('не прорисовывает штрих и не открывает маску до запуска анимации', () => {
+    // Смещение 1 — это «ничего не нарисовано»: узор штрихов сдвинут назад за
+    // начало пути, и на линии остаётся только шапка под точкой.
+    const line = getComputedStyle(document.querySelector('.boot__line') as Element);
+    const sweep = getComputedStyle(document.querySelector('.boot__sweep') as Element);
+
+    expect(line.strokeDashoffset).toBe('1');
+    expect(sweep.strokeDashoffset).toBe('1');
+  });
+
+  it('оставляет видимой одну точку — начало жеста', () => {
+    const dot = getComputedStyle(document.querySelector('.boot__dot') as Element);
+
+    expect(dot.opacity).toBe('1');
+    // Маленькое зерно, из которого штрих вырастет: точка не мигает, а растёт.
+    expect(dot.transform).toBe('scale(0.6)');
   });
 });
 
