@@ -1,0 +1,30 @@
+# Справочная конфигурация Worker'а приёма конверсий.
+#
+# Лежит в репозитории для воспроизводимости, но сборку сайта не затрагивает:
+# Angular берёт только src/ и public/, а Pages читает wrangler.toml лишь из
+# корня репозитория — здесь он на два уровня ниже.
+#
+# Деплой (нужен токен с Workers Scripts:Edit):
+#   npx wrangler deploy --config worker/wrangler.toml
+#
+# Маршрут в зоне создаётся один раз и привязывает /api/track к Worker'у:
+#   POST /client/v4/zones/{zone_id}/workers/routes
+#   { "pattern": "waystroke.online/api/track", "script": "waystroke-track" }
+#
+# Схема таблицы (создаётся один раз):
+#   CREATE TABLE IF NOT EXISTS conversions (
+#     day    TEXT    NOT NULL,
+#     event  TEXT    NOT NULL,
+#     source TEXT    NOT NULL,
+#     count  INTEGER NOT NULL DEFAULT 0,
+#     PRIMARY KEY (day, event, source)
+#   );
+
+name = "waystroke-track"
+main = "track.js"
+compatibility_date = "2026-09-26"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "waystroke-events"
+database_id = "6b6411a9-745f-4207-8403-bac0850ff72e"

@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, inject, signal } from '@angular/core';
 import { initServiceScenes, initStepsSequence, initTeamScene, type Dispose } from './motion';
+import { initConversions } from './tracking';
 import { DesignDemo } from './design-demo/design-demo';
 
 /** Прокрутка без анимации, когда пользователь просит уменьшить движение. */
@@ -11,8 +12,9 @@ const prefersReduced = (): boolean =>
 /**
  * Одностраничная витрина Waystroke.
  *
- * Появление блоков, мобильное меню, секционные анимации и подстраховка
- * для календаря записи живут здесь — всё уничтожается вместе с компонентом.
+ * Появление блоков, мобильное меню, секционные анимации, подстраховка
+ * для календаря записи и учёт кликов по контактам живут здесь — всё
+ * уничтожается вместе с компонентом.
  */
 @Component({
   selector: 'app-root',
@@ -50,6 +52,7 @@ export class App implements AfterViewInit, OnDestroy {
       initServiceScenes(host),
       initTeamScene(host),
       initStepsSequence(host),
+      initConversions(host),
     );
 
     window.addEventListener('scroll', this.handleScroll, { passive: true });
