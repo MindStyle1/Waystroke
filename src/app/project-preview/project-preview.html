@@ -1,0 +1,86 @@
+<div
+  class="pv"
+  [attr.data-concept]="concept()"
+  role="img"
+  [attr.aria-label]="'Превью концепта сайта «' + title() + '»'"
+>
+  @switch (concept()) {
+    <!-- Концепт 1: тёплая редакционная витрина пекарни -->
+    @case ('bakery') {
+      <div class="pv__top">
+        <span class="pv__brand">Тёплый хлеб</span>
+        <span class="pv__menu"><i></i><i></i><i></i></span>
+      </div>
+      <p class="pv__kicker">Пекарня на закваске</p>
+      <p class="pv__headline">Хлеб с шести<br />утра</p>
+      <div class="pv__shelf">
+        <span class="pv__loaf"><i></i></span>
+        <span class="pv__loaf pv__loaf--tall"><i></i></span>
+        <span class="pv__loaf pv__loaf--dark"><i></i></span>
+      </div>
+      <div class="pv__row">
+        <span class="pv__price">180 ₽ · бородинский</span>
+        <span class="pv__cta">Предзаказ</span>
+      </div>
+    }
+
+    <!-- Концепт 2: спокойная галерея работ мастерской керамики -->
+    @case ('ceramics') {
+      <div class="pv__top">
+        <span class="pv__brand">Форма</span>
+        <span class="pv__menu"><i></i><i></i></span>
+      </div>
+      <p class="pv__kicker">Коллекция «Печь»</p>
+      <div class="pv__tiles">
+        <span class="pv__tile"><i class="pv__vase pv__vase--a"></i></span>
+        <span class="pv__tile"><i class="pv__vase pv__vase--b"></i></span>
+        <span class="pv__tile"><i class="pv__vase pv__vase--c"></i></span>
+        <span class="pv__tile"><i class="pv__vase pv__vase--d"></i></span>
+      </div>
+      <div class="pv__row">
+        <span class="pv__price">Керамика ручной работы</span>
+        <span class="pv__cta">Записаться</span>
+      </div>
+    }
+
+    <!-- Концепт 3: строгий деловой сайт с прозрачными тарифами -->
+    @case ('accounting') {
+      <div class="pv__top">
+        <span class="pv__brand">САЛЬДО</span>
+        <span class="pv__menu"><i></i><i></i><i></i></span>
+      </div>
+      <p class="pv__kicker">Бухгалтерское бюро</p>
+      <p class="pv__headline">Бухгалтерия<br />без сюрпризов</p>
+      <div class="pv__table">
+        <div class="pv__line"><span>Зарплата и кадры</span><b>Старт</b></div>
+        <div class="pv__line"><span>Отчётность</span><b>Бизнес</b></div>
+        <div class="pv__line"><span>Первичка</span><b>Под ключ</b></div>
+      </div>
+      <div class="pv__row">
+        <span class="pv__cta">Расчёт стоимости</span>
+      </div>
+    }
+
+    <!-- Концепт 4: морская витрина школы с расписанием выходов -->
+    @case ('sailing') {
+      <div class="pv__top">
+        <span class="pv__brand">Галс</span>
+        <span class="pv__menu"><i></i><i></i><i></i></span>
+      </div>
+      <p class="pv__kicker">Школа парусного спорта</p>
+      <p class="pv__headline">Выход в море</p>
+      <div class="pv__sea">
+        <span class="pv__sun"></span>
+        <span class="pv__sail pv__sail--main"></span>
+        <span class="pv__sail pv__sail--jib"></span>
+        <span class="pv__hull"></span>
+        <span class="pv__wave pv__wave--1"></span>
+        <span class="pv__wave pv__wave--2"></span>
+      </div>
+      <div class="pv__row">
+        <span class="pv__price">Пробное плавание · сб 10:00</span>
+        <span class="pv__cta">Записаться</span>
+      </div>
+    }
+  }
+</div>

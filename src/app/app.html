@@ -1,0 +1,551 @@
+<!-- 1. Шапка -->
+<header class="site-header" [class.is-scrolled]="scrolled()">
+  <div class="container header__inner">
+    <button class="brand" type="button" data-scroll-to="top">
+      <span class="brand__dot" aria-hidden="true"></span>
+      <span class="brand__name">Waystroke</span>
+    </button>
+
+    <nav class="nav" aria-label="Основная навигация">
+      <button class="nav__link" type="button" data-scroll-to="works">Работы</button>
+      <button class="nav__link" type="button" data-scroll-to="services">Услуги</button>
+      <button class="nav__link" type="button" data-scroll-to="contact">Контакты</button>
+    </nav>
+
+    <div class="header__actions">
+      <button class="btn btn--dark header__cta" type="button" data-scroll-to="contact">
+        Обсудить проект
+      </button>
+      <button
+        class="menu-toggle"
+        type="button"
+        [attr.aria-expanded]="menuOpen() ? 'true' : 'false'"
+        aria-controls="mobile-menu"
+        (click)="toggleMenu()"
+      >
+        <span class="menu-toggle__label">Меню</span>
+        <span class="menu-toggle__icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Меню скролит страницу, не меняя адрес: якорей в URL нет. -->
+  <div
+    class="mobile-menu"
+    id="mobile-menu"
+    [class.is-open]="menuOpen()"
+    [class.is-instant]="instantMenu()"
+  >
+    <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
+      <button class="mobile-menu__link" type="button" data-scroll-to="works">Работы</button>
+      <button class="mobile-menu__link" type="button" data-scroll-to="services">Услуги</button>
+      <button class="mobile-menu__link" type="button" data-scroll-to="contact">Контакты</button>
+    </nav>
+    <button class="btn btn--dark mobile-menu__cta" type="button" data-scroll-to="contact">
+      Обсудить проект
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- 2. Первый экран -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container">
+      <p class="eyebrow reveal">
+        <span class="chip">
+          <span class="chip__dot" aria-hidden="true"></span>
+          Открыт к проектам
+        </span>
+        <span class="eyebrow__text">Waystroke / сайты на заказ</span>
+      </p>
+
+      <div class="hero__grid">
+        <h1 class="hero__title reveal" id="hero-title">
+          <span class="hero__line">Создаю сайты, которые удобно</span>
+          <span class="hero__line">использовать</span>
+          <span class="hero__line hero__line--serif">и приятно смотреть.</span>
+        </h1>
+
+        <div class="hero__aside reveal">
+          <p class="lead">
+            Беру вашу идею и довожу её до готового сайта: продуманная структура,
+            аккуратный интерфейс и запуск, к которому не стыдно вести клиентов. Вы
+            работаете со мной напрямую — без прослоек и передачи задачи дальше.
+          </p>
+          <div class="hero__actions">
+            <button class="btn btn--dark" type="button" data-scroll-to="contact">
+              Обсудить проект
+            </button>
+            <button class="link-arrow link-arrow--down" type="button" data-scroll-to="works">
+              Смотреть работы
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- мотив линии: мазок кисти и путь -->
+      <div class="stroke reveal" aria-hidden="true">
+        <svg
+          class="stroke__svg"
+          viewBox="0 0 1440 64"
+          preserveAspectRatio="none"
+          focusable="false"
+        >
+          <defs>
+            <linearGradient id="stroke-gradient-1" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#17191A" stop-opacity="0.08" />
+              <stop offset="0.35" stop-color="#17191A" stop-opacity="0.55" />
+              <stop offset="0.72" stop-color="#C8F054" stop-opacity="0.95" />
+              <stop offset="1" stop-color="#17191A" stop-opacity="0.35" />
+            </linearGradient>
+          </defs>
+          <path
+            class="stroke__path"
+            pathLength="1"
+            d="M6 46C164 46 268 16 430 18c150 2 236 34 386 30 132-4 214-34 340-34 110 0 178 20 272 22"
+          />
+        </svg>
+      </div>
+
+      <ul class="features reveal">
+        <li class="feature">
+          <p class="feature__title">Сайты под задачу</p>
+          <p class="feature__note">Лендинги и многостраничные</p>
+        </li>
+        <li class="feature">
+          <p class="feature__title">Адаптивный интерфейс</p>
+          <p class="feature__note">Телефон · планшет · ПК</p>
+        </li>
+        <li class="feature">
+          <p class="feature__title">Чистая реализация</p>
+          <p class="feature__note">От идеи до публикации</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. Мои работы -->
+  <section
+    class="works"
+    data-section="works"
+    tabindex="-1"
+    aria-labelledby="works-title"
+  >
+    <div class="container">
+      <div class="works__panel">
+        <div class="works__head-main reveal">
+          <p class="label label--accent">Избранные работы</p>
+          <h2 class="heading heading--light" id="works-title">
+            Проекты, в которых видно внимание к деталям.
+          </h2>
+          <p class="works__note">
+            Ниже — четыре авторских концепта: визуальные решения, собранные для
+            витрины. Это не выполненные клиентские заказы, отзывы и цифры
+            результатов к ним не придумывались.
+          </p>
+        </div>
+
+        <div class="works__carousel reveal">
+          <div
+            class="works__scroll"
+            data-carousel-scroll
+            tabindex="0"
+            role="region"
+            aria-label="Проекты — карусель"
+          >
+            <div class="works__track" data-carousel-track>
+              @for (card of workCards; track card.key) {
+                <article
+                  class="project"
+                  [class.reveal]="!card.clone"
+                  [attr.data-concept]="card.project.concept"
+                  [attr.aria-hidden]="card.clone ? 'true' : null"
+                >
+                  <p class="project__label">
+                    <span>{{ card.project.label }}</span>
+                    @if (card.project.demo) {
+                      <span class="project__demo">Концепт</span>
+                    }
+                  </p>
+
+                  <!-- Превью — главный элемент карточки: мини-версия концепта. -->
+                  <figure class="project__shot">
+                    <span class="project__bar">
+                      <span class="project__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+                      <span class="project__frame-note">{{ card.project.frameNote }}</span>
+                    </span>
+                    <app-project-preview
+                      [concept]="card.project.concept"
+                      [title]="card.project.title"
+                    />
+                  </figure>
+
+                  <div class="project__body">
+                    <h3 class="project__title">{{ card.project.title }}</h3>
+                    <p class="project__desc">{{ card.project.description }}</p>
+                    <p class="project__meta">{{ card.project.meta }}</p>
+                  </div>
+                </article>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Услуги и подход -->
+  <section
+    class="services"
+    data-section="services"
+    tabindex="-1"
+    aria-labelledby="services-title"
+  >
+    <div class="container">
+      <div class="services__head">
+        <div class="reveal">
+          <p class="label">Услуги и подход</p>
+          <h2 class="heading" id="services-title">От идеи до работающего сайта.</h2>
+        </div>
+        <p class="services__note reveal">
+          Коротко обсуждаем задачу, собираем понятную структуру, аккуратно собираем
+          интерфейс и доводим проект до публикации.
+        </p>
+      </div>
+
+      <ul class="services__grid">
+        <li class="service reveal" data-scene="site">
+          <div class="service__scene" aria-hidden="true">
+            <svg
+              class="scene"
+              viewBox="0 0 260 140"
+              preserveAspectRatio="xMidYMid meet"
+              focusable="false"
+            >
+              <path
+                class="a-frame sc-draw"
+                pathLength="1"
+                d="M38 18h184a8 8 0 0 1 8 8v88a8 8 0 0 1-8 8H38a8 8 0 0 1-8-8V26a8 8 0 0 1 8-8Z"
+              />
+              <path class="a-bar sc-draw" pathLength="1" d="M30 36H230" />
+              <circle class="a-dot" cx="42" cy="27" r="2.4" />
+              <circle class="a-dot" cx="51" cy="27" r="2.4" />
+              <circle class="a-dot a-dot--accent" cx="60" cy="27" r="2.4" />
+              <rect class="a-title" x="44" y="48" width="96" height="9" rx="4.5" />
+              <rect class="a-sub" x="44" y="63" width="64" height="6" rx="3" />
+              <rect class="a-image" x="148" y="48" width="68" height="44" rx="5" />
+              <rect class="a-badge" x="156" y="56" width="22" height="7" rx="3.5" />
+              <rect class="a-cell" x="44" y="94" width="40" height="16" rx="4" />
+              <rect class="a-cell" x="90" y="94" width="40" height="16" rx="4" />
+              <rect class="a-cell" x="136" y="94" width="40" height="16" rx="4" />
+              <rect class="a-cell" x="182" y="94" width="34" height="16" rx="4" />
+            </svg>
+          </div>
+          <h3 class="service__title">Новый сайт</h3>
+          <p class="service__text">
+            Лендинг или несколько страниц под вашу задачу: от структуры до готового
+            макета.
+          </p>
+        </li>
+
+        <li class="service reveal" data-scene="responsive">
+          <div class="service__scene" aria-hidden="true">
+            <svg
+              class="scene"
+              viewBox="0 0 260 140"
+              preserveAspectRatio="xMidYMid meet"
+              focusable="false"
+            >
+              <path
+                class="b-frame"
+                vector-effect="non-scaling-stroke"
+                d="M43 22h174a7 7 0 0 1 7 7v82a7 7 0 0 1-7 7H43a7 7 0 0 1-7-7V29a7 7 0 0 1 7-7Z"
+              />
+              <rect class="b-nav-main" x="48" y="32" width="30" height="6" rx="3" />
+              <rect class="b-nav-item" x="84" y="32" width="24" height="6" rx="3" />
+              <rect class="b-nav-item" x="114" y="32" width="24" height="6" rx="3" />
+              <rect class="b-col" x="46" y="48" width="48" height="56" rx="5" />
+              <rect class="b-col" x="106" y="48" width="48" height="56" rx="5" />
+              <rect class="b-col" x="166" y="48" width="48" height="56" rx="5" />
+              <rect class="b-badge" x="52" y="96" width="30" height="4" rx="2" />
+            </svg>
+          </div>
+          <h3 class="service__title">Адаптивная вёрстка</h3>
+          <p class="service__text">
+            Удобное отображение на телефоне, планшете и компьютере — без наложений
+            и обрезанного текста.
+          </p>
+        </li>
+
+        <li class="service reveal" data-scene="refine">
+          <div class="service__scene" aria-hidden="true">
+            <svg
+              class="scene"
+              viewBox="0 0 260 140"
+              preserveAspectRatio="xMidYMid meet"
+              focusable="false"
+            >
+              <rect class="c-frame" x="46" y="18" width="168" height="104" rx="8" />
+              <rect class="c-head" x="58" y="32" width="64" height="10" rx="5" />
+              <rect class="c-new" x="176" y="32" width="26" height="10" rx="5" />
+              <rect class="c-a" x="58" y="54" width="70" height="34" rx="5" />
+              <rect class="c-b" x="136" y="54" width="66" height="34" rx="5" />
+              <rect class="c-c" x="58" y="94" width="144" height="16" rx="5" />
+              <path class="c-accent sc-draw" pathLength="1" d="M62 117H120" />
+            </svg>
+          </div>
+          <h3 class="service__title">Доработка</h3>
+          <p class="service__text">
+            Исправление ошибок, обновление страниц и развитие уже готового сайта.
+          </p>
+        </li>
+      </ul>
+
+      <div class="approach">
+        <div class="stroke stroke--small reveal" aria-hidden="true">
+          <svg
+            class="stroke__svg"
+            viewBox="0 0 1440 40"
+            preserveAspectRatio="none"
+            focusable="false"
+          >
+            <defs>
+              <linearGradient id="stroke-gradient-2" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0" stop-color="#17191A" stop-opacity="0.1" />
+                <stop offset="0.5" stop-color="#17191A" stop-opacity="0.5" />
+                <stop offset="1" stop-color="#C8F054" stop-opacity="1" />
+              </linearGradient>
+            </defs>
+            <path
+              class="stroke__path"
+              pathLength="1"
+              d="M4 26C180 26 300 10 470 12c140 2 232 20 372 18 126-2 206-22 330-22 106 0 178 14 260 16"
+            />
+          </svg>
+        </div>
+
+        <p class="label reveal">Как проходит работа</p>
+        <div class="steps" data-steps>
+          <ol class="steps__list">
+            <li class="step reveal">
+              <span class="step__rail" aria-hidden="true"
+                ><span class="step__rail-fill"></span
+              ></span>
+              <span class="step__dot" aria-hidden="true"
+                ><span class="step__dot-core"></span
+              ></span>
+              <span class="step__art" aria-hidden="true">
+                <svg
+                  class="art"
+                  viewBox="0 0 88 60"
+                  preserveAspectRatio="xMidYMid meet"
+                  focusable="false"
+                >
+                  <g class="art-bubble">
+                    <rect x="4" y="6" width="44" height="24" rx="7" />
+                  </g>
+                  <g class="art-bubble">
+                    <rect x="36" y="26" width="48" height="24" rx="7" />
+                  </g>
+                  <circle class="art-dot" cx="14" cy="18" r="2.6" />
+                  <circle class="art-dot" cx="23" cy="18" r="2.6" />
+                  <circle class="art-dot art-dot--accent" cx="32" cy="18" r="2.6" />
+                </svg>
+              </span>
+              <span class="step__title">Созвон</span>
+              <span class="step__text">20 минут, чтобы понять задачу и формат</span>
+            </li>
+
+            <li class="step reveal">
+              <span class="step__rail" aria-hidden="true"
+                ><span class="step__rail-fill"></span
+              ></span>
+              <span class="step__dot" aria-hidden="true"
+                ><span class="step__dot-core"></span
+              ></span>
+              <span class="step__art" aria-hidden="true">
+                <svg
+                  class="art"
+                  viewBox="0 0 88 60"
+                  preserveAspectRatio="xMidYMid meet"
+                  focusable="false"
+                >
+                  <rect class="art-bullet" x="5" y="14" width="7" height="7" rx="2" />
+                  <path class="art-line sc-draw" pathLength="1" d="M18 17.5H79" />
+                  <rect class="art-bullet" x="5" y="30" width="7" height="7" rx="2" />
+                  <path class="art-line sc-draw" pathLength="1" d="M18 33.5H66" />
+                  <rect class="art-bullet" x="5" y="46" width="7" height="7" rx="2" />
+                  <path class="art-line sc-draw" pathLength="1" d="M18 49.5H72" />
+                </svg>
+              </span>
+              <span class="step__title">План</span>
+              <span class="step__text">Структура, объём работ и сроки</span>
+            </li>
+
+            <li class="step reveal">
+              <span class="step__rail" aria-hidden="true"
+                ><span class="step__rail-fill"></span
+              ></span>
+              <span class="step__dot" aria-hidden="true"
+                ><span class="step__dot-core"></span
+              ></span>
+              <span class="step__art" aria-hidden="true">
+                <svg
+                  class="art"
+                  viewBox="0 0 88 60"
+                  preserveAspectRatio="xMidYMid meet"
+                  focusable="false"
+                >
+                  <path
+                    class="art-page sc-draw"
+                    pathLength="1"
+                    d="M11 5h71a6 6 0 0 1 6 6v38a6 6 0 0 1-6 6H11a6 6 0 0 1-6-6V11a6 6 0 0 1 6-6Z"
+                  />
+                  <rect class="art-block" x="13" y="13" width="30" height="6" rx="3" />
+                  <rect class="art-block" x="13" y="25" width="62" height="14" rx="4" />
+                  <rect class="art-block" x="13" y="45" width="29" height="6" rx="3" />
+                  <rect class="art-block" x="46" y="45" width="29" height="6" rx="3" />
+                </svg>
+              </span>
+              <span class="step__title">Сборка</span>
+              <span class="step__text">Дизайн и реализация по этапам</span>
+            </li>
+
+            <li class="step reveal">
+              <span class="step__rail" aria-hidden="true"
+                ><span class="step__rail-fill"></span
+              ></span>
+              <span class="step__dot" aria-hidden="true"
+                ><span class="step__dot-core"></span
+              ></span>
+              <span class="step__art" aria-hidden="true">
+                <svg
+                  class="art"
+                  viewBox="0 0 88 60"
+                  preserveAspectRatio="xMidYMid meet"
+                  focusable="false"
+                >
+                  <path class="art-check sc-draw" pathLength="1" d="M10 31 23 44 52 14" />
+                  <path class="art-done sc-draw" pathLength="1" d="M60 31H78" />
+                </svg>
+              </span>
+              <span class="step__title">Запуск</span>
+              <span class="step__text">Проверка на устройствах и публикация</span>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Контакты -->
+  <section
+    class="contact"
+    data-section="contact"
+    tabindex="-1"
+    aria-labelledby="contact-title"
+  >
+    <div class="container">
+      <div class="contact__panel reveal">
+        <p class="label">Начнём с разговора</p>
+        <h2 class="contact__title" id="contact-title">
+          <span class="contact__title-line">Есть идея для сайта?</span>
+          <span class="contact__title-line contact__title-line--serif">Давайте обсудим.</span>
+        </h2>
+
+        <span class="contact__rule" aria-hidden="true"></span>
+
+        <div class="contact__row">
+          <p class="contact__text">
+            Обсудим задачу, сроки и следующие шаги. Знакомство займёт 20 минут.
+          </p>
+          <div class="contact__actions">
+            <a
+              class="btn btn--dark btn--arrow"
+              href="https://cal.com/mind-style-00/waystroke-call"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Записаться на созвон
+              <span class="btn__arrow" aria-hidden="true">↗</span>
+            </a>
+            <a
+              class="contact__secondary"
+              href="https://t.me/waystroke"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Написать в Telegram · @waystroke</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="cal reveal"
+        [class.is-loaded]="calendarLoaded()"
+        [class.is-fallback]="calendarFailed()"
+      >
+        <div class="cal__bar">
+          <p class="cal__label">Созвон · 20 минут</p>
+          <a
+            class="cal__link"
+            href="https://cal.com/mind-style-00/waystroke-call"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Открыть страницу записи ↗</a
+          >
+        </div>
+
+        <div class="cal__body">
+          <div class="cal__status">
+            @if (calendarFailed()) {
+              <p class="cal__error">Календарь не загрузился — запись откроется по ссылке.</p>
+            } @else {
+              <p class="cal__loading">Загружаем календарь…</p>
+            }
+            <a
+              class="btn btn--outline btn--on-dark"
+              href="https://cal.com/mind-style-00/waystroke-call"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Открыть страницу записи</a
+            >
+          </div>
+
+          @if (!calendarFailed()) {
+            <iframe
+              class="cal__frame"
+              data-booking-frame
+              title="Запись на 20-минутный созвон"
+              src="https://cal.com/mind-style-00/waystroke-call?embed=true&amp;theme=dark"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              (load)="onCalendarLoad()"
+            ></iframe>
+          }
+        </div>
+
+        <p class="cal__foot">
+          Не удобнее в переписке?&nbsp;
+          <a
+            href="https://cal.com/mind-style-00/waystroke-call"
+            target="_blank"
+            rel="noopener noreferrer"
+            >обычная ссылка на запись</a
+          >
+        </p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer__inner">
+    <p class="footer__brand">Waystroke <span class="footer__sep">/</span> сайты на заказ</p>
+    <p class="footer__meta">
+      <a href="https://t.me/waystroke" target="_blank" rel="noopener noreferrer">Telegram · @waystroke</a>
+      <span class="footer__sep">·</span>
+      <span>© 2026</span>
+    </p>
+  </div>
+</footer>
