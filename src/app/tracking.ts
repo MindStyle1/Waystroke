@@ -3,13 +3,8 @@
  *
  * Cloudflare Web Analytics умеет только свои метрики посещений: отправить в
  * него своё событие нельзя (официальный FAQ — «Not yet»). Поэтому клики по
- * контактам считает отдельный Worker на `track.waystroke.online/api/track`,
- * а отсюда уходит одно короткое сообщение без cookie и без идентификаторов
- * посетителя.
- *
- * Адрес абсолютный намеренно: сайт раздаёт GitHub Pages напрямую, минуя
- * Cloudflare, и относительный `/api/track` ушёл бы в 404 этого хостинга.
- * Запрос уходит на другое имя, поэтому Worker отдаёт CORS-заголовки.
+ * контактам считает отдельный Worker на `/api/track`, а отсюда уходит одно
+ * короткое сообщение без cookie и без идентификаторов посетителя.
  *
  * Ссылка остаётся нетронутой: обработчик только слушает и ничего не
  * отменяет, поэтому переход по контакту не замедляется. Отправка не
@@ -30,7 +25,7 @@ const OUTBOUND: ReadonlyArray<readonly [string, ConversionEvent]> = [
 /** Значения, которые принимает Worker: всё остальное он отбрасывает. */
 const ALLOWED: ReadonlyArray<string> = ['telegram_click', 'calcom_click', 'cta_click'];
 
-const ENDPOINT = 'https://track.waystroke.online/api/track';
+const ENDPOINT = '/api/track';
 
 const MAX_SOURCE = 48;
 

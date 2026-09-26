@@ -65,7 +65,7 @@ describe('initConversions', () => {
     initConversions(host);
     click('tg');
     await Promise.resolve();
-    expect(beacon).toHaveBeenCalledWith('https://track.waystroke.online/api/track', expect.any(Blob));
+    expect(beacon).toHaveBeenCalledWith('/api/track', expect.any(Blob));
     expect(sent).toEqual([{ event: 'telegram_click', source: 'header' }]);
   });
 
