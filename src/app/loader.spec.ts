@@ -33,6 +33,17 @@ const bootScene = (doc: Document): SVGSVGElement => {
   return scene as SVGSVGElement;
 };
 
+/**
+ * Исходник решения из `<head>`: оно принимается до первой отрисовки и решает,
+ * показывать ли загрузчик вообще.
+ */
+const headScript = (): string => {
+  const scripts = Array.from(parsed().querySelectorAll('script'));
+  const head = scripts.find((script) => script.textContent?.includes('boot-skip'));
+  if (!head?.textContent) throw new Error('в index.html нет решения о загрузчике');
+  return head.textContent;
+};
+
 /** Исходник сцены из конца документа — тот, что запускает и убирает её. */
 const lifecycleSource = (): string => {
   const scripts = Array.from(parsed().querySelectorAll('script'));
@@ -135,6 +146,7 @@ describe('Загрузчик: сцена', () => {
 
   beforeEach(() => {
     document.documentElement.className = 'js';
+    delete document.documentElement.dataset['bootState'];
     document.body.innerHTML = '';
     boot = parsed().querySelector('[data-boot]') as HTMLElement;
     document.body.appendChild(boot);
@@ -146,6 +158,7 @@ describe('Загрузчик: сцена', () => {
     window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
     document.body.innerHTML = '';
     document.documentElement.className = 'js';
+    delete document.documentElement.dataset['bootState'];
   });
 
   /** Исполняет сценарий загрузчика в текущем документе. */
@@ -248,8 +261,64 @@ describe('Загрузчик: сцена', () => {
     expect(released).toHaveBeenCalledTimes(1);
     expect(document.documentElement.classList.contains('boot-on')).toBe(false);
     expect(boot.classList.contains('is-playing')).toBe(false);
+    // Показывать и тут же убирать через скрипт нельзя — это кадр без
+    // анимации. Раз его не показывали, из документа он просто уходит.
+    expect(document.body.contains(boot)).toBe(false);
 
     window.removeEventListener('waystroke:boot-done', released);
+  });
+
+  it('помечает документ состоянием, по которому приложение решает, ждать ли экран', () => {
+    expect(document.documentElement.dataset['bootState']).toBeUndefined();
+    // Часы ставим до запуска: сцена отсчитывает от первого кадра, который
+    // приходит через requestAnimationFrame.
+    vi.useFakeTimers();
+
+    try {
+      new Function(lifecycleSource())();
+      vi.advanceTimersByTime(40);
+      expect(document.documentElement.dataset['bootState']).toBe('on');
+
+      window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
+      vi.advanceTimersByTime(2000);
+      expect(document.documentElement.dataset['bootState']).toBe('off');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('на пропуске оставляет состояние «экран свободен», а документ целым', () => {
+    // Так решает и решение в `<head>`: повторный визит и уменьшенное движение.
+    document.documentElement.classList.add('boot-skip');
+    document.documentElement.dataset['bootState'] = 'off';
+
+    new Function(lifecycleSource())();
+
+    expect(document.documentElement.dataset['bootState']).toBe('off');
+    // Состояние живёт на <html>, загрузчик помечен тем же именем признака.
+    // Смешать эти два имени нельзя: поиск по одному признаку начнёт отдавать
+    // корень документа, и сцена перестанет запускаться.
+    expect(document.documentElement.matches('.boot[data-boot]')).toBe(false);
+    expect(document.documentElement.isConnected).toBe(true);
+  });
+
+  it('на повторном визите находит сцену, хотя решение лежит на документе', () => {
+    // Путь reload целиком: решение в `<head>` ставит состояние на <html>, и
+    // сцена из конца документа ищет себя по признаку в разметке. Имена не должны
+    // пересекаться — иначе поиск отдаст корень документа, сцена не запустится,
+    // и посетитель увидит пустой кадр до таймера.
+    sessionStorage.setItem('waystroke:booted', '1');
+    new Function(headScript())();
+
+    expect(document.documentElement.dataset['bootState']).toBe('off');
+    expect(document.querySelector('.boot[data-boot]')).not.toBeNull();
+
+    new Function(lifecycleSource())();
+
+    expect(document.querySelector('.boot[data-boot]')).toBeNull();
+    expect(document.documentElement.isConnected).toBe(true);
+    expect(document.documentElement.dataset['bootState']).toBe('off');
+    sessionStorage.clear();
   });
 
   it('прячет кнопку повтора, пока сцена не вызвана на просмотр', async () => {

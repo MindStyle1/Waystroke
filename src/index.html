@@ -158,7 +158,19 @@
       (function () {
         var root = document.documentElement;
 
+        /*
+         * `data-boot-state` — состояние загрузчика на документе, и приложение
+         * читает его вместо события: на повторном визите загрузчик проходит
+         * мимо экрана ещё до бутстрапа Angular, и слушатель события
+         * зарегистрировался бы после него. Состояние — факт о документе, а не
+         * сигнал, который можно пропустить.
+         *
+         * Имя намеренно не совпадает с `data-boot` на самом загрузчике: иначе
+         * `querySelector('[data-boot]')` нашёл бы корень документа вместо
+         * сцены, и сцена не запустилась бы вовсе.
+         */
         if (/[?&]preview=loader(?:&|$)/.test(window.location.search)) {
+          root.dataset.bootState = 'review';
           root.classList.add('boot-review');
           // Служебный кадр не должен попасть в индекс.
           var meta = document.createElement('meta');
@@ -170,7 +182,9 @@
 
         try {
           if (window.sessionStorage.getItem('waystroke:booted')) {
+            root.dataset.bootState = 'off';
             root.classList.add('boot-skip');
+            return;
           }
         } catch (err) {
           // Хранилище может быть недоступно (приватный режим, отключённые
@@ -180,7 +194,10 @@
         var reduced =
           typeof window.matchMedia === 'function' &&
           window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduced) root.classList.add('boot-skip');
+        if (reduced) {
+          root.dataset.bootState = 'off';
+          root.classList.add('boot-skip');
+        }
       })();
     </script>
 
@@ -289,7 +306,9 @@
     <script>
       (function () {
         var root = document.documentElement;
-        var boot = document.querySelector('[data-boot]');
+        // И класс, и признак: одиночного признака мало, его имя может повториться
+        // на документе (см. data-boot-state выше).
+        var boot = document.querySelector('.boot[data-boot]');
         var app = document.querySelector('app-root');
         var review = root.classList.contains('boot-review');
         var timers = [];
@@ -314,6 +333,7 @@
           released = true;
           stopTimers();
           if (app) app.removeAttribute('inert');
+          root.dataset.bootState = 'off';
           root.classList.remove('boot-on');
           // Событие на окне, а не на документе:CustomEvent без `bubbles`
           // до окна не доходит, и страница ждала бы только страховки.
@@ -340,11 +360,21 @@
           if (played && appReady) release();
         }
 
-        /* Без сцены и пропускать нечего: сразу отдаём экран. */
+        /*
+         * Пропуск: загрузчик не показывался (решение принято в `<head>`, кадр
+         * скрыт стилями с первой отрисовки), поэтому здесь он просто удаляется —
+         * вместе с ролью `status`, которая иначе осталась бы в дереве страницы.
+         * Показывать и тут же убирать через скрипт нельзя: это тот самый кадр
+         * без анимации, ради которого всё затевалось.
+         */
         if (!boot || root.classList.contains('boot-skip')) {
+          if (boot) boot.remove();
+          root.dataset.bootState = 'off';
           window.dispatchEvent(new CustomEvent('waystroke:boot-done'));
           return;
         }
+
+        root.dataset.bootState = 'on';
 
         var replay = boot.querySelector('[data-boot-replay]');
         if (replay) {

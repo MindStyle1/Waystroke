@@ -36,12 +36,10 @@ describe('App', () => {
     }
   });
 
-  it('should hold the reveal back until the loader gives the screen away', async () => {
-    // Страница нарисована, но брендовый кадр ещё на экране: появление блоков
-    // не должно отыграть под ним.
-    const loader = document.createElement('div');
-    loader.setAttribute('data-boot', '');
-    document.body.appendChild(loader);
+  it('should hold the reveal back while the loader holds the screen', async () => {
+    // Состояние `on` — загрузчик на экране и держит страницу: появление
+    // блоков не должно отыграть под ним.
+    document.documentElement.dataset['bootState'] = 'on';
 
     try {
       const fixture = TestBed.createComponent(App);
@@ -55,7 +53,17 @@ describe('App', () => {
 
       expect(compiled.querySelector('.reveal.is-visible')).not.toBeNull();
     } finally {
-      loader.remove();
+      delete document.documentElement.dataset['bootState'];
     }
+  });
+
+  it('should show the page at once when no loader is holding the screen', async () => {
+    // Повторный визит в сессии: загрузчик проходит мимо экрана ещё до
+    // бутстрапа, и ждать события, которого уже не будет, нельзя.
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelector('.reveal.is-visible')).not.toBeNull();
   });
 });
