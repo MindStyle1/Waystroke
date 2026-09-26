@@ -30,6 +30,9 @@ describe('initConversions', () => {
     host.innerHTML = `
       <header><a id="tg" href="https://t.me/waystroke" target="_blank" rel="noopener noreferrer">Telegram</a></header>
       <main>
+        <section data-section="hero">
+          <button id="hero-cta" data-track="cta_click">Обсудить проект</button>
+        </section>
         <section data-section="contact">
           <a id="cal" href="https://cal.com/mind-style-00/waystroke-call">Записаться</a>
           <a id="calwww" href="https://www.cal.com/mind-style-00/waystroke-call">Записаться</a>
@@ -95,6 +98,15 @@ describe('initConversions', () => {
     click('cta');
     await Promise.resolve();
     expect(sent).toEqual([{ event: 'cta_click', source: 'contact' }]);
+  });
+
+  // Главная кнопка первого экрана — самая частая конверсия, и раньше её
+  // источник приходил в D1 как «unknown»: секция шла без data-section.
+  it('узнаёт источник главной кнопки по секции первого экрана', async () => {
+    initConversions(host);
+    click('hero-cta');
+    await Promise.resolve();
+    expect(sent).toEqual([{ event: 'cta_click', source: 'hero' }]);
   });
 
   it('не считает навигацию, якорь, http-ссылку и подделанный атрибут', async () => {
