@@ -32,8 +32,9 @@ npm test           # unit-тесты (vitest)
 | `src/styles.css` | дизайн-токены, сетки, мотив линии, адаптив и `prefers-reduced-motion` |
 | `src/data/projects.ts` | **единственный файл с данными проектов** |
 | `src/index.html` | `lang`, мета, favicon, ранний скрипт `no-js → js` |
-| `server.js` | небольшой статический сервер для деплоя (порт из `PORT`) |
-| `railway.json` | сборка и запуск на Railway |
+| `server.js` | локальный статический сервер (`npm run serve`, порт из `PORT`) |
+| `scripts/postbuild.mjs` | копирует `index.html` в `404.html` — SPA-fallback для Cloudflare Pages |
+| `.nvmrc` | версия Node для облачной сборки (Angular 22 требует ≥ 22.22.3) |
 
 ## Редактирование проектов
 
@@ -80,10 +81,22 @@ export interface Project {
 
 ## Деплой
 
-Сборка и запуск на Railway описаны в `railway.json`:
-`npm run build:prod` → `node server.js` (статика из `dist/waystroke-studio/browser`,
-порт из переменной `PORT`, SPA-fallback на `index.html`).
-Купленный домен к проекту пока не подключён.
+Хостинг — **Cloudflare Pages** (бесплатный тариф), проект `waystroke`,
+адрес: <https://waystroke.pages.dev>
+
+- Источник — GitHub `MindStyle1/Waystroke`, ветка `main`: каждый push в `main`
+  собирается и публикуется автоматически.
+- **Build command**: `npm run build`
+- **Build output directory**: `dist/waystroke-studio/browser`
+- **Root directory**: корень репозитория
+- `.nvmrc` поднимает Node до 22.23.2 — облачный образ по умолчанию даёт 22.16.0,
+  а Angular 22 требует ≥ 22.22.3.
+- **SPA-fallback**: `postbuild` кладёт копию `index.html` в `404.html`, поэтому
+  прямое открытие любого адреса рендерит приложение. Catch-all-правило
+  `/* /index.html 200` в `_redirects` Cloudflare отклоняет собственной валидацией
+  («infinite loop detected»), а `/* /404.html 200` на практике закольцовывает
+  ответы (308 → `/404` → …) — поэтому используется только `404.html`.
+- Купленный домен к проекту пока не подключён.
 
 ## Проверено
 
@@ -94,3 +107,5 @@ export interface Project {
 - `prefers-reduced-motion: reduce` — анимации отключаются, всё видно сразу
 - Календарь Cal.com загружается (и в десктопном, и в мобильном виде)
 - Продакшен-сборка проходит без предупреждений, ошибок в консоли нет
+- Живой сайт <https://waystroke.pages.dev>: `/` → 200, js/css/svg → 200,
+  неизвестный путь отдаёт оболочку приложения (SPA-fallback)
