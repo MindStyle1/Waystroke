@@ -23,8 +23,10 @@
  *  - если запись не прошла, ответ не 204, а 500: молчаливый «успех» хуже
  *    явной ошибки — по нему видно, что привязка базы потеряна.
  *
- * События приходят с того же домена, поэтому CORS не нужен: заголовки
- * доступа не выдаём, перекрёстные вызовы отсекаем проверкой Origin.
+ * Worker живёт на своём имени (track.waystroke.online), а сайт раздаёт
+ * GitHub Pages, поэтому события приходят уже с чужого источника: нужен
+ * CORS. Домен из белого списка по-прежнему решает всё — заголовки доступа
+ * выдаём только ему, остальным по-прежнему 403.
  */
 
 /** Всё, что не перечислено здесь, в счётчики не попадает. */
@@ -32,6 +34,9 @@ const EVENTS = new Set(['telegram_click', 'calcom_click', 'cta_click']);
 
 /** Сайт и его www-версия — больше никто не считается. */
 const ORIGINS = new Set(['https://waystroke.online', 'https://www.waystroke.online']);
+
+/** Заголовки для запроса с тела application/json — ровно этот набор. */
+const ALLOWED_HEADERS = 'content-type';
 
 /** Обрезка полей: в базу попадают только короткие осмысленные строки. */
 const LIMIT_EVENT = 32;
@@ -130,15 +135,38 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // Страница и её данные живут под /api/*: этот маршрут точно доходит до
-    // Worker'а, в отличие от голого пути, где его перехватывает Pages.
+    // Страница и её данные живут под /api/* — так же, как и до переезда
+    // сайта на GitHub Pages: с голого пути их перехватывала раздача статики.
     if (url.pathname === '/api/stats') return serveStatsPage(request, env, url);
     if (url.pathname === '/api/stats.json') return serveStatsJson(request, env, url);
     if (url.pathname !== '/api/track') return new Response('Not Found', { status: 404 });
 
+    // Тело application/json не проходит CORS-«простым» запросом, поэтому
+    // браузер сначала спрашивает разрешение. Отвечаем только своему домену.
+    if (request.method === 'OPTIONS') return preflight(request);
+
     return track(request, env);
   },
 };
+
+function preflight(request) {
+  const origin = request.headers.get('Origin');
+
+  if (origin === null || !ORIGINS.has(origin)) {
+    return new Response('Forbidden', { status: 403 });
+  }
+
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'POST',
+      'Access-Control-Allow-Headers': ALLOWED_HEADERS,
+      'Access-Control-Max-Age': '86400',
+      Vary: 'Origin',
+    },
+  });
+}
 
 async function track(request, env) {
   if (request.method !== 'POST') {
@@ -170,7 +198,10 @@ async function track(request, env) {
     return new Response('Write failed', { status: 500 });
   }
 
-  return new Response(null, { status: 204 });
+  return new Response(null, {
+    status: 204,
+    headers: { 'Access-Control-Allow-Origin': origin, Vary: 'Origin' },
+  });
 }
 
 async function serveStatsJson(request, env, url) {
@@ -296,7 +327,7 @@ function page() {
     <p>Обновление раз в минуту. События: telegram_click · calcom_click · cta_click</p>
     <p class="keys">
       Это служебная страница, в меню сайта её нет.
-      <a href="/">Открыть waystroke.online</a> ·
+      <a href="https://waystroke.online/">Открыть waystroke.online</a> ·
       <span class="muted">входить снова: /api/stats?key=… (ключ в приглашении)</span>
     </p>
   </footer>

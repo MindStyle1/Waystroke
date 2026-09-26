@@ -43,6 +43,15 @@
     <script>
       document.documentElement.classList.replace('no-js', 'js');
     </script>
+
+    <!-- Cloudflare Web Analytics. Тот же токен, что раньше вставлял сам
+         Cloudflare Pages: раз сайт теперь раздаёт GitHub Pages, скрипт
+         должен быть в исходниках, иначе beacon пропадает. -->
+    <script
+      type="module"
+      src="https://static.cloudflareinsights.com/beacon.min.js"
+      data-cf-beacon='{"token": "b2ae0ed2f1cc463da32cdc5583300451"}'
+    ></script>
   </head>
   <body>
     <app-root></app-root>

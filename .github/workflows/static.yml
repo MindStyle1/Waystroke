@@ -32,8 +32,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # base-href=/ — под кастомный домен waystroke.online, который
+      # GitHub Pages отдаёт из корня. Со /Waystroke/ пути к js/css
+      # уезжали бы в подпапку репозитория и сайт открывался пустым.
       - name: Build Angular
-        run: npm run build -- --base-href=/Waystroke/
+        run: npm run build -- --base-href=/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

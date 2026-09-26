@@ -156,14 +156,18 @@ npm test           # unit-тесты (vitest)
 
 ## Деплой
 
-Хостинг — **Cloudflare Pages** (бесплатный тариф), проект `waystroke`,
-адрес: <https://waystroke.pages.dev>
+Хостинг — **GitHub Pages** (репозиторий `MindStyle1/Waystroke`, workflow
+`.github/workflows/static.yml`), адрес: <https://waystroke.online>
+
+Почему не Cloudflare Pages: `pages.dev` из части сетей без VPN не открывается.
+Cloudflare в проекте остался только как DNS и как приёмник событий.
 
 - Источник — GitHub `MindStyle1/Waystroke`, ветка `main`: каждый push в `main`
-  собирается и публикуется автоматически.
-- **Build command**: `npm run build`
-- **Build output directory**: `dist/waystroke-studio/browser`
-- **Root directory**: корень репозитория
+  собирается и публикуется автоматически (Actions → Pages).
+- **Сборка**: `npm run build -- --base-href=/`. Именно `/`, а не `/Waystroke/`:
+  кастомный домен отдаётся из корня, и с префиксом репозитория пути к js/css
+  уезжали бы в подпапку и сайт открывался пустым.
+- **Артефакт**: `dist/waystroke-studio/browser`.
 - `.nvmrc` поднимает Node до 22.23.2 — облачный образ по умолчанию даёт 22.16.0,
   а Angular 22 требует ≥ 22.22.3.
 - **SPA-fallback**: `postbuild` кладёт копию `index.html` в `404.html`, поэтому
@@ -171,12 +175,29 @@ npm test           # unit-тесты (vitest)
   `/* /index.html 200` в `_redirects` Cloudflare отклоняет собственной валидацией
   («infinite loop detected»), а `/* /404.html 200` на практике закольцовывает
   ответы (308 → `/404` → …) — поэтому используется только `404.html`.
-- Домен `waystroke.online` переводится на NS Cloudflare
-  (`dante.ns.cloudflare.com` / `meera.ns.cloudflare.com`): в зоне уже есть
-  CNAME `apex` и `www` → `waystroke.pages.dev` (proxied), MX/TXT Timeweb
-  сохранены, правило `www → apex` настроено. До смены NS у регистратора
-  (`pdr ltd. d/b/a publicdomainreg`) домен открывает парковочную страницу,
-  а привязка Pages остаётся в статусе `pending`.
+- **DNS** (зона `waystroke.online`, NS Cloudflare): apex — четыре A-записи
+  `185.199.108–111.153`, `www` — CNAME на `mindstyle1.github.io`, всё в режиме
+  «только DNS» (серое облако, без прокси). MX и TXT Timeweb сохранены.
+  Сертификат для обоих имён выпускает GitHub автоматически.
+- **Cloudflare Pages** (проект `waystroke`) не удалён: `waystroke.pages.dev`
+  продолжает собираться и открываться, но больше не обслуживает
+  `waystroke.online` — это осознанный запасной адрес.
+
+### Cloudflare Web Analytics
+
+Beacon лежит в `src/index.html` с тем же токеном, который раньше подставлял
+сам Cloudflare Pages. Как только сайт уехал на GitHub Pages, вставки от Pages
+больше нет — без снимка в исходниках аналитика молча перестала бы собирать
+всё, включая обычные посещения.
+
+### Worker приёма конверсий
+
+`worker/track.js` живёт на собственном имени `track.waystroke.online`
+(Worker custom domain), а не на пути `/api/*` сайта. Причина та же: маршрут
+`waystroke.online/api/*` работает только на проксированном трафике, а apex
+теперь уходит на IP GitHub мимо Cloudflare. Свой домен остаётся на прокси,
+поэтому Worker на месте; события приходят к нему с чужого источника, и в
+обработчике появились CORS-заголовки с ответом на preflight.
 
 ## Проверено
 
