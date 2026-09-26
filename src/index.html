@@ -2,25 +2,36 @@
 <html lang="ru" class="no-js">
   <head>
     <meta charset="utf-8" />
-    <title>Waystroke — сайты на заказ</title>
+    <title>Waystroke — веб-дизайн и разработка сайтов</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Waystroke — сайты одного веб-разработчика. Аккуратные, быстрые и понятные сайты на заказ: от первого экрана до запуска."
+      content="UX/UI-дизайн и разработка сайтов на заказ: лендинги и многостраничные сайты, адаптивная вёрстка и публикация. Работа напрямую с двумя специалистами."
     />
+    <!-- Ключевые слова в meta не добавляем: Google и Яндекс их не используют,
+         а список быстро устаревает и мешает правкам. -->
+    <meta name="author" content="Waystroke" />
     <meta name="theme-color" content="#ECE9DF" />
     <link rel="canonical" href="https://waystroke.online/" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
+
+    <!-- Иконка в результатах поиска и на телефоне: та же метка, что и в шапке,
+         но без полупрозрачной линии — на 16 px она не читалась. -->
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon-16x16.png" type="image/png" sizes="16x16" />
+    <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="favicon-48x48.png" type="image/png" sizes="48x48" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
     <!-- Социальное превью ссылки: одна картинка на весь сайт -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Waystroke" />
     <meta property="og:locale" content="ru_RU" />
-    <meta property="og:title" content="Waystroke — сайты на заказ" />
+    <meta property="og:title" content="Waystroke — веб-дизайн и разработка сайтов" />
     <meta
       property="og:description"
-      content="Waystroke — сайты одного веб-разработчика. Аккуратные, быстрые и понятные сайты на заказ: от первого экрана до запуска."
+      content="UX/UI-дизайн и разработка сайтов на заказ: лендинги и многостраничные сайты, адаптивная вёрстка и публикация. Работа напрямую с двумя специалистами."
     />
     <meta property="og:url" content="https://waystroke.online/" />
     <meta property="og:image" content="https://waystroke.online/images/og-waystroke.png" />
@@ -29,17 +40,112 @@
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Waystroke — сайты, которые удобно использовать и приятно смотреть"
+      content="Waystroke: UX/UI-дизайн и разработка сайтов на заказ"
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Waystroke — сайты на заказ" />
+    <meta name="twitter:title" content="Waystroke — веб-дизайн и разработка сайтов" />
     <meta
       name="twitter:description"
-      content="Waystroke — сайты одного веб-разработчика. Аккуратные, быстрые и понятные сайты на заказ: от первого экрана до запуска."
+      content="UX/UI-дизайн и разработка сайтов на заказ: лендинги и многостраничные сайты, адаптивная вёрстка и публикация. Работа напрямую с двумя специалистами."
     />
     <meta name="twitter:image" content="https://waystroke.online/images/og-waystroke.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Waystroke: UX/UI-дизайн и разработка сайтов на заказ"
+    />
 
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <!-- Разметка для поиска: кто мы, чем занимаемся и сколько стоят услуги.
+         Только реальные данные сайта — без отзывов и оценок, которых нет. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://waystroke.online/#website",
+            "url": "https://waystroke.online/",
+            "name": "Waystroke",
+            "inLanguage": "ru-RU",
+            "publisher": { "@id": "https://waystroke.online/#studio" }
+          },
+          {
+            "@type": "ProfessionalService",
+            "@id": "https://waystroke.online/#studio",
+            "name": "Waystroke",
+            "url": "https://waystroke.online/",
+            "description": "Веб-дизайн и разработка сайтов на заказ: лендинги и многостраничные сайты, адаптивная вёрстка, доработка и публикация.",
+            "image": "https://waystroke.online/images/og-waystroke.png",
+            "slogan": "Сайты, которые удобно использовать и приятно смотреть",
+            "sameAs": ["https://t.me/waystroke"],
+            "areaServed": "RU",
+            "availableLanguage": "ru",
+            "hasOfferCatalog": {
+              "@type": "OfferCatalog",
+              "name": "Услуги",
+              "itemListElement": [
+                {
+                  "@type": "Offer",
+                  "priceSpecification": {
+                    "@type": "PriceSpecification",
+                    "minPrice": "35000",
+                    "maxPrice": "65000",
+                    "priceCurrency": "RUB"
+                  },
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Лендинг",
+                    "description": "Одностраничный сайт: структура, дизайн, сборка и публикация."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "priceSpecification": {
+                    "@type": "PriceSpecification",
+                    "minPrice": "70000",
+                    "maxPrice": "130000",
+                    "priceCurrency": "RUB"
+                  },
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Многостраничный сайт",
+                    "description": "Несколько связанных страниц с общей структурой и визуальной системой."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "priceSpecification": {
+                    "@type": "PriceSpecification",
+                    "minPrice": "15000",
+                    "maxPrice": "40000",
+                    "priceCurrency": "RUB"
+                  },
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Адаптивная вёрстка",
+                    "description": "Вёрстка под телефон, планшет и компьютер."
+                  }
+                },
+                {
+                  "@type": "Offer",
+                  "priceSpecification": {
+                    "@type": "PriceSpecification",
+                    "minPrice": "5000",
+                    "maxPrice": "30000",
+                    "priceCurrency": "RUB"
+                  },
+                  "itemOffered": {
+                    "@type": "Service",
+                    "name": "Доработка и развитие",
+                    "description": "Исправление ошибок, обновление страниц и развитие готового сайта."
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    </script>
+
     <script>
       document.documentElement.classList.replace('no-js', 'js');
     </script>
@@ -47,6 +153,7 @@
     <!-- Cloudflare Web Analytics. Тот же токен, что раньше вставлял сам
          Cloudflare Pages: раз сайт теперь раздаёт GitHub Pages, скрипт
          должен быть в исходниках, иначе beacon пропадает. -->
+    <link rel="preconnect" href="https://cloudflareinsights.com" />
     <script
       type="module"
       src="https://static.cloudflareinsights.com/beacon.min.js"

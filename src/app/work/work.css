@@ -1,0 +1,103 @@
+/* ==========================================================================
+   Секция «Кейсы» — та же светлая поверхность, что услуги: карточка на
+   --surface с тонкой рамкой, заголовок в .heading, подписи каптелью.
+   Пока данных нет, секция показывает одну честную строку .work__note.
+   ========================================================================== */
+
+:host {
+  display: block;
+}
+
+.work {
+  padding-bottom: var(--section);
+}
+
+.work__note {
+  max-width: 58ch;
+  margin-top: clamp(20px, 2.4vw, 32px);
+  font-size: clamp(15px, 1.4vw, 16.5px);
+  color: var(--ink-2);
+}
+
+.work__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(14px, 1.6vw, 24px);
+  margin-top: clamp(30px, 4vw, 52px);
+}
+
+.work__item {
+  flex: 1 1 280px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-md);
+  padding: clamp(18px, 1.8vw, 28px);
+  transition:
+    transform 0.4s var(--ease),
+    box-shadow 0.4s var(--ease);
+}
+
+.work__item.is-visible:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 22px 44px rgba(23, 25, 26, 0.11);
+}
+
+.work__media {
+  margin: 0 0 clamp(14px, 1.6vw, 20px);
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.work__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.work__meta {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.work__name {
+  margin-top: 8px;
+  font-size: clamp(1.1rem, 1.5vw, 1.32rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.work__task {
+  margin-top: 8px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+.work__scope {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+
+.work__link {
+  align-self: flex-start;
+  margin-top: 14px;
+  font-size: 14.5px;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(23, 25, 26, 0.4);
+  padding-bottom: 3px;
+  transition: border-color 0.3s var(--ease);
+}
+
+.work__link:hover {
+  border-color: var(--ink);
+}

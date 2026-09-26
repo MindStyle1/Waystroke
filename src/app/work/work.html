@@ -1,0 +1,41 @@
+<section class="work" aria-labelledby="work-title">
+  <div class="container">
+    <p class="label reveal">Кейсы</p>
+    <h2 class="heading reveal" id="work-title">Работы, за которые не стыдно.</h2>
+
+    @if (projects.length > 0) {
+      <ul class="work__grid">
+        @for (project of projects; track project.title) {
+          <li class="work__item reveal">
+            <figure class="work__media">
+              <img
+                [src]="project.image"
+                [srcset]="project.thumb + ' 480w, ' + project.image + ' 960w'"
+                sizes="(max-width: 700px) 100vw, 33vw"
+                width="960"
+                height="640"
+                [alt]="project.alt"
+                loading="lazy"
+                decoding="async"
+              />
+            </figure>
+            <p class="work__meta">{{ project.format }}</p>
+            <h3 class="work__name">{{ project.title }}</h3>
+            <p class="work__task">{{ project.task }}</p>
+            <p class="work__scope">{{ project.scope }}</p>
+            @if (project.url) {
+              <a class="work__link" [href]="project.url" target="_blank" rel="noopener noreferrer">
+                Открыть сайт ↗
+              </a>
+            }
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="work__note reveal">
+        Публичные проекты появятся здесь, когда клиенты разрешат их показать. Пока ближе всего к
+        работе шесть концептов в блоке «Дизайн» — разные ниши, разные визуальные решения.
+      </p>
+    }
+  </div>
+</section>

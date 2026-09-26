@@ -1,3 +1,5 @@
+<a class="skip-link" href="#main">Перейти к содержанию</a>
+
 <!-- 1. Шапка -->
 <header class="site-header" [class.is-scrolled]="scrolled()">
   <div class="container header__inner">
@@ -57,7 +59,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
   <!-- 2. Первый экран -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="container">
@@ -78,9 +80,9 @@
 
         <div class="hero__aside reveal">
           <p class="lead">
-            Беру вашу идею и довожу её до готового сайта: продуманная структура,
-            аккуратный интерфейс и запуск, к которому не стыдно вести клиентов. Вы
-            работаете со мной напрямую — без прослоек и передачи задачи дальше.
+            Беру вашу идею и довожу её до готового сайта: веб-дизайн, адаптивная
+            вёрстка и запуск, к которому не стыдно вести клиентов. Вы работаете
+            напрямую с двумя специалистами — без прослоек и передачи задачи дальше.
           </p>
           <div class="hero__actions">
             <button
@@ -151,7 +153,10 @@
     </div>
   </section>
 
-  <!-- 4. Услуги и подход -->
+  <!-- 4. Кейсы: пока публичных проектов нет, секция честно об этом говорит -->
+  <app-work />
+
+  <!-- 5. Услуги и подход -->
   <section
     class="services"
     data-section="services"
@@ -166,7 +171,8 @@
         </div>
         <p class="services__note reveal">
           Коротко обсуждаем задачу, собираем понятную структуру, аккуратно собираем
-          интерфейс и доводим проект до публикации.
+          интерфейс и доводим проект до публикации. На выходе — работающий сайт,
+          исходный код и доступы.
         </p>
       </div>
 
@@ -299,7 +305,7 @@
         </button>
       </div>
 
-      <div class="approach">
+      <section class="approach" aria-labelledby="process-title">
         <div class="stroke stroke--small reveal" aria-hidden="true">
           <svg
             class="stroke__svg"
@@ -322,7 +328,7 @@
           </svg>
         </div>
 
-        <p class="label reveal">Как проходит работа</p>
+        <h2 class="label reveal" id="process-title">Как мы работаем</h2>
         <div class="steps" data-steps>
           <ol class="steps__list">
             <li class="step reveal">
@@ -350,8 +356,9 @@
                   <circle class="art-dot art-dot--accent" cx="32" cy="18" r="2.6" />
                 </svg>
               </span>
-              <span class="step__title">Созвон</span>
-              <span class="step__text">20 минут, чтобы понять задачу и формат</span>
+              <span class="step__num" aria-hidden="true">01</span>
+              <span class="step__title">Обсуждение задачи</span>
+              <span class="step__text">Короткий созвон: цели, аудитория, сроки и бюджет</span>
             </li>
 
             <li class="step reveal">
@@ -376,8 +383,9 @@
                   <path class="art-line sc-draw" pathLength="1" d="M18 49.5H72" />
                 </svg>
               </span>
-              <span class="step__title">План</span>
-              <span class="step__text">Структура, объём работ и сроки</span>
+              <span class="step__num" aria-hidden="true">02</span>
+              <span class="step__title">Дизайн</span>
+              <span class="step__text">Структура страниц, прототип и визуальная система</span>
             </li>
 
             <li class="step reveal">
@@ -405,8 +413,9 @@
                   <rect class="art-block" x="46" y="45" width="29" height="6" rx="3" />
                 </svg>
               </span>
-              <span class="step__title">Сборка</span>
-              <span class="step__text">Дизайн и реализация по этапам</span>
+              <span class="step__num" aria-hidden="true">03</span>
+              <span class="step__title">Разработка</span>
+              <span class="step__text">Вёрстка, интеграции и проверка на устройствах</span>
             </li>
 
             <li class="step reveal">
@@ -427,16 +436,17 @@
                   <path class="art-done sc-draw" pathLength="1" d="M60 31H78" />
                 </svg>
               </span>
+              <span class="step__num" aria-hidden="true">04</span>
               <span class="step__title">Запуск</span>
-              <span class="step__text">Проверка на устройствах и публикация</span>
+              <span class="step__text">Публикация, передача кода и 14 дней на правки</span>
             </li>
           </ol>
         </div>
-      </div>
+      </section>
     </div>
   </section>
 
-  <!-- 4. Команда: дизайн и разработка в одной связке -->
+  <!-- 6. Команда: дизайн и разработка в одной связке -->
   <section class="team" aria-labelledby="team-title">
     <div class="container">
       <p class="label reveal">Наша команда</p>
@@ -452,19 +462,19 @@
       <div class="team__roles reveal">
         <ol class="team__list">
         <li class="role">
-          <h3 class="role__title">UX/UI Designer</h3>
+          <h3 class="role__title">Web UX/UI Designer</h3>
           <p class="role__text">
-            Продумывает структуру, пользовательские сценарии и визуальную систему
-            сайта. Следит, чтобы интерфейс был понятным, цельным и удобным на
-            каждом экране.
+            Проектирует структуру страниц, пользовательский опыт и визуальную
+            систему. Следит, чтобы интерфейс был понятным и цельным на каждом
+            экране.
           </p>
         </li>
 
         <li class="role">
           <h3 class="role__title">Web Developer</h3>
           <p class="role__text">
-            Превращает дизайн в быстрый адаптивный сайт, подключает необходимые
-            сервисы, тестирует и публикует проект.
+            Разрабатывает интерфейсы и интеграции: превращает дизайн в быстрый
+            адаптивный сайт, тестирует его и публикует.
           </p>
         </li>
         </ol>
@@ -477,7 +487,7 @@
     </div>
   </section>
 
-  <!-- 5. Условия работы: частые вопросы до обращения -->
+  <!-- 7. Условия работы: частые вопросы до обращения -->
   <section class="faq" aria-labelledby="faq-title">
     <div class="container">
       <p class="label reveal">До начала работы</p>
@@ -553,7 +563,7 @@
     </div>
   </section>
 
-  <!-- 6. Контакты -->
+  <!-- 8. Контакты -->
   <section
     class="contact"
     data-section="contact"
