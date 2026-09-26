@@ -15,7 +15,14 @@
  * Каждая функция возвращает диспозер — он снимает слушатели и наблюдатели
  * и останавливает анимации вместе с компонентом.
  */
-import { createTimeline, stagger, utils, type Timeline } from 'animejs';
+import {
+  animate,
+  createTimeline,
+  stagger,
+  utils,
+  type JSAnimation,
+  type Timeline,
+} from 'animejs';
 
 export type Dispose = () => void;
 
@@ -313,6 +320,147 @@ export function initServiceScenes(host: HTMLElement): Dispose {
   return () => {
     cleanups.forEach((dispose) => dispose());
     Array.from(states.keys()).forEach((card) => drop(card, true));
+  };
+}
+
+/* --- Связка двух ролей --------------------------------------------------- */
+
+const TEAM_START_GRACE = 700;
+const TEAM_FINISH_GRACE = 3400;
+
+/**
+ * Между ролями прорисовывается мосток, и по нему едет лаймовая точка: дизайн
+ * передаёт работу разработке. Один раз — при первом появлении блока, дальше
+ * точка медленно ходит туда-обратно, пока блок на экране.
+ *
+ * Финальное состояние задано стилями, поэтому при любой неудаче — движок не
+ * получил кадров, сцена упала, блок уничтожен или пересечение пропущено —
+ * мосток и точки просто остаются нарисованными.
+ */
+export function initTeamScene(host: HTMLElement): Dispose {
+  const list = host.querySelector<HTMLElement>('.team__list');
+  const bridge = host.querySelector<HTMLElement>('.team__bridge');
+  if (!list || !bridge || prefersReduced()) return noop;
+
+  const lines = all<HTMLElement>(list, '.role__line');
+  const dots = all<HTMLElement>(list, '.role__dot');
+  const bridgeDot = el<HTMLElement>(bridge, '.team__bridge-dot');
+  if (lines.length === 0 || dots.length === 0 || !bridgeDot) return noop;
+
+  const targets = [...lines, ...dots, bridge, bridgeDot];
+  const timers: number[] = [];
+  let intro: Timeline | null = null;
+  let glide: JSAnimation | null = null;
+  let stopped = false;
+
+  const clearTimers = (): void => {
+    timers.forEach((timer) => window.clearTimeout(timer));
+    timers.length = 0;
+  };
+
+  /** Возврат к состоянию из стилей: линии, мосток и точки просто нарисованы. */
+  const settle = (): void => {
+    utils.remove(targets);
+    targets.forEach((node) => node.removeAttribute('style'));
+  };
+
+  const stop = (): void => {
+    if (stopped) return;
+    stopped = true;
+    clearTimers();
+    intro?.pause();
+    glide?.pause();
+    settle();
+  };
+
+  /**
+   * Спокойное движение точки по мостку, пока блок на экране. Интро заканчивает
+   * точкой в конце мостка, поэтому дальше она идёт обратно и снова — целиком
+   * от 100 % к 0 % и обратно.
+   */
+  const startGlide = (): void => {
+    if (stopped || glide) return;
+    glide = animate(bridgeDot, {
+      left: '0%',
+      duration: 2600,
+      ease: 'inOutSine',
+      loop: true,
+      alternate: true,
+    });
+  };
+
+  const play = (): void => {
+    if (stopped || intro) return;
+
+    let tl: Timeline | null = null;
+    try {
+      utils.set(lines, { scaleX: 0 });
+      utils.set(dots, { scale: 0.4, opacity: 0 });
+      utils.set(bridge, { scaleX: 0 });
+      utils.set(bridgeDot, { left: '0%', scale: 0.6, opacity: 0 });
+
+      tl = createTimeline({ autoplay: false });
+      lines.forEach((line, index) => {
+        tl?.add(line, { scaleX: 1, duration: 620, ease: 'outQuad' }, index * 160);
+      });
+      dots.forEach((dot, index) => {
+        tl?.add(dot, { scale: 1, opacity: 1, duration: 380, ease: 'outQuad' }, 520 + index * 160);
+      });
+      tl.add(bridge, { scaleX: 1, duration: 440, ease: 'outQuad' }, 900);
+      tl.add(
+        bridgeDot,
+        { left: '100%', scale: 1, opacity: 1, duration: 1100, ease: 'inOutSine' },
+        1160,
+      );
+      tl.play();
+      intro = tl;
+    } catch {
+      stop();
+      return;
+    }
+
+    const scene = tl;
+    scene.onBegin = (): void => {
+      scene.onBegin = noopCb;
+      timers.push(
+        window.setTimeout(() => {
+          if (!scene.completed) stop();
+        }, TEAM_FINISH_GRACE),
+      );
+    };
+    scene.onComplete = (): void => {
+      clearTimers();
+      startGlide();
+    };
+
+    // Движок не отдал ни кадра — показываем готовый блок.
+    timers.push(
+      window.setTimeout(() => {
+        if (!scene.began && !scene.completed) stop();
+      }, TEAM_START_GRACE),
+    );
+  };
+
+  if (!('IntersectionObserver' in window)) {
+    play();
+    return stop;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const visible = entries.some((entry) => entry.isIntersecting);
+      if (visible) play();
+      // Вне экрана точка не двигается.
+      if (visible) glide?.play();
+      else glide?.pause();
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -4% 0px' },
+  );
+  observer.observe(list);
+
+  return () => {
+    observer.disconnect();
+    stop();
   };
 }
 

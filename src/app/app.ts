@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, inject, signal } from '@angular/core';
-import { initServiceScenes, initStepsSequence, type Dispose } from './motion';
+import { initServiceScenes, initStepsSequence, initTeamScene, type Dispose } from './motion';
 import { DesignDemo } from './design-demo/design-demo';
 
 /** Прокрутка без анимации, когда пользователь просит уменьшить движение. */
@@ -46,7 +46,11 @@ export class App implements AfterViewInit, OnDestroy {
     this.initReveal();
     this.initBooking();
     this.updateHeader();
-    this.motionDisposers.push(initServiceScenes(host), initStepsSequence(host));
+    this.motionDisposers.push(
+      initServiceScenes(host),
+      initTeamScene(host),
+      initStepsSequence(host),
+    );
 
     window.addEventListener('scroll', this.handleScroll, { passive: true });
     window.addEventListener('resize', this.handleResize);

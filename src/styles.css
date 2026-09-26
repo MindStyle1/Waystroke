@@ -1084,12 +1084,17 @@ app-root .team__lead {
  * Две роли — одна композиция: у каждой своя тонкая линия на одной высоте,
  * номер «сидит» на линии, а лаймовая точка закрывает её справа.
  */
+app-root .team__roles {
+  position: relative;
+  margin-top: clamp(24px, 2.8vw, 38px);
+}
+
 app-root .team__list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(22px, 3vw, 56px);
   list-style: none;
-  margin: clamp(24px, 2.8vw, 38px) 0 0;
+  margin: 0;
   padding: 0;
 }
 
@@ -1099,23 +1104,46 @@ app-root .role {
   padding-top: 32px;
 }
 
-app-root .role::before {
-  content: '';
+app-root .role__line {
   position: absolute;
   top: 9px;
   left: 0;
   right: 0;
   height: 1px;
   background: var(--line);
+  transform-origin: left center;
 }
 
-app-root .role::after {
-  content: '';
+app-root .role__dot {
   position: absolute;
   top: 5px;
   right: 0;
   width: 9px;
   height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* Мосток между ролями: по нему едет точка — дизайн передаёт работу разработке. */
+app-root .team__bridge {
+  /* Мосток короче промежутка между колонками, иначе сливается с линией роли. */
+  --bridge-w: calc(clamp(22px, 3vw, 56px) * 0.58);
+  position: absolute;
+  top: 9px;
+  left: calc(50% - var(--bridge-w) / 2);
+  width: var(--bridge-w);
+  height: 1px;
+  background: var(--line);
+  transform-origin: left center;
+}
+
+app-root .team__bridge-dot {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
   border-radius: 50%;
   background: var(--accent);
 }
@@ -1145,55 +1173,6 @@ app-root .role__text {
   font-size: 14.5px;
   line-height: 1.55;
   color: var(--ink-2);
-}
-
-/*
- * Мягкое появление команды: линия прорисовывается слева направо, и на её
- * конце оседает лаймовая точка — сначала 01, потом 02. Один раз, при первом
- * попадании блока в экран, силами CSS. Стартовые значения живут только
- * внутри prefers-reduced-motion: no-preference, поэтому при отключённой
- * анимации линии и точки просто нарисованы, а «залипнуть» в пустом виде
- * блок не может: финал — это обычные стили.
- */
-@media (prefers-reduced-motion: no-preference) {
-  app-root .team__list .role::before {
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-
-  app-root .team__list .role::after {
-    transform: scale(0.4);
-    opacity: 0;
-  }
-
-  app-root .team__list .role::before,
-  app-root .team__list .role::after {
-    transition:
-      transform 0.55s var(--ease),
-      opacity 0.35s var(--ease);
-  }
-
-  /* Точка оседает в конце прорисованной линии, вторая роль отвечает позже. */
-  app-root .team__list .role:first-child::after {
-    transition-delay: 0.45s;
-  }
-
-  app-root .team__list .role:nth-child(2)::before {
-    transition-delay: 0.22s;
-  }
-
-  app-root .team__list .role:nth-child(2)::after {
-    transition-delay: 0.67s;
-  }
-
-  app-root .team__list.is-visible .role::before {
-    transform: scaleX(1);
-  }
-
-  app-root .team__list.is-visible .role::after {
-    transform: scale(1);
-    opacity: 1;
-  }
 }
 
 /* --- Условия работы (FAQ) ------------------------------------------------- */
@@ -1649,6 +1628,11 @@ app-root .cal__foot a {
   }
 
   .no-js .menu-toggle {
+    display: none;
+  }
+
+  /* Мосток между ролями держится только там, где промежуток это позволяет. */
+  app-root .team__bridge {
     display: none;
   }
 }
