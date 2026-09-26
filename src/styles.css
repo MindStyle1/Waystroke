@@ -1101,63 +1101,39 @@ app-root .team__list {
 app-root .role {
   position: relative;
   min-width: 0;
-  padding-top: 32px;
+  padding-top: 26px;
 }
 
-app-root .role__line {
+/*
+ * Одна линия на всю ширину блока соединяет обе роли, и по ней медленно
+ * ездят два лаймовых шарика. В покое шарики просто стоят на своих местах:
+ * анимация только оживляет их, но не рисует блок.
+ */
+app-root .team__strip {
   position: absolute;
   top: 9px;
   left: 0;
   right: 0;
   height: 1px;
   background: var(--line);
-  transform-origin: left center;
 }
 
-app-root .role__dot {
-  position: absolute;
-  top: 5px;
-  right: 0;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-/* Мосток между ролями: по нему едет точка — дизайн передаёт работу разработке. */
-app-root .team__bridge {
-  /* Мосток короче промежутка между колонками, иначе сливается с линией роли. */
-  --bridge-w: calc(clamp(22px, 3vw, 56px) * 0.58);
-  position: absolute;
-  top: 9px;
-  left: calc(50% - var(--bridge-w) / 2);
-  width: var(--bridge-w);
-  height: 1px;
-  background: var(--line);
-  transform-origin: left center;
-}
-
-app-root .team__bridge-dot {
+app-root .team__ball {
   position: absolute;
   top: 50%;
-  left: 0;
-  width: 7px;
-  height: 7px;
-  margin: -3.5px 0 0 -3.5px;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
   border-radius: 50%;
   background: var(--accent);
 }
 
-app-root .role__num {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding-right: 14px;
-  background: var(--bg);
-  font-size: 11px;
-  line-height: 1.4;
-  letter-spacing: 0.16em;
-  color: var(--ink-3);
+app-root .team__ball--a {
+  left: 24%;
+}
+
+app-root .team__ball--b {
+  left: 68%;
 }
 
 app-root .role__title {
@@ -1631,10 +1607,6 @@ app-root .cal__foot a {
     display: none;
   }
 
-  /* Мосток между ролями держится только там, где промежуток это позволяет. */
-  app-root .team__bridge {
-    display: none;
-  }
 }
 
 @media (max-width: 760px) {

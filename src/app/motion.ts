@@ -323,140 +323,92 @@ export function initServiceScenes(host: HTMLElement): Dispose {
   };
 }
 
-/* --- Связка двух ролей --------------------------------------------------- */
+/* --- Два шарика на общей линии ------------------------------------------ */
 
-const TEAM_START_GRACE = 700;
-const TEAM_FINISH_GRACE = 3400;
+const randomBetween = (min: number, max: number): number => min + Math.random() * (max - min);
 
 /**
- * Между ролями прорисовывается мосток, и по нему едет лаймовая точка: дизайн
- * передаёт работу разработке. Один раз — при первом появлении блока, дальше
- * точка медленно ходит туда-обратно, пока блок на экране.
+ * По линии, соединяющей роли, медленно ездят два лаймовых шарика. Движение
+ * не по циклу: каждый раз новая случайная цель, новая длительность и пауза
+ * перед следующим броском, поэтому шарики не выглядят «включёнными на повтор».
  *
- * Финальное состояние задано стилями, поэтому при любой неудаче — движок не
- * получил кадров, сцена упала, блок уничтожен или пересечение пропущено —
- * мосток и точки просто остаются нарисованными.
+ * Покой задан стилями — шарики нарисованы, линия нарисована. Анимация только
+ * оживляет их, поэтому движок, не отдавший кадров, пропущенное пересечение
+ * или уничтожение компонента оставляют блок в готовом виде.
  */
 export function initTeamScene(host: HTMLElement): Dispose {
-  const list = host.querySelector<HTMLElement>('.team__list');
-  const bridge = host.querySelector<HTMLElement>('.team__bridge');
-  if (!list || !bridge || prefersReduced()) return noop;
+  const strip = host.querySelector<HTMLElement>('.team__strip');
+  if (!strip || prefersReduced()) return noop;
 
-  const lines = all<HTMLElement>(list, '.role__line');
-  const dots = all<HTMLElement>(list, '.role__dot');
-  const bridgeDot = el<HTMLElement>(bridge, '.team__bridge-dot');
-  if (lines.length === 0 || dots.length === 0 || !bridgeDot) return noop;
+  const balls = all<HTMLElement>(strip, '.team__ball');
+  if (balls.length === 0) return noop;
 
-  const targets = [...lines, ...dots, bridge, bridgeDot];
+  const active = new Set<JSAnimation>();
+  const walking = new Set<HTMLElement>();
   const timers: number[] = [];
-  let intro: Timeline | null = null;
-  let glide: JSAnimation | null = null;
+  let inView = false;
+  let started = false;
   let stopped = false;
-
-  const clearTimers = (): void => {
-    timers.forEach((timer) => window.clearTimeout(timer));
-    timers.length = 0;
-  };
-
-  /** Возврат к состоянию из стилей: линии, мосток и точки просто нарисованы. */
-  const settle = (): void => {
-    utils.remove(targets);
-    targets.forEach((node) => node.removeAttribute('style'));
-  };
 
   const stop = (): void => {
     if (stopped) return;
     stopped = true;
-    clearTimers();
-    intro?.pause();
-    glide?.pause();
-    settle();
+    timers.forEach((timer) => window.clearTimeout(timer));
+    timers.length = 0;
+    active.forEach((step) => step.pause());
+    active.clear();
+    // Возврат к состоянию из стилей: шарики стоят на своих местах.
+    utils.remove(balls);
+    balls.forEach((ball) => ball.removeAttribute('style'));
   };
 
-  /**
-   * Спокойное движение точки по мостку, пока блок на экране. Интро заканчивает
-   * точкой в конце мостка, поэтому дальше она идёт обратно и снова — целиком
-   * от 100 % к 0 % и обратно.
-   */
-  const startGlide = (): void => {
-    if (stopped || glide) return;
-    glide = animate(bridgeDot, {
-      left: '0%',
-      duration: 2600,
+  /** Один случайный бросок и планирование следующего. */
+  const wander = (ball: HTMLElement): void => {
+    if (stopped || !inView || walking.has(ball)) return;
+
+    walking.add(ball);
+    const step = animate(ball, {
+      left: () => `${randomBetween(12, 88).toFixed(2)}%`,
+      duration: () => Math.round(randomBetween(3200, 7200)),
       ease: 'inOutSine',
-      loop: true,
-      alternate: true,
+      onComplete: (): void => {
+        active.delete(step);
+        walking.delete(ball);
+        if (stopped) return;
+        timers.push(window.setTimeout(() => wander(ball), randomBetween(600, 2600)));
+      },
     });
+
+    active.add(step);
   };
 
-  const play = (): void => {
-    if (stopped || intro) return;
-
-    let tl: Timeline | null = null;
-    try {
-      utils.set(lines, { scaleX: 0 });
-      utils.set(dots, { scale: 0.4, opacity: 0 });
-      utils.set(bridge, { scaleX: 0 });
-      utils.set(bridgeDot, { left: '0%', scale: 0.6, opacity: 0 });
-
-      tl = createTimeline({ autoplay: false });
-      lines.forEach((line, index) => {
-        tl?.add(line, { scaleX: 1, duration: 620, ease: 'outQuad' }, index * 160);
-      });
-      dots.forEach((dot, index) => {
-        tl?.add(dot, { scale: 1, opacity: 1, duration: 380, ease: 'outQuad' }, 520 + index * 160);
-      });
-      tl.add(bridge, { scaleX: 1, duration: 440, ease: 'outQuad' }, 900);
-      tl.add(
-        bridgeDot,
-        { left: '100%', scale: 1, opacity: 1, duration: 1100, ease: 'inOutSine' },
-        1160,
-      );
-      tl.play();
-      intro = tl;
-    } catch {
-      stop();
-      return;
-    }
-
-    const scene = tl;
-    scene.onBegin = (): void => {
-      scene.onBegin = noopCb;
-      timers.push(
-        window.setTimeout(() => {
-          if (!scene.completed) stop();
-        }, TEAM_FINISH_GRACE),
-      );
-    };
-    scene.onComplete = (): void => {
-      clearTimers();
-      startGlide();
-    };
-
-    // Движок не отдал ни кадра — показываем готовый блок.
-    timers.push(
-      window.setTimeout(() => {
-        if (!scene.began && !scene.completed) stop();
-      }, TEAM_START_GRACE),
-    );
+  const start = (): void => {
+    if (stopped || started) return;
+    started = true;
+    balls.forEach(wander);
   };
 
   if (!('IntersectionObserver' in window)) {
-    play();
+    start();
     return stop;
   }
 
   const observer = new IntersectionObserver(
     (entries) => {
-      const visible = entries.some((entry) => entry.isIntersecting);
-      if (visible) play();
-      // Вне экрана точка не двигается.
-      if (visible) glide?.play();
-      else glide?.pause();
+      // Пока блок на экране — шарики едут, ушёл с экрана — замирают.
+      inView = entries.some((entry) => entry.isIntersecting);
+      if (inView) {
+        start();
+        active.forEach((step) => step.play());
+        // Шарик, который отдыхал или остановился вне экрана, снова трогается.
+        balls.forEach((ball) => wander(ball));
+      } else {
+        active.forEach((step) => step.pause());
+      }
     },
     { threshold: 0.12, rootMargin: '0px 0px -4% 0px' },
   );
-  observer.observe(list);
+  observer.observe(strip);
 
   return () => {
     observer.disconnect();
