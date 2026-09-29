@@ -208,11 +208,6 @@
   line-height: 1.5;
 }
 
-.disc__label b {
-  display: block;
-  font-size: clamp(11px, 1.4cqw, 18px);
-}
-
 .covers {
   position: absolute;
   left: 0;
@@ -282,13 +277,6 @@
 
 .release:last-child {
   border-bottom: 0;
-}
-
-.release__num {
-  color: var(--accent);
-  font-weight: 700;
-  font-size: clamp(10px, 1cqw, 13px);
-  letter-spacing: 0.1em;
 }
 
 .release__title {

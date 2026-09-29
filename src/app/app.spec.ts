@@ -22,6 +22,15 @@ describe('App', () => {
     expect(compiled.querySelector('h1')?.textContent).toContain('Создаю сайты');
   });
 
+  it('should render the work process without decorative ordinal numbers', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    expect(compiled.querySelectorAll('.step__num')).toHaveLength(0);
+    expect(compiled.querySelectorAll('.step__title')).toHaveLength(4);
+  });
+
   it('should tell the loader that the first frame is ready', async () => {
     const ready = vi.fn();
     window.addEventListener('waystroke:app-ready', ready);

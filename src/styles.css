@@ -1196,26 +1196,12 @@ app-root .step__art .art {
   height: auto;
 }
 
-/* Номер этапа — тот же приём, что и в подписи под демо: спокойная
-   надпись каптелью, чтобы порядок читался до заголовка. */
-app-root .step__num {
-  display: block;
-  margin-top: 14px;
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  color: var(--ink-3);
-}
-
 app-root .step__title {
   display: block;
   margin-top: 14px;
   font-size: 1.15rem;
   font-weight: 500;
   letter-spacing: -0.02em;
-}
-
-app-root .step__num + .step__title {
-  margin-top: 6px;
 }
 
 app-root .step__text {

@@ -72,9 +72,8 @@
     </p>
 
     <ul class="sections">
-      @for (item of sections; track item.num) {
+      @for (item of sections; track item.title) {
         <li class="section">
-          <span class="section__num">{{ item.num }}</span>
           <span class="section__title">{{ item.title }}</span>
           <span class="section__text">{{ item.text }}</span>
         </li>

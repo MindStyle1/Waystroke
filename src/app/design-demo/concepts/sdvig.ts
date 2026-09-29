@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 
 interface Release {
-  num: string;
   title: string;
   meta: string;
 }
@@ -18,8 +17,8 @@ interface Release {
 })
 export class Sdvig {
   protected readonly releases: Release[] = [
-    { num: '01', title: 'Ночной трамвай', meta: 'EP · 6 треков' },
-    { num: '02', title: 'Кислотный хор', meta: 'Сингл · ротация' },
-    { num: '03', title: 'Контур', meta: 'LP · винил 12″' },
+    { title: 'Ночной трамвай', meta: 'EP · 6 треков' },
+    { title: 'Кислотный хор', meta: 'Сингл · ротация' },
+    { title: 'Контур', meta: 'LP · винил 12″' },
   ];
 }

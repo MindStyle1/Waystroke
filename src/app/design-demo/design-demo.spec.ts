@@ -206,3 +206,29 @@ describe('DesignDemo — управление границей сравнени�
     });
   });
 });
+
+describe('DesignDemo — типографика без порядковой нумерации', () => {
+  it('не показывает декоративные номера в подписях и концептах', async () => {
+    await TestBed.configureTestingModule({ imports: [DesignDemo] }).compileComponents();
+    const fixture = TestBed.createComponent(DesignDemo);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const visibleText = (): string => host.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+
+    expect(visibleText()).not.toMatch(/\b(?:01|02|03|04|004)\b/);
+
+    for (const label of ['Авто / Кофе', 'Fintech / Art']) {
+      const tab = Array.from(host.querySelectorAll<HTMLButtonElement>('.demo__tab')).find(
+        (item) => item.textContent?.trim() === label,
+      );
+      if (!tab) throw new Error(`Не найдена вкладка «${label}»`);
+
+      tab.click();
+      fixture.detectChanges();
+
+      expect(visibleText()).not.toMatch(/\b(?:01|02|03|04|004)\b/);
+    }
+  });
+});

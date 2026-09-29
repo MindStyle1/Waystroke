@@ -49,9 +49,8 @@
   </header>
 
   <section class="band">
-    @for (item of services; track item.num) {
+    @for (item of services; track item.title) {
       <article class="service">
-        <span class="service__num">{{ item.num }}</span>
         <svg class="service__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
           <path [attr.d]="item.icon" />
         </svg>

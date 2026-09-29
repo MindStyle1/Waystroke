@@ -30,7 +30,7 @@
       <span class="deco chrome">2026</span>
 
       <span class="deco disc">
-        <span class="deco disc__label">СДВИГ<b>004</b></span>
+        <span class="deco disc__label">СДВИГ</span>
       </span>
 
       <ul class="covers">
@@ -45,9 +45,8 @@
     <p class="band__label">Свежие релизы</p>
 
     <ul class="releases">
-      @for (item of releases; track item.num) {
+      @for (item of releases; track item.title) {
         <li class="release">
-          <span class="release__num">{{ item.num }}</span>
           <span class="release__title">{{ item.title }}</span>
           <span class="release__meta">{{ item.meta }}</span>
           <span class="release__play" aria-hidden="true"></span>

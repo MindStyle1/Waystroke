@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 
 interface Section {
-  num: string;
   title: string;
   text: string;
 }
@@ -18,17 +17,14 @@ interface Section {
 export class Exhibit {
   protected readonly sections: Section[] = [
     {
-      num: '01',
       title: 'Инсталляция',
       text: 'Двенадцать залов, где материал важнее сюжета.',
     },
     {
-      num: '02',
       title: 'Живопись',
       text: 'Сорок холстов новой волны — от абстракции до фотореализма.',
     },
     {
-      num: '03',
       title: 'Видео и звук',
       text: 'Три инсталляции в полный рост и ночной кинопоказ.',
     },

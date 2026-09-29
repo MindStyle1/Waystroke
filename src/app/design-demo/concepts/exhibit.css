@@ -273,13 +273,6 @@
   border-left: 1px solid rgba(11, 11, 12, 0.22);
 }
 
-.section__num {
-  font-size: clamp(10px, 1cqw, 13px);
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  color: #1b3cff;
-}
-
 .section__title {
   font-size: clamp(13px, 1.5cqw, 20px);
   font-weight: 800;
