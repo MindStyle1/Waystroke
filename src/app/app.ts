@@ -2,7 +2,6 @@ import { Component, DestroyRef, ElementRef, OnDestroy, afterNextRender, inject, 
 import { initServiceScenes, initStepsSequence, initTeamScene, type Dispose } from './motion';
 import { initConversions } from './tracking';
 import { DesignDemo } from './design-demo/design-demo';
-import { Work } from './work/work';
 
 /** Прокрутка без анимации, когда пользователь просит уменьшить движение. */
 const prefersReduced = (): boolean =>
@@ -19,7 +18,7 @@ const prefersReduced = (): boolean =>
  */
 @Component({
   selector: 'app-root',
-  imports: [DesignDemo, Work],
+  imports: [DesignDemo],
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
