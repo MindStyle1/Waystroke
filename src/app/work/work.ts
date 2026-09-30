@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { PROJECTS, type CaseStudy } from './work.data';
 
 /**
- * Секция «Кейсы».
+ * Секция «Работы мастерской».
  *
  * Список пуст, пока нет публичных клиентских проектов, — тогда показывается
  * честная короткая строка вместо пустых карточек. Стоит добавить запись в

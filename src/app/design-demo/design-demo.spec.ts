@@ -232,3 +232,45 @@ describe('DesignDemo — типографика без порядковой ну
     }
   });
 });
+
+describe('DesignDemo — загрузка шрифта концепта', () => {
+  it('сохраняет видимую пару до готовности начертания следующей', async () => {
+    const link = document.createElement('link');
+    link.id = 'concept-fonts';
+    link.rel = 'stylesheet';
+    link.media = 'print';
+    document.head.append(link);
+    Object.defineProperty(link, 'sheet', { configurable: true, value: {} });
+
+    const originalFonts = Object.getOwnPropertyDescriptor(document, 'fonts');
+    let finishLoad!: () => void;
+    const loading = new Promise<void>((resolve) => { finishLoad = resolve; });
+    const load = vi.fn(() => loading);
+    Object.defineProperty(document, 'fonts', { configurable: true, value: { load } });
+
+    try {
+      await TestBed.configureTestingModule({ imports: [DesignDemo] }).compileComponents();
+      const fixture = TestBed.createComponent(DesignDemo);
+      await fixture.whenStable();
+      fixture.detectChanges();
+      const tabs = (fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('.demo__tab');
+
+      tabs[1].click();
+      fixture.detectChanges();
+      expect(tabs[0].getAttribute('aria-pressed')).toBe('true');
+      expect(load).toHaveBeenCalled();
+
+      finishLoad();
+      await vi.waitFor(() => {
+        fixture.detectChanges();
+        expect(tabs[1].getAttribute('aria-pressed')).toBe('true');
+      });
+      fixture.destroy();
+    } finally {
+      link.remove();
+      if (originalFonts) Object.defineProperty(document, 'fonts', originalFonts);
+      else delete (document as { fonts?: FontFaceSet }).fonts;
+      document.documentElement.classList.remove('concept-fonts-fallback', 'concept-fonts-pending');
+    }
+  });
+});

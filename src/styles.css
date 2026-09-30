@@ -283,29 +283,32 @@ button {
 
 /* --- Брендовый загрузчик: «первый штрих» ---------------------------------- */
 
-/*
- * Сцена живёт в разметке документа, а не в Angular: первый кадр рисуется до
- * бутстрапа, поэтому под загрузчиком не бывает белого экрана.
- *
- * Исходное состояние — до анимации, а не после: штрих не прорисован, слово
- * невидимо, видна только точка. Поэтому скрывающие значения заданы здесь, а
- * не скриптом: на холодной загрузке браузер рисует разметку загрузчика раньше,
- * чем выполнит скрипт в конце документа, и состояние «как в разметке» успело
- * бы показать готовый логотип на один кадр.
- *
- * Покой здесь пустой, поэтому запасной путь один: сцена уходит по своему
- * таймеру, а без JS (`no-js`) и по просьбе уменьшить движение загрузчик не
- * показывается вовсе.
- */
+/* Тот же штрих в прозрачном слое вне потока. Первый экран доступен
+   во время intro; полноэкранная сцена остаётся только в режиме просмотра. */
 .boot {
   position: fixed;
-  inset: 0;
+  right: var(--gutter);
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: clamp(140px, 18vw, 200px);
   z-index: 200;
   display: grid;
   place-items: center;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 460ms var(--ease);
+}
+
+.boot.is-playing {
+  visibility: visible;
+}
+
+html.boot-review .boot {
+  inset: 0;
+  width: auto;
   padding: var(--gutter);
   background: var(--bg);
-  transition: opacity 460ms var(--ease);
+  visibility: visible;
+  pointer-events: auto;
 }
 
 /* Скрытый загрузчик не должен перекрывать страницу, а `display: grid` выше
@@ -322,6 +325,13 @@ button {
 .boot__svg {
   width: 100%;
   height: auto;
+}
+
+/* Светлый контур сохраняет тёмный wordmark над тёмными секциями.
+   Только вокруг рисунка: прозрачный слой не получает фон и не закрывает UI.
+   Два коротких shadow дают плотный край без размытой подложки. */
+html:not(.boot-review) .boot__svg {
+  filter: drop-shadow(0 0 1px var(--surface)) drop-shadow(0 0 1px var(--surface));
 }
 
 .boot__dot {
@@ -370,11 +380,6 @@ button {
   stroke-dashoffset: 1;
 }
 
-/* Пока загрузчик на экране, страница не должна прокручиваться. */
-html.boot-on {
-  overflow: hidden;
-}
-
 .boot__replay {
   position: absolute;
   right: var(--gutter);
@@ -412,11 +417,7 @@ html.boot-on {
  * 66–88 % — слово оседает. Обе линии, штрих и маска, играют по одному
  * списку кадров: они не могут разойтись.
  *
- * Длина кадра — 1500 мс, а не «сколько получится»: на телефоне сцена
- * полностью закрывает страницу, и каждая лишняя сотня миллисекунд — это
- * лишнее ожидание до первого касания. Проверено на медленной сети с
- * замедленным процессором: приложение там готово к ~1 с, а интро обязано
- * уйти раньше, чем страница покажется, но не позже, чем покажется вовремя.
+ * Длина кадра остаётся 1500 мс; она больше не задерживает интерфейс.
  */
 .boot.is-playing .boot__dot {
   animation: boot-dot 1500ms linear both;
@@ -526,6 +527,7 @@ html.boot-skip .boot,
 }
 
 .brand {
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 12px;
@@ -1769,7 +1771,7 @@ app-root .cal__foot a {
   --d: 140ms;
 }
 
-.js .reveal {
+.js.motion-ready .reveal {
   opacity: 0;
   transform: translateY(22px);
   transition:
@@ -1786,13 +1788,21 @@ app-root .cal__foot a {
  * которую нечему возвращать: анимация разовая, отыграла и всё. Теперь слой
  * появляется вместе с блоком и освобождается, как только тот показался.
  */
-.js .reveal:not(.is-visible) {
+.js.motion-ready .reveal:not(.is-visible) {
   will-change: opacity, transform;
 }
 
-.js .reveal.is-visible {
+.js.motion-ready .reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Первый экран не стартует с opacity: 0: текст доступен для LCP сразу.
+   Плавный подъём блоков, штрихи и появление остальных секций сохраняются. */
+.js .hero .reveal {
+  opacity: 1;
+  transition-property: transform;
+  will-change: auto;
 }
 
 /* --- Адаптив ------------------------------------------------------------- */
@@ -1839,6 +1849,11 @@ app-root .cal__foot a {
 
   .no-js .menu-toggle {
     display: none;
+  }
+
+  /* Открытая fallback-навигация не закрывает якорные цели при прокрутке. */
+  .no-js .site-header {
+    position: static;
   }
 
 }
@@ -1953,9 +1968,9 @@ app-root .cal__foot a {
     scroll-behavior: auto;
   }
 
-  .js .reveal,
-  .js .reveal:not(.is-visible),
-  .js .reveal.is-visible {
+  .js.motion-ready .reveal,
+  .js.motion-ready .reveal:not(.is-visible),
+  .js.motion-ready .reveal.is-visible {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
@@ -1986,4 +2001,31 @@ app-root .cal__foot a {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Keep the comparison frame in layout until the selected deferred faces are ready. */
+html.concept-fonts-pending #design .cmp__layer {
+  visibility: hidden;
+}
+
+/* If the slow connection times out, keep a stable fallback for this preview. */
+html.concept-fonts-fallback #design .cmp__stage * {
+  font-family: Arial, sans-serif !important;
+}
+
+/* Без JS остаются обычные ссылки на запись и статичное сравнение. */
+.no-js app-root .cal__frame,
+.no-js app-root .cal__loading,
+.no-js app-design-demo .demo__switch,
+.no-js app-design-demo .demo__note,
+.no-js app-design-demo .cmp__handle {
+  display: none;
+}
+
+.no-js app-root .cal__body {
+  height: auto;
+}
+
+.no-js app-root .cal__status {
+  position: static;
 }

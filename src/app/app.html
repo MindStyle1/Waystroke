@@ -1,28 +1,28 @@
 <a class="skip-link" href="#main">Перейти к содержанию</a>
 
 <!-- 1. Шапка -->
-<header class="site-header" [class.is-scrolled]="scrolled()">
+<header id="top" class="site-header" [class.is-scrolled]="scrolled()">
   <div class="container header__inner">
-    <button class="brand" type="button" data-scroll-to="top">
+    <a class="brand" data-scroll-to="top" href="#top">
       <span class="brand__dot" aria-hidden="true"></span>
       <span class="brand__name">Waystroke</span>
-    </button>
+    </a>
 
     <nav class="nav" aria-label="Основная навигация">
-      <button class="nav__link" type="button" data-scroll-to="design">Дизайн</button>
-      <button class="nav__link" type="button" data-scroll-to="services">Услуги</button>
-      <button class="nav__link" type="button" data-scroll-to="contact">Контакты</button>
+      <a class="nav__link" data-scroll-to="design" href="#design">Дизайн</a>
+      <a class="nav__link" data-scroll-to="services" href="#services">Услуги</a>
+      <a class="nav__link" data-scroll-to="contact" href="#contact">Контакты</a>
     </nav>
 
     <div class="header__actions">
-      <button
+      <a
         class="btn btn--dark header__cta"
-        type="button"
         data-scroll-to="contact"
         data-track="cta_click"
+        href="#contact"
       >
         Обсудить проект
-      </button>
+      </a>
       <button
         class="menu-toggle"
         type="button"
@@ -44,18 +44,18 @@
     [class.is-instant]="instantMenu()"
   >
     <nav class="mobile-menu__nav" aria-label="Мобильная навигация">
-      <button class="mobile-menu__link" type="button" data-scroll-to="design">Дизайн</button>
-      <button class="mobile-menu__link" type="button" data-scroll-to="services">Услуги</button>
-      <button class="mobile-menu__link" type="button" data-scroll-to="contact">Контакты</button>
+      <a class="mobile-menu__link" data-scroll-to="design" href="#design">Дизайн</a>
+      <a class="mobile-menu__link" data-scroll-to="services" href="#services">Услуги</a>
+      <a class="mobile-menu__link" data-scroll-to="contact" href="#contact">Контакты</a>
     </nav>
-    <button
+    <a
       class="btn btn--dark mobile-menu__cta"
-      type="button"
       data-scroll-to="contact"
       data-track="cta_click"
+      href="#contact"
     >
       Обсудить проект
-    </button>
+    </a>
   </div>
 </header>
 
@@ -69,34 +69,34 @@
           <span class="chip__dot" aria-hidden="true"></span>
           Открыт к проектам
         </span>
-        <span class="eyebrow__text">Waystroke / сайты на заказ</span>
+        <span class="eyebrow__text">Waystroke / цифровая мастерская</span>
       </p>
 
       <div class="hero__grid">
         <h1 class="hero__title reveal" id="hero-title">
-          <span class="hero__line">Создаю сайты, которые удобно</span>
+          <span class="hero__line">Сайты, которые удобно</span>
           <span class="hero__line">использовать</span>
           <span class="hero__line hero__line--serif">и приятно смотреть.</span>
         </h1>
 
         <div class="hero__aside reveal">
           <p class="lead">
-            Беру вашу идею и довожу её до готового сайта: веб-дизайн, адаптивная
-            вёрстка и запуск, к которому не стыдно вести клиентов. Над проектом
-            работает наша команда — без посредников и передачи задачи дальше.
+            Waystroke начинает со структуры, подбирает визуальный характер и доводит
+            сайт до публикации. Веб-дизайн, адаптивная разработка и запуск — части
+            одной работы.
           </p>
           <div class="hero__actions">
-            <button
+            <a
               class="btn btn--dark"
-              type="button"
               data-scroll-to="contact"
               data-track="cta_click"
+              href="#contact"
             >
               Обсудить проект
-            </button>
-            <button class="link-arrow link-arrow--down" type="button" data-scroll-to="design">
+            </a>
+            <a class="link-arrow link-arrow--down" data-scroll-to="design" href="#design">
               Смотреть дизайн
-            </button>
+            </a>
           </div>
         </div>
       </div>
@@ -145,6 +145,7 @@
   <!-- 3. Дизайн: одна задача в четырёх подачах -->
   <section
     class="design"
+    id="design"
     data-section="design"
     tabindex="-1"
     aria-labelledby="design-title"
@@ -154,12 +155,13 @@
     </div>
   </section>
 
-  <!-- 4. Кейсы: пока публичных проектов нет, секция честно об этом говорит -->
+  <!-- 4. Работы: пока публичных проектов нет, секция честно об этом говорит -->
   <app-work />
 
   <!-- 5. Услуги и подход -->
   <section
     class="services"
+    id="services"
     data-section="services"
     tabindex="-1"
     aria-labelledby="services-title"
@@ -171,9 +173,9 @@
           <h2 class="heading" id="services-title">От идеи до работающего сайта.</h2>
         </div>
         <p class="services__note reveal">
-          Коротко обсуждаем задачу, собираем понятную структуру, аккуратно собираем
-          интерфейс и доводим проект до публикации. На выходе — работающий сайт,
-          исходный код и доступы.
+          Работа начинается с обсуждения задачи и структуры. Затем — дизайн,
+          адаптивная разработка и публикация. На выходе — работающий сайт, исходный
+          код и доступы.
         </p>
       </div>
 
@@ -293,17 +295,17 @@
 
       <div class="services__foot reveal">
         <p class="services__disclaimer">
-          Стоимость ориентировочная. После короткого обсуждения фиксируем объём,
-          срок и цену до начала работ.
+          Стоимость ориентировочная. После короткого обсуждения объём, срок и цена
+          фиксируются до начала работ.
         </p>
-        <button
+        <a
           class="btn btn--outline services__cta"
-          type="button"
           data-scroll-to="contact"
           data-track="cta_click"
+          href="#contact"
         >
           Обсудить задачу
-        </button>
+        </a>
       </div>
 
       <section class="approach" aria-labelledby="process-title">
@@ -329,7 +331,7 @@
           </svg>
         </div>
 
-        <h2 class="label reveal" id="process-title">Как мы работаем</h2>
+        <h2 class="label reveal" id="process-title">Как работает Waystroke</h2>
         <div class="steps" data-steps>
           <ol class="steps__list">
             <li class="step reveal">
@@ -435,7 +437,10 @@
                 </svg>
               </span>
               <span class="step__title">Запуск</span>
-              <span class="step__text">Публикация, передача кода и 14 дней на правки</span>
+              <span class="step__text"
+                >Публикация, передача кода; 14 дней на исправление технических ошибок в
+                согласованном объёме</span
+              >
             </li>
           </ol>
         </div>
@@ -443,34 +448,33 @@
     </div>
   </section>
 
-  <!-- 6. Команда: дизайн и разработка в одной связке -->
+  <!-- 6. Направления работы цифровой мастерской -->
   <section class="team" aria-labelledby="team-title">
     <div class="container">
-      <p class="label reveal">Наша команда</p>
+      <p class="label reveal">В мастерской</p>
 
       <div class="team__head reveal">
-        <h2 class="heading" id="team-title">Дизайн и разработка в одной команде.</h2>
+        <h2 class="heading" id="team-title">Дизайн и разработка — части одной работы.</h2>
         <p class="team__lead">
-          Дизайн и разработка идут вместе — без передачи проекта между случайными
-          исполнителями.
+          В Waystroke структура, визуальное решение и работа сайта рассматриваются
+          вместе — от первого макета до публикации.
         </p>
       </div>
 
       <div class="team__roles reveal">
         <ol class="team__list">
         <li class="role">
-          <h3 class="role__title">Web UX/UI Designer</h3>
+          <h3 class="role__title">Проектирование</h3>
           <p class="role__text">
-            Проектирует структуру страниц, пользовательский опыт и визуальную
-            систему проекта.
+            Структура страниц, пользовательские сценарии и визуальная система
+            проекта.
           </p>
         </li>
 
         <li class="role">
-          <h3 class="role__title">Web Developer</h3>
+          <h3 class="role__title">Реализация</h3>
           <p class="role__text">
-            Разрабатывает интерфейсы, интеграции и превращает дизайн в работающий
-            продукт.
+            Адаптивный интерфейс, интеграции, проверка на устройствах и публикация.
           </p>
         </li>
         </ol>
@@ -505,9 +509,9 @@
           <summary class="faq__q">Сколько правок входит в стоимость?</summary>
           <div class="faq__a">
             <p>
-              В стоимость входят два собранных круга правок. Один круг — это один
-              общий список комментариев. Новый функционал или изменение уже
-              согласованной структуры оцениваются отдельно.
+              В процессе работы в стоимость входят два собранных круга правок.
+              Один круг — это один общий список комментариев. Новый функционал
+              или изменение уже согласованной структуры оцениваются отдельно.
             </p>
           </div>
         </details>
@@ -528,8 +532,8 @@
           <div class="faq__a">
             <p>
               Готовый опубликованный сайт, исходный код проекта и необходимые доступы.
-              Перед передачей я проверяю основные экраны, ссылки и работу сайта на
-              телефоне, планшете и компьютере.
+              Перед передачей Waystroke проверяет основные экраны, ссылки и работу
+              сайта на телефоне, планшете и компьютере.
             </p>
           </div>
         </details>
@@ -538,9 +542,10 @@
           <summary class="faq__q">Что происходит после запуска?</summary>
           <div class="faq__a">
             <p>
-              В течение 14 календарных дней бесплатно исправляю технические ошибки,
-              относящиеся к согласованному объёму работ. Новый функционал и дальнейшее
-              развитие сайта обсуждаются отдельно.
+              В течение 14 календарных дней после запуска Waystroke бесплатно
+              исправляет технические ошибки, относящиеся к согласованному объёму
+              работ. Новый функционал и дальнейшее развитие сайта обсуждаются
+              отдельно.
             </p>
           </div>
         </details>
@@ -562,13 +567,14 @@
   <!-- 8. Контакты -->
   <section
     class="contact"
+    id="contact"
     data-section="contact"
     tabindex="-1"
     aria-labelledby="contact-title"
   >
     <div class="container">
       <div class="contact__panel reveal">
-        <p class="label">Начнём с разговора</p>
+        <p class="label">Первый штрих сделан.</p>
         <h2 class="contact__title" id="contact-title">
           <span class="contact__title-line">Есть идея для сайта?</span>
           <span class="contact__title-line contact__title-line--serif">Давайте обсудим.</span>
@@ -578,7 +584,7 @@
 
         <div class="contact__row">
           <p class="contact__text">
-            Обсудим задачу, сроки и следующие шаги. Знакомство займёт 20 минут.
+            20 минут, чтобы уточнить задачу, сроки и следующий шаг.
           </p>
           <div class="contact__actions">
             <a
@@ -662,7 +668,7 @@
 
 <footer class="site-footer">
   <div class="container footer__inner">
-    <p class="footer__brand">Waystroke <span class="footer__sep">/</span> сайты на заказ</p>
+    <p class="footer__brand">Waystroke <span class="footer__sep">/</span> цифровая мастерская</p>
     <p class="footer__meta">
       <a href="https://t.me/waystroke" target="_blank" rel="noopener noreferrer">Telegram · @waystroke</a>
       <span class="footer__sep">·</span>

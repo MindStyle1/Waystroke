@@ -8,23 +8,16 @@ import { initConversions } from './tracking';
  */
 describe('initConversions', () => {
   let sent: { event: string; source: string }[];
-  let beacon: Mock<(url: string | URL, data?: BodyInit | null) => boolean>;
+  let request: Mock<typeof fetch>;
   let host: HTMLElement;
 
   beforeEach(() => {
     sent = [];
-    beacon = vi.fn((_url: string | URL, data?: BodyInit | null) => {
-      void (data as Blob).text().then((text) => {
-        sent.push(JSON.parse(text) as { event: string; source: string });
-      });
-      return true;
+    request = vi.fn(async (_url, init) => {
+      sent.push(JSON.parse(init?.body as string) as { event: string; source: string });
+      return new Response(null, { status: 204 });
     });
-    // jsdom не реализует sendBeacon, поэтому объявляем его сами.
-    Object.defineProperty(navigator, 'sendBeacon', {
-      value: beacon,
-      configurable: true,
-      writable: true,
-    });
+    vi.stubGlobal('fetch', request);
 
     host = document.createElement('div');
     host.innerHTML = `
@@ -49,7 +42,7 @@ describe('initConversions', () => {
 
   afterEach(() => {
     host?.remove();
-    Reflect.deleteProperty(navigator, 'sendBeacon');
+    vi.unstubAllGlobals();
   });
 
   /**
@@ -68,7 +61,11 @@ describe('initConversions', () => {
     initConversions(host);
     click('tg');
     await Promise.resolve();
-    expect(beacon).toHaveBeenCalledWith('https://track.waystroke.online/api/track', expect.any(Blob));
+    expect(request).toHaveBeenCalledExactlyOnceWith('https://track.waystroke.online/api/track', {
+      method: 'POST', mode: 'cors', credentials: 'omit',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: 'telegram_click', source: 'header' }), keepalive: true,
+    });
     expect(sent).toEqual([{ event: 'telegram_click', source: 'header' }]);
   });
 
@@ -118,7 +115,7 @@ describe('initConversions', () => {
     click('anchor');
     await Promise.resolve();
     expect(sent).toEqual([]);
-    expect(beacon).not.toHaveBeenCalled();
+    expect(request).not.toHaveBeenCalled();
   });
 
   it('не мешает переходу: обработчик не отменяет событие по умолчанию', () => {
@@ -135,6 +132,18 @@ describe('initConversions', () => {
     dispose();
     click('tg');
     await Promise.resolve();
-    expect(beacon).not.toHaveBeenCalled();
+    expect(request).not.toHaveBeenCalled();
   });
+  it('не повторяет запрос при сетевой ошибке или HTTP 500', async () => {
+    initConversions(host);
+    request.mockRejectedValueOnce(new TypeError('Network error'));
+    click('hero-cta');
+    await Promise.resolve();
+    expect(request).toHaveBeenCalledTimes(1);
+    request.mockResolvedValueOnce(new Response(null, { status: 500 }));
+    click('cal');
+    await Promise.resolve();
+    expect(request).toHaveBeenCalledTimes(2);
+  });
+
 });

@@ -168,84 +168,42 @@ describe('Загрузчик: сцена', () => {
     await new Promise((resolve) => setTimeout(resolve, 40));
   };
 
-  it('держит страницу на месте и запускает сцену', async () => {
-    await run();
-
-    expect(document.documentElement.classList.contains('boot-on')).toBe(true);
-    expect(boot.classList.contains('is-playing')).toBe(true);
-    expect(boot.hidden).toBe(false);
-  });
-
-  it('не обрывает сцену, если приложение собралось раньше неё', async () => {
-    await run();
-
-    // Приложение отдало кадр, но штрих ещё рисуется — экран остаётся занят.
-    window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
-    expect(boot.classList.contains('is-out')).toBe(false);
-    expect(document.documentElement.classList.contains('boot-on')).toBe(true);
-  });
-
-  it('уходит, когда и сцена отыграла, и приложение отдало первый кадр', () => {
-    const released = vi.fn();
-    window.addEventListener('waystroke:boot-done', released);
-    vi.useFakeTimers();
-
-    try {
-      // Часы ставим до запуска: сцена отсчитывает 1560 мс от первого кадра.
-      new Function(lifecycleSource())();
-      vi.advanceTimersByTime(40);
-
-      // Первым отвечает приложение, вторым — сцена.
-      window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
-      vi.advanceTimersByTime(1000);
-      expect(released).not.toHaveBeenCalled();
-
-      // Кадр длиной 1500 мс: раньше ~1600 уходить рано, к 1800 — пора.
-      vi.advanceTimersByTime(500);
-      expect(released).not.toHaveBeenCalled();
-
-      vi.advanceTimersByTime(300);
-      expect(released).toHaveBeenCalledTimes(1);
-      expect(boot.classList.contains('is-out')).toBe(true);
-      expect(document.documentElement.classList.contains('boot-on')).toBe(false);
-    } finally {
-      vi.useRealTimers();
-      window.removeEventListener('waystroke:boot-done', released);
-    }
-  });
-
-  it('снимает с приложения inert, когда отдаёт экран', () => {
+  it('ждёт готовности приложения без блокировки управления', () => {
     const appRoot = document.createElement('app-root');
     document.body.appendChild(appRoot);
     vi.useFakeTimers();
-
     try {
       new Function(lifecycleSource())();
       vi.advanceTimersByTime(40);
-      expect(appRoot.hasAttribute('inert')).toBe(true);
+      expect(boot.classList.contains('is-playing')).toBe(false);
+      expect(appRoot.hasAttribute('inert')).toBe(false);
+      expect(document.documentElement.classList.contains('boot-on')).toBe(false);
 
       window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
-      vi.advanceTimersByTime(3000);
-
+      vi.advanceTimersByTime(40);
+      expect(boot.classList.contains('is-playing')).toBe(true);
       expect(appRoot.hasAttribute('inert')).toBe(false);
+      vi.advanceTimersByTime(1500);
+      expect(boot.classList.contains('is-out')).toBe(false);
+      vi.advanceTimersByTime(100);
+      expect(boot.classList.contains('is-out')).toBe(true);
+      vi.advanceTimersByTime(640);
+      expect(boot.hidden).toBe(true);
+      expect(sessionStorage.getItem('waystroke:booted')).toBe('1');
     } finally {
       vi.useRealTimers();
-      appRoot.remove();
     }
   });
 
-  it('освобождает экран страховкой, если приложение так и не отрисовалось', () => {
-    sessionStorage.clear();
+  it('убирает сцену страховкой при ошибке bootstrap', () => {
     vi.useFakeTimers();
-
     try {
       new Function(lifecycleSource())();
-      vi.advanceTimersByTime(4600);
-      expect(boot.classList.contains('is-out')).toBe(true);
-
-      vi.advanceTimersByTime(700);
+      vi.advanceTimersByTime(5300);
       expect(boot.hidden).toBe(true);
-      expect(sessionStorage.getItem('waystroke:booted')).toBe('1');
+      window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
+      vi.advanceTimersByTime(40);
+      expect(boot.classList.contains('is-playing')).toBe(false);
     } finally {
       vi.useRealTimers();
     }

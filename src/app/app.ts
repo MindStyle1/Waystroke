@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, OnDestroy, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnDestroy, afterNextRender, inject, signal } from '@angular/core';
 import { initServiceScenes, initStepsSequence, initTeamScene, type Dispose } from './motion';
 import { initConversions } from './tracking';
 import { DesignDemo } from './design-demo/design-demo';
@@ -23,7 +23,7 @@ const prefersReduced = (): boolean =>
   styleUrl: './app.css',
   templateUrl: './app.html',
 })
-export class App implements AfterViewInit, OnDestroy {
+export class App implements OnDestroy {
   protected readonly menuOpen = signal(false);
   protected readonly instantMenu = signal(false);
   protected readonly scrolled = signal(false);
@@ -37,27 +37,37 @@ export class App implements AfterViewInit, OnDestroy {
   private bookingObserver: IntersectionObserver | null = null;
   private readonly motionDisposers: Dispose[] = [];
   private sweepScheduled = false;
+  private headerFrame: number | null = null;
   private cleanedUp = false;
+  private browserInitialized = false;
 
   constructor() {
     this.destroyRef.onDestroy(() => this.cleanup());
+    // Пропускается при prerender; DOM уже восстановлен hydration в браузере.
+    afterNextRender(() => this.initBrowser());
   }
 
-  ngAfterViewInit(): void {
+  private initBrowser(): void {
+    if (this.cleanedUp) return;
+    this.browserInitialized = true;
     const host = this.host.nativeElement as HTMLElement;
 
-    // Первый кадр отрисован — загрузчику можно уходить. Событие нужно всегда:
-    // без загрузчика его никто не слушает, но и лишним оно не будет.
+    // Контент и календарь не зависят от декоративного intro.
+    this.initReveal();
+    // Initial HTML читаем даже до Angular. Включаем motion после того,
+    // как существующая логика reveal отметит блоки текущего экрана.
+    window.requestAnimationFrame(() => {
+      if (!this.cleanedUp) document.documentElement.classList.add('motion-ready');
+    });
+    this.initBooking();
     window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
 
-    // Пока брендовый кадр на экране, страница не показывается: появление
-    // блоков стартует в момент, когда загрузчик освобождает экран.
-    this.onBootDone(() => {
-      this.initReveal();
-      this.initBooking();
+    // Первый кадр завершает layout после hydration и app-ready. Чтение
+    // позиции шапки происходит в следующем, до её изменения состояния.
+    this.headerFrame = window.requestAnimationFrame(() => {
+      this.headerFrame = null;
+      this.scheduleHeaderUpdate();
     });
-
-    this.updateHeader();
     this.motionDisposers.push(
       initServiceScenes(host),
       initTeamScene(host),
@@ -93,7 +103,7 @@ export class App implements AfterViewInit, OnDestroy {
   }
 
   private readonly handleScroll = (): void => {
-    this.updateHeader();
+    this.scheduleHeaderUpdate();
     this.scheduleSweep();
   };
 
@@ -138,6 +148,9 @@ export class App implements AfterViewInit, OnDestroy {
     const origin = event.target as Element | null;
     const trigger = origin?.closest<HTMLElement>('[data-scroll-to]');
     if (!trigger || !this.host.nativeElement.contains(trigger)) return;
+    if (event instanceof MouseEvent && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) return;
+    // Без JS работает href; с JS сохраняем прокрутку без изменения URL.
+    event.preventDefault();
     this.scrollToKey(trigger.dataset['scrollTo'] ?? '');
   };
 
@@ -188,43 +201,18 @@ export class App implements AfterViewInit, OnDestroy {
     go();
   }
 
-  private updateHeader(): void {
-    this.scrolled.set(window.scrollY > 12);
+  private scheduleHeaderUpdate(): void {
+    if (this.cleanedUp || this.headerFrame !== null) return;
+    this.headerFrame = window.requestAnimationFrame(() => {
+      this.headerFrame = null;
+      if (this.cleanedUp) return;
+      this.updateHeader();
+    });
   }
 
-  /**
-   * Ждём, пока загрузчик отдаст экран.
-   *
-   * Источник истины — состояние `data-boot-state` на документе, а не событие
-   * `waystroke:boot-done`. На повторном визите загрузчик не показывается и
-   * отдаёт экран ещё при разборе документа, то есть заведомо до бутстрапа
-   * Angular: слушатель события зарегистрировался бы после него и ждал уже
-   * бесполезной страховки — все три с половиной секунды страница стояла бы
-   * пустой.
-   *
-   * Пока состояние `on`, появление блоков играет под брендовым кадром, и к
-   * моменту его ухода уже отыграло бы — страница показалась бы готовой, без
-   * жеста. Если состояние любое другое, показывать можно сразу.
-   */
-  private onBootDone(run: () => void): void {
-    if (document.documentElement.dataset['bootState'] !== 'on') {
-      run();
-      return;
-    }
-
-    let started = false;
-    let timer = 0;
-
-    const start = (): void => {
-      if (started) return;
-      started = true;
-      window.clearTimeout(timer);
-      run();
-    };
-
-    timer = window.setTimeout(start, 3600);
-    window.addEventListener('waystroke:boot-done', start, { once: true });
-    this.destroyRef.onDestroy(() => window.clearTimeout(timer));
+  private updateHeader(): void {
+    const scrolled = window.scrollY > 12;
+    if (this.scrolled() !== scrolled) this.scrolled.set(scrolled);
   }
 
   private syncMenu(): void {
@@ -306,6 +294,14 @@ export class App implements AfterViewInit, OnDestroy {
   private cleanup(): void {
     if (this.cleanedUp) return;
     this.cleanedUp = true;
+    if (!this.browserInitialized) return;
+
+    if (this.headerFrame !== null) {
+      window.cancelAnimationFrame(this.headerFrame);
+      this.headerFrame = null;
+    }
+
+    document.documentElement.classList.remove('motion-ready');
 
     window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener('resize', this.handleResize);

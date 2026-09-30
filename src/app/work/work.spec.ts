@@ -24,6 +24,6 @@ describe('Секция «Кейсы»', () => {
     const host = await render();
     expect(PROJECTS).toHaveLength(0);
     expect(host.querySelectorAll('.work__item')).toHaveLength(0);
-    expect(host.querySelector('.work__note')?.textContent).toContain('Публичные проекты появятся');
+    expect(host.querySelector('.work__note')?.textContent).toContain('не клиентские кейсы');
   });
 });

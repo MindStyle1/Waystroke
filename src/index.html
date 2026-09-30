@@ -2,12 +2,12 @@
 <html lang="ru" class="no-js">
   <head>
     <meta charset="utf-8" />
-    <title>Waystroke — студия веб-дизайна и разработки сайтов</title>
+    <title>Waystroke — цифровая мастерская веб-дизайна и разработки</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Веб-студия Waystroke: создание и разработка сайтов под заказ, веб-дизайн и UX/UI, адаптивная вёрстка и запуск — от структуры страниц до публикации."
+      content="Waystroke — цифровая мастерская. Веб-дизайн и разработка сайтов: структура страниц, визуальная система, адаптивный интерфейс и запуск."
     />
     <!-- Ключевые слова в meta не добавляем: Google и Яндекс их не используют,
          а список быстро устаревает и мешает правкам. -->
@@ -28,10 +28,10 @@
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Waystroke" />
     <meta property="og:locale" content="ru_RU" />
-    <meta property="og:title" content="Waystroke — студия веб-дизайна и разработки сайтов" />
+    <meta property="og:title" content="Waystroke — цифровая мастерская веб-дизайна и разработки" />
     <meta
       property="og:description"
-      content="Веб-студия Waystroke: создание и разработка сайтов под заказ, веб-дизайн и UX/UI, адаптивная вёрстка и запуск — от структуры страниц до публикации."
+      content="Waystroke — цифровая мастерская. Веб-дизайн и разработка сайтов: структура страниц, визуальная система, адаптивный интерфейс и запуск."
     />
     <meta property="og:url" content="https://waystroke.online/" />
     <meta property="og:image" content="https://waystroke.online/images/og-waystroke.png" />
@@ -40,21 +40,21 @@
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Waystroke — студия веб-дизайна и разработки сайтов"
+      content="Waystroke — цифровая мастерская веб-дизайна и разработки"
     />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Waystroke — студия веб-дизайна и разработки сайтов" />
+    <meta name="twitter:title" content="Waystroke — цифровая мастерская веб-дизайна и разработки" />
     <meta
       name="twitter:description"
-      content="Веб-студия Waystroke: создание и разработка сайтов под заказ, веб-дизайн и UX/UI, адаптивная вёрстка и запуск — от структуры страниц до публикации."
+      content="Waystroke — цифровая мастерская. Веб-дизайн и разработка сайтов: структура страниц, визуальная система, адаптивный интерфейс и запуск."
     />
     <meta name="twitter:image" content="https://waystroke.online/images/og-waystroke.png" />
     <meta
       name="twitter:image:alt"
-      content="Waystroke — студия веб-дизайна и разработки сайтов"
+      content="Waystroke — цифровая мастерская веб-дизайна и разработки"
     />
 
-    <!-- Разметка для поиска: кто мы, чем занимаемся и сколько стоят услуги.
+    <!-- Разметка для поиска: позиционирование, услуги и стоимость.
          Только реальные данные сайта — без отзывов и оценок, которых нет. -->
     <script type="application/ld+json">
       {
@@ -73,7 +73,7 @@
             "@id": "https://waystroke.online/#studio",
             "name": "Waystroke",
             "url": "https://waystroke.online/",
-            "description": "Студия веб-дизайна и разработки сайтов: создание сайтов под заказ, лендинги и многостраничные сайты, UX/UI, адаптивная вёрстка, доработка и запуск цифровых продуктов.",
+            "description": "Waystroke — цифровая мастерская веб-дизайна и разработки сайтов: лендинги, многостраничные сайты, адаптивная вёрстка, доработка и запуск.",
             "image": "https://waystroke.online/images/og-waystroke.png",
             "slogan": "Сайты, которые удобно использовать и приятно смотреть",
             "sameAs": ["https://t.me/waystroke"],
@@ -149,26 +149,10 @@
     <script>
       document.documentElement.classList.replace('no-js', 'js');
 
-      /*
-       * Решение по загрузчику принимается до первой отрисовки, иначе
-       * страница мигнёт готовым кадром. Повторный визит в той же сессии
-       * идёт без загрузчика, `?preview=loader` оставляет сцену на экране
-       * вместе с кнопкой повтора.
-       */
+      // Повторный визит и reduced-motion пропускают декоративное intro.
       (function () {
         var root = document.documentElement;
 
-        /*
-         * `data-boot-state` — состояние загрузчика на документе, и приложение
-         * читает его вместо события: на повторном визите загрузчик проходит
-         * мимо экрана ещё до бутстрапа Angular, и слушатель события
-         * зарегистрировался бы после него. Состояние — факт о документе, а не
-         * сигнал, который можно пропустить.
-         *
-         * Имя намеренно не совпадает с `data-boot` на самом загрузчике: иначе
-         * `querySelector('[data-boot]')` нашёл бы корень документа вместо
-         * сцены, и сцена не запустилась бы вовсе.
-         */
         if (/[?&]preview=loader(?:&|$)/.test(window.location.search)) {
           root.dataset.bootState = 'review';
           root.classList.add('boot-review');
@@ -213,13 +197,10 @@
   </head>
   <body>
     <!--
-      Брендовый загрузчик «первый штрих». Разметка лежит в документе, а не в
-      Angular, поэтому первый кадр рисуется до бутстрапа и под сценой не
-      бывает белого экрана.
+      Брендовый intro «первый штрих». Разметка лежит в документе,
+      а сцена запускается после готовности Angular.
 
-      Покой задан этой же разметкой: точка на месте, штрих прорисован целиком,
-      слово видно. Скрипт ниже только запускает сцену и убирает её — если
-      движок не отдал кадров, зритель всё равно видит готовую запись.
+      Intro — декоративный слой: не скрывает контент и не блокирует управление.
 
       Устройство кадра: точка — начало штриха, а не украшение рядом с ним;
       штрих — одна непрерывная линия с пологим подъёмом и коротким заносом в
@@ -229,7 +210,6 @@
       маскированной группы и закрывает начало штриха.
     -->
     <div class="boot" data-boot>
-      <p class="visually-hidden" role="status">Waystroke загружается</p>
 
       <div class="boot__scene">
         <svg
@@ -290,31 +270,54 @@
 
     <app-root></app-root>
 
-    <!--
-      Сцена загрузчика. Решения приняты в `<head>` (boot-skip / boot-review),
-      здесь остаётся только запуск и уход.
+    <!-- The optional font stylesheet is added to the prerendered head at build time.
+         It loads before the concept artwork enters view; the hero keeps its own faces. -->
+    <script>
+      (function () {
+        var sheet = document.getElementById('concept-fonts');
+        var section = document.getElementById('design');
+        if (!sheet || !section) return;
 
-      Порядок такой: лаймовая точка → штрих из неё → штрих полностью
-      прорисован → проявляется WAYSTROKE → сцена уходит. Уходит она позже
-      из двух: когда сцена отыграла (1560 мс) и когда приложение отдало
-      первый кадр (`waystroke:app-ready`). Если приложение собралось быстрее
-      сцены, ждать его нечего — обрывать штрих на середине нельзя, а если
-      приложение зависло, экран освобождает страховка (4600 мс).
+        // Reserve the prerendered comparison frame while its first pair's faces load.
+        // With JavaScript disabled this class is never added and the artwork stays visible.
+        document.documentElement.classList.add('concept-fonts-pending');
 
-      Страница, в свою очередь, стартует по `waystroke:boot-done`.
-    -->
+        var observer;
+        function activate() {
+          if (sheet.media === 'all') return;
+          sheet.media = 'all';
+          document.dispatchEvent(new Event('concept-fonts-activated'));
+          observer && observer.disconnect();
+          document.removeEventListener('click', onNavigation, true);
+        }
+        function onNavigation(event) {
+          if (event.target.closest('[data-scroll-to="design"]')) activate();
+        }
+
+        document.addEventListener('click', onNavigation, true);
+        if (!('IntersectionObserver' in window)) {
+          activate();
+          return;
+        }
+        observer = new IntersectionObserver(function (entries) {
+          if (entries.some(function (entry) { return entry.isIntersecting; })) activate();
+        }, { rootMargin: '80px 0px' });
+        observer.observe(section);
+      })();
+    </script>
+
+    <!-- Intro стартует после готовности интерфейса. Его таймеры управляют
+         только сценой; Angular, прокрутка и фокус от них не зависят. -->
     <script>
       (function () {
         var root = document.documentElement;
         // И класс, и признак: одиночного признака мало, его имя может повториться
         // на документе (см. data-boot-state выше).
         var boot = document.querySelector('.boot[data-boot]');
-        var app = document.querySelector('app-root');
         var review = root.classList.contains('boot-review');
         var timers = [];
         var released = false;
-        var played = false;
-        var appReady = false;
+        var started = false;
 
         function later(fn, ms) {
           timers.push(window.setTimeout(fn, ms));
@@ -327,16 +330,14 @@
           timers = [];
         }
 
-        /* Отдаёт экран странице: сначала событие, потом уход сцены. */
+        /* Завершает только декоративную сцену. */
         function release() {
           if (released) return;
           released = true;
           stopTimers();
-          if (app) app.removeAttribute('inert');
+          window.removeEventListener('waystroke:app-ready', start);
           root.dataset.bootState = 'off';
-          root.classList.remove('boot-on');
-          // Событие на окне, а не на документе:CustomEvent без `bubbles`
-          // до окна не доходит, и страница ждала бы только страховки.
+          // Событие оставлено для совместимости; приложение его не ждёт.
           window.dispatchEvent(new CustomEvent('waystroke:boot-done'));
 
           // В режиме просмотра кадр остаётся на экране — его снимает повтор.
@@ -354,16 +355,9 @@
           }, 640);
         }
 
-        /* Уходим не раньше, чем отыграла сцена: готовность приложения без
-           кадра ничего не значит, а кадр без приложения показывать нечем. */
-        function finish() {
-          if (played && appReady) release();
-        }
-
         /*
          * Пропуск: загрузчик не показывался (решение принято в `<head>`, кадр
-         * скрыт стилями с первой отрисовки), поэтому здесь он просто удаляется —
-         * вместе с ролью `status`, которая иначе осталась бы в дереве страницы.
+         * скрыт стилями с первой отрисовки), поэтому здесь он просто удаляется.
          * Показывать и тут же убирать через скрипт нельзя: это тот самый кадр
          * без анимации, ради которого всё затевалось.
          */
@@ -391,25 +385,21 @@
           replay.hidden = !review;
         }
 
-        if (app) app.setAttribute('inert', '');
-        root.classList.add('boot-on');
+        function start() {
+          if (started || released) return;
+          started = true;
+          window.removeEventListener('waystroke:app-ready', start);
+          window.requestAnimationFrame(function () {
+            if (released) return;
+            boot.classList.add('is-playing');
+            later(release, 1560);
+          });
+        }
 
-        window.addEventListener('waystroke:app-ready', function () {
-          appReady = true;
-          finish();
-        });
+        window.addEventListener('waystroke:app-ready', start, { once: true });
+        if (review) start();
 
-        // Первый кадр сцены — на следующем кадре после разбора документа,
-        // иначе браузер успеет показать готовый покой и мигнёт им.
-        window.requestAnimationFrame(function () {
-          boot.classList.add('is-playing');
-          later(function () {
-            played = true;
-            finish();
-          }, 1560);
-        });
-
-        // Страховка: приложение так и не отрисовалось, экран освобождаем.
+        // При ошибке bootstrap убираем сцену без блокировки страницы.
         later(release, 4600);
       })();
     </script>

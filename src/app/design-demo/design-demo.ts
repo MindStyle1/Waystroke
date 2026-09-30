@@ -2,6 +2,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  afterNextRender,
   computed,
   inject,
   signal,
@@ -45,6 +46,24 @@ const PAIRS: Pair[] = [
     rightName: 'ВНЕ РАМКИ',
   },
 ];
+
+// Only the faces used by the selected mockups are requested. The Cyrillic and
+// Latin samples cover the separate Fontsource unicode-range files.
+const PAIR_FONTS: Record<string, readonly [string, string][]> = {
+  music: [
+    ['700 16px Inter', 'СДВИГ studio'],
+    ['400 16px "Playfair Display"', 'красота miora'],
+    ['500 16px "Playfair Display"', 'красота miora'],
+  ],
+  auto: [
+    ['700 16px Inter', 'ТОЧКА МОТОР'],
+    ['italic 500 16px "Playfair Display"', 'крошка coffee'],
+  ],
+  fintech: [
+    ['700 16px Inter', 'saldo ВНЕ РАМКИ ₽'],
+    ['500 16px "Playfair Display"', 'ВНЕ РАМКИ art'],
+  ],
+};
 
 /**
  * Сколько пикселей нужно пройти по горизонтали, прежде чем жест признан
@@ -99,6 +118,8 @@ export class DesignDemo {
   private readonly frame = viewChild<ElementRef<HTMLElement>>('frame');
   private readonly handle = viewChild<ElementRef<HTMLElement>>('handle');
   private readonly destroyRef = inject(DestroyRef);
+  private readonly readyPairs = new Set<string>();
+  private fontRequest = 0;
 
   /** Идентификатор перетаскиваемого указателя; null — ползунок свободен. */
   private pointerId: number | null = null;
@@ -117,17 +138,64 @@ export class DesignDemo {
   private moved = false;
 
   constructor() {
+    afterNextRender(() => {
+      const onActivated = () => void this.preparePair(this.pairKey());
+      document.addEventListener('concept-fonts-activated', onActivated);
+      this.destroyRef.onDestroy(() =>
+        document.removeEventListener('concept-fonts-activated', onActivated),
+      );
+      if (document.getElementById('concept-fonts')?.getAttribute('media') === 'all') {
+        onActivated();
+      }
+    });
     this.destroyRef.onDestroy(() => {
       this.pointerId = null;
+      this.fontRequest++;
     });
   }
 
   /** Смена пары: положение границы предсказуемо возвращается в центр. */
   protected selectPair(key: string): void {
     if (this.pairKey() === key) return;
+    if (this.readyPairs.has(key) || !document.getElementById('concept-fonts')) {
+      this.showPair(key);
+      return;
+    }
+    void this.preparePair(key);
+  }
+
+  private showPair(key: string): void {
     this.pairKey.set(key);
     this.splitAtDown = 50;
     this.split.set(50);
+  }
+
+  private async preparePair(key: string): Promise<void> {
+    const request = ++this.fontRequest;
+    const sheet = document.getElementById('concept-fonts') as HTMLLinkElement | null;
+    if (!sheet) return;
+    if (sheet.media !== 'all') sheet.media = 'all';
+
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const loaded = await Promise.race([
+      (async () => {
+        if (!sheet.sheet) {
+          await new Promise<void>((resolve) => sheet.addEventListener('load', () => resolve(), { once: true }));
+        }
+        if (!document.fonts?.load) return false;
+        await Promise.all(PAIR_FONTS[key].map(([face, text]) => document.fonts.load(face, text)));
+        return true;
+      })().catch(() => false),
+      new Promise<false>((resolve) => { timeout = setTimeout(() => resolve(false), 4000); }),
+    ]);
+    clearTimeout(timeout);
+    if (request !== this.fontRequest) return;
+
+    // A failed/slow font never swaps under a visible mockup later in the visit.
+    document.documentElement.classList.toggle('concept-fonts-fallback', !loaded);
+    document.documentElement.classList.remove('concept-fonts-pending');
+    if (loaded) this.readyPairs.add(key);
+    if (this.pairKey() !== key) this.showPair(key);
   }
 
   /**

@@ -13,9 +13,9 @@
  *
  * Ссылка остаётся нетронутой: обработчик только слушает и ничего не
  * отменяет, поэтому переход по контакту не замедляется. Отправка не
- * задерживает уход со страницы — `sendBeacon` доводит запрос сам, а если он
- * недоступен, `fetch` с `keepalive`. Ошибки проглатываются: счётчик не
- * записался — это не повод показывать посетителю ошибку.
+ * задерживает уход со страницы — `fetch` с `keepalive` продолжает отправку
+ * после перехода. Credentials явно отключены: запись не использует cookie.
+ * Ошибки проглатываются: счётчик не записался — это не повод показывать посетителю ошибку.
  */
 import type { Dispose } from './motion';
 
@@ -77,14 +77,16 @@ const sourceFor = (element: HTMLElement): string => {
 };
 
 const report = (name: ConversionEvent, element: HTMLElement): void => {
-  const payload = new Blob([JSON.stringify({ event: name, source: sourceFor(element) })], {
-    type: 'application/json',
-  });
-
-  // sendBeacon живёт своей очередью и уходит даже после ухода со страницы.
-  if (navigator.sendBeacon?.(ENDPOINT, payload)) return;
-
-  void fetch(ENDPOINT, { method: 'POST', body: payload, keepalive: true }).catch(() => {
+  // sendBeacon всегда использует credentials: include; endpoint не требует
+  // cookie. Один fetch без повторов исключает двойную запись при потере ответа.
+  void fetch(ENDPOINT, {
+    method: 'POST',
+    mode: 'cors',
+    credentials: 'omit',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event: name, source: sourceFor(element) }),
+    keepalive: true,
+  }).catch(() => {
     /* Событие не записалось — молча, посетителя это не касается. */
   });
 };
