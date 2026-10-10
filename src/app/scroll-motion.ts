@@ -66,6 +66,8 @@ export function initScrollMotion(host: HTMLElement) {
             y: 0,
             duration: 1.15,
             ease: 'power3.out',
+            // The one-shot reveal must not retain a clipping/compositing layer.
+            clearProps: 'clipPath,transform',
             scrollTrigger: { trigger: card, start: 'top 94%', once: true },
           },
         );
