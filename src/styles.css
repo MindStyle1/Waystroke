@@ -2029,3 +2029,16 @@ html.concept-fonts-fallback #design .cmp__stage * {
 .no-js app-root .cal__status {
   position: static;
 }
+
+/* ScrollTrigger owns section transforms after its lazy module is ready. */
+html.lenis, html.lenis body { height: auto; }
+html.lenis { scroll-behavior: auto; }
+html.lenis.lenis-stopped { overflow: clip; }
+html.scroll-motion.motion-ready .reveal,
+html.scroll-motion.motion-ready .reveal:not(.is-visible),
+html.scroll-motion.motion-ready .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  transition: none;
+  will-change: auto;
+}

@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
+import { EventPhase } from '@angular/core/primitives/event-dispatch';
 import { App } from './app';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-    })
-      .compileComponents();
+    }).compileComponents();
   });
 
   it('should create the app', () => {
@@ -15,12 +15,123 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
+  it('loads the booking embed only after opening the calendar', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    const calendar = host.querySelector<HTMLDetailsElement>('details.cal')!;
+    expect(calendar.open).toBe(false);
+    expect(host.querySelector('[data-booking-frame]')).toBeNull();
+
+    calendar.open = true;
+    calendar.dispatchEvent(new Event('toggle'));
+    await fixture.whenStable();
+    const frame = host.querySelector<HTMLIFrameElement>('[data-booking-frame]')!;
+    expect(frame.getAttribute('src')).toContain('cal.com/mind-style-00/waystroke-call');
+    frame.dispatchEvent(new Event('load'));
+    await fixture.whenStable();
+    expect(calendar.classList.contains('is-loaded')).toBe(true);
+
+    calendar.open = false;
+    calendar.dispatchEvent(new Event('toggle'));
+    await fixture.whenStable();
+    calendar.open = true;
+    calendar.dispatchEvent(new Event('toggle'));
+    await fixture.whenStable();
+    expect(host.querySelector('[data-booking-frame]')).toBe(frame);
+    fixture.destroy();
+  });
+
+  it('keeps the calendar visible until collapse finishes and reverses an interrupted collapse', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    const panel = host.querySelector<HTMLDetailsElement>('details.cal')!;
+    const summary = panel.querySelector<HTMLElement>('summary')!;
+    const animations: Array<{ cancel: ReturnType<typeof vi.fn>; onfinish: (() => void) | null }> =
+      [];
+    panel.animate = vi.fn(() => {
+      const animation = { cancel: vi.fn(), onfinish: null as (() => void) | null };
+      animations.push(animation);
+      return animation as unknown as Animation;
+    });
+    summary.click();
+    await fixture.whenStable();
+    expect(panel.open).toBe(true);
+    animations[0].onfinish!();
+    summary.click();
+    await fixture.whenStable();
+    expect(panel.open).toBe(true);
+    expect(summary.getAttribute('aria-expanded')).toBe('false');
+    summary.click();
+    await fixture.whenStable();
+    expect(animations[1].cancel).toHaveBeenCalled();
+    animations[1].onfinish!();
+    expect(panel.open).toBe(true);
+    animations[2].onfinish!();
+    summary.click();
+    await fixture.whenStable();
+    animations[3].onfinish!();
+    await fixture.whenStable();
+    expect(panel.open).toBe(false);
+    expect(panel.classList.contains('is-booking-animating')).toBe(false);
+    fixture.destroy();
+  });
+
+  it('opens and closes immediately when reduced motion is requested', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const panel = (fixture.nativeElement as HTMLElement).querySelector<HTMLDetailsElement>(
+      'details.cal',
+    )!;
+    const summary = panel.querySelector<HTMLElement>('summary')!;
+    const original = window.matchMedia;
+    window.matchMedia = (() => ({ matches: true })) as unknown as typeof window.matchMedia;
+    panel.animate = vi.fn();
+    try {
+      summary.click();
+      await fixture.whenStable();
+      expect(panel.open).toBe(true);
+      summary.click();
+      await fixture.whenStable();
+      expect(panel.open).toBe(false);
+      expect(panel.animate).not.toHaveBeenCalled();
+    } finally {
+      window.matchMedia = original;
+      fixture.destroy();
+    }
+  });
+
+  it('preserves a native opening replayed after hydration', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    const panel = host.querySelector<HTMLDetailsElement>('details.cal')!;
+    const summary = panel.querySelector<HTMLElement>('summary')!;
+    panel.open = true;
+    const replay = new MouseEvent('click');
+    Object.defineProperty(replay, 'eventPhase', { value: EventPhase.REPLAY });
+    Object.defineProperty(replay, 'currentTarget', { value: summary });
+    const prevent = vi.spyOn(replay, 'preventDefault').mockImplementation(() => {
+      throw new Error('Replay cannot cancel the original browser action');
+    });
+    fixture.componentInstance['onBookingClick'](replay);
+    await fixture.whenStable();
+    expect(prevent).not.toHaveBeenCalled();
+    expect(panel.open).toBe(true);
+    expect(summary.getAttribute('aria-expanded')).toBe('true');
+    expect(host.querySelector('[data-booking-frame]')).not.toBeNull();
+    fixture.destroy();
+  });
+
   it('should render hero heading', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain('Сайты, которые удобно');
-    expect(compiled.querySelector('.eyebrow__text')?.textContent).toContain('цифровая мастерская');
+    expect(compiled.querySelector('.lead')?.textContent).toContain(
+      'Waystroke начинает со структуры',
+    );
   });
 
   it('should expose native navigation links with existing fragment targets', async () => {
@@ -112,7 +223,9 @@ describe('App', () => {
   it('batches scroll events into one header read and preserves the 12px threshold', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    await new Promise((resolve) => window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)));
+    await new Promise((resolve) =>
+      window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)),
+    );
     const callbacks: FrameRequestCallback[] = [];
     const raf = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
       callbacks.push(cb);
@@ -149,7 +262,9 @@ describe('App', () => {
   it('cancels a queued header update when the component is destroyed', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
-    await new Promise((resolve) => window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)));
+    await new Promise((resolve) =>
+      window.requestAnimationFrame(() => window.requestAnimationFrame(resolve)),
+    );
     const callbacks: FrameRequestCallback[] = [];
     const raf = vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
       callbacks.push(cb);
@@ -169,5 +284,4 @@ describe('App', () => {
       y.mockRestore();
     }
   });
-
 });

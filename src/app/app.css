@@ -1,0 +1,535 @@
+/* Две самостоятельные роли в одной композиции. */
+.tandem {
+  padding: clamp(32px, 6vw, 80px) 0;
+  border-top: 1px solid var(--line);
+}
+.tandem__intro {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 40px;
+  align-items: end;
+}
+.tandem__heading {
+  font-size: clamp(44px, 6.5vw, 88px);
+  line-height: 1.04;
+  font-weight: 500;
+  letter-spacing: -0.035em;
+}
+.tandem em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+.tandem__intro > p {
+  max-width: 34ch;
+  color: var(--ink-2);
+  font-size: 18px;
+  line-height: 1.6;
+  padding-bottom: 6px;
+}
+.tandem__people {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 5vw, 72px);
+  margin-top: 56px;
+}
+.tandem__person {
+  min-width: 0;
+}
+.tandem__person--dev {
+  --d: 140ms;
+}
+.tandem__art {
+  height: clamp(150px, 19vw, 240px);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.tandem__art svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.tandem__person h3 {
+  font-size: clamp(36px, 4vw, 58px);
+  line-height: 1.05;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+.tandem__person > p {
+  margin-top: 18px;
+  max-width: 36ch;
+  font-size: 16px;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.tandem__together {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-top: 32px;
+  margin-top: 44px;
+  border-top: 1px solid var(--line);
+  font-size: 16px;
+}
+.tandem__joining {
+  position: relative;
+  flex: 0 0 68px;
+  height: 36px;
+}
+.tandem__joining i {
+  position: absolute;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+}
+.tandem__joining i:first-child {
+  left: 0;
+  background: var(--accent);
+}
+.tandem__joining i:last-child {
+  right: 0;
+}
+.booking__summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  min-height: 48px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 16px;
+}
+.booking__summary::-webkit-details-marker {
+  display: none;
+}
+.booking__summary span {
+  font-size: 28px;
+  line-height: 1;
+  transition: transform 0.48s cubic-bezier(0.4, 0, 0.2, 1);
+}
+summary[aria-expanded='true'] span {
+  transform: rotate(45deg);
+}
+.booking__summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+@media (max-width: 760px) {
+  .tandem__intro {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .tandem__people {
+    gap: 22px;
+    margin-top: 32px;
+  }
+  .tandem__person h3 {
+    font-size: clamp(26px, 6.8vw, 42px);
+  }
+  .tandem__art {
+    height: 130px;
+    margin-bottom: 18px;
+  }
+  .tandem__person > p {
+    font-size: 14px;
+  }
+  .tandem__together {
+    font-size: 14px;
+    gap: 16px;
+  }
+}
+@media (max-width: 359px) {
+  .tandem__people {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .booking__summary span {
+    transition: none;
+  }
+}
+
+.booking__content {
+  padding-top: 18px;
+}
+.cal.is-booking-animating {
+  overflow: clip;
+  will-change: height;
+}
+
+/* Первый экран: заметное раскрытие текста и живой акцент на слове. */
+.hero__line {
+  overflow: clip;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+.hero__word {
+  display: block;
+}
+.hero__divider {
+  height: 1px;
+  background: var(--line);
+  margin: clamp(30px, 4vw, 48px) 0 16px;
+}
+/* Два самостоятельных графических поля, как две стороны одной мастерской. */
+.tandem__people {
+  gap: 28px;
+}
+.tandem__art {
+  height: auto;
+  aspect-ratio: 1.65;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  overflow: hidden;
+}
+.tandem__art--design {
+  background: var(--accent);
+}
+.tandem__art--dev {
+  background: var(--dark);
+}
+.design-scene {
+  position: relative;
+  width: min(100%, 360px);
+  aspect-ratio: 360 / 250;
+}
+.design-scene__orbit {
+  position: absolute;
+  inset: 0;
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  opacity: 0.55;
+}
+.design-scene__selection {
+  position: absolute;
+  left: 20%;
+  top: 17%;
+  width: 60%;
+  height: 66%;
+  border: 1.5px solid var(--ink);
+}
+.design-scene__selection i {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border: 1.5px solid var(--ink);
+}
+.design-scene__selection i:nth-child(1) {
+  left: -5px;
+  top: -5px;
+}
+.design-scene__selection i:nth-child(2) {
+  right: -5px;
+  top: -5px;
+}
+.design-scene__selection i:nth-child(3) {
+  left: -5px;
+  bottom: -5px;
+}
+.design-scene__selection i:nth-child(4) {
+  right: -5px;
+  bottom: -5px;
+}
+.design-scene__form {
+  position: absolute;
+  left: 32%;
+  top: 25%;
+  width: 36%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--ink);
+}
+.design-scene__cursor {
+  position: absolute;
+  left: 72%;
+  top: 65%;
+  width: 26px !important;
+  height: 34px !important;
+  fill: var(--surface);
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.runtime-scene {
+  width: min(100%, 360px) !important;
+  height: auto !important;
+}
+.runtime-scene__routes {
+  fill: none;
+  stroke: #434a38;
+  stroke-width: 1.5;
+}
+.runtime-scene__signals {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.runtime-scene__core {
+  fill: var(--dark);
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.runtime-scene__code {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.runtime-scene__nodes {
+  fill: var(--accent);
+}
+@media (prefers-reduced-motion: no-preference) {
+  :host-context(.js) .hero__grid {
+    animation: hero-field-open 1.55s cubic-bezier(0.76, 0, 0.24, 1) both;
+  }
+  :host-context(.js) .hero__word {
+    animation: hero-entrance 1.55s 0.25s cubic-bezier(0.65, 0, 0.25, 1) both;
+  }
+  :host-context(.js) .hero__line:nth-child(2) .hero__word {
+    animation-delay: 0.4s;
+  }
+  :host-context(.js) .hero__line--serif .hero__word {
+    animation: hero-serif-entrance 1.65s 0.55s cubic-bezier(0.65, 0, 0.25, 1) both;
+  }
+  :host-context(.js) .hero__aside {
+    animation: hero-aside 1.2s 0.75s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  :host-context(.js) .hero .features {
+    animation: hero-aside 1.2s 0.95s cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+  .design-scene__form {
+    animation: designer-form 4.8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+  .design-scene__selection {
+    animation: designer-selection 4.8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+  .design-scene__orbit {
+    animation: designer-orbit 4.8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+    transform-origin: center;
+  }
+  .design-scene__cursor {
+    animation: designer-cursor 4.8s cubic-bezier(0.45, 0, 0.25, 1) infinite;
+  }
+  .runtime-scene__signals path {
+    stroke-dasharray: 10 90;
+    animation: runtime-flow 3s linear infinite;
+  }
+  .runtime-scene__signals path:nth-child(even) {
+    animation-delay: -1.5s;
+  }
+  .runtime-scene__nodes circle {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: runtime-node 3s ease-in-out infinite;
+  }
+  .runtime-scene__nodes circle:nth-child(even) {
+    animation-delay: -1.5s;
+  }
+  .tandem__art *,
+  .tandem__art::after {
+    animation-play-state: paused;
+  }
+  .tandem.is-alive .tandem__art * {
+    animation-play-state: running;
+  }
+}
+@keyframes hero-field-open {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes hero-serif-entrance {
+  from {
+    transform: translateX(-70px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes hero-entrance {
+  from {
+    transform: translateY(-110%);
+    opacity: 1;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes hero-aside {
+  from {
+    transform: translateY(22px);
+    opacity: 0.4;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes designer-form {
+  0%,
+  10%,
+  100% {
+    border-radius: 50%;
+    transform: scale(0.9) rotate(0);
+  }
+  38%,
+  52% {
+    border-radius: 12%;
+    transform: translate(10px, -8px) scale(1.05) rotate(-18deg);
+  }
+  75% {
+    border-radius: 30% 6% 30% 6%;
+    transform: translate(-8px, 6px) rotate(18deg);
+  }
+}
+@keyframes designer-selection {
+  0%,
+  10%,
+  100% {
+    transform: none;
+  }
+  38%,
+  52% {
+    transform: translate(10px, -8px) rotate(-8deg) scale(1.04);
+  }
+  75% {
+    transform: translate(-8px, 6px) rotate(6deg);
+  }
+}
+@keyframes designer-orbit {
+  0%,
+  100% {
+    transform: rotate(-12deg) scale(0.95);
+  }
+  50% {
+    transform: rotate(18deg) scale(1.05);
+  }
+}
+@keyframes designer-cursor {
+  0%,
+  10%,
+  100% {
+    transform: none;
+  }
+  38%,
+  52% {
+    transform: translate(-48px, -46px);
+  }
+  75% {
+    transform: translate(-82px, -16px);
+  }
+}
+@keyframes runtime-flow {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes runtime-node {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  45% {
+    transform: scale(1.35);
+    opacity: 1;
+  }
+}
+@media (min-width: 561px) and (max-width: 900px) {
+  .tandem__art {
+    aspect-ratio: 1.3;
+  }
+}
+@media (max-width: 560px) {
+  .tandem__people {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .tandem__art {
+    aspect-ratio: 1.3;
+  }
+  .tandem__person h3 {
+    font-size: 38px;
+  }
+  .tandem__person > p {
+    font-size: 16px;
+  }
+}
+
+/* Isolated first-screen study: ?hero=wave. No canvas remains after 2.6s. */
+.hero {
+  position: relative;
+  isolation: isolate;
+}
+.hero > .container {
+  position: relative;
+  z-index: 1;
+}
+.hero-wave {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+:host-context(.js) .hero--wave .hero__grid,
+:host-context(.js) .hero--wave .hero__word {
+  animation: none;
+}
+
+.hero--lime::before,
+.hero--paper::before,
+.hero--hybrid::before,
+.hero--hybrid::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero--lime::before,
+.hero--hybrid::before {
+  background: radial-gradient(ellipse at 62% 38%, rgba(200, 240, 84, 0.24), transparent 44%);
+  animation: hero-lime-rest 2.6s ease-out both;
+}
+.hero--paper {
+  background: #e7e1d5;
+}
+.hero--paper::before,
+.hero--hybrid::after {
+  opacity: 0.38;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.76' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.32' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+@keyframes hero-lime-rest {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.hero--hybrid {
+  background: #e9e5da;
+}
+.hero--hybrid::after {
+  opacity: 0.24;
+}

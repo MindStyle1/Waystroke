@@ -15,14 +15,7 @@
  * Каждая функция возвращает диспозер — он снимает слушатели и наблюдатели
  * и останавливает анимации вместе с компонентом.
  */
-import {
-  animate,
-  createTimeline,
-  stagger,
-  utils,
-  type JSAnimation,
-  type Timeline,
-} from 'animejs';
+import { animate, createTimeline, stagger, utils, type Timeline } from 'animejs';
 
 export type Dispose = () => void;
 
@@ -179,7 +172,11 @@ const buildRefineScene: SceneBuilder = (card) => {
   tl.add(head, { translateX: 0, duration: 320, ease: 'outQuad' }, 0)
     .add(blockA, { translateX: 0, translateY: 0, duration: 420, ease: 'outQuad' }, 120)
     .add(blockB, { translateX: 0, translateY: 0, duration: 420, ease: 'outQuad' }, 250)
-    .add(blockC, { translateX: 0, translateY: 0, width: 144, duration: 520, ease: 'inOutQuad' }, 400)
+    .add(
+      blockC,
+      { translateX: 0, translateY: 0, width: 144, duration: 520, ease: 'inOutQuad' },
+      400,
+    )
     .add(added, { opacity: 1, scale: 1, duration: 340, ease: 'outQuad' }, 960)
     .add(accent, { strokeDashoffset: 0, duration: 460, ease: 'inOutQuad' }, 1240);
 
@@ -284,8 +281,7 @@ export function initServiceScenes(host: HTMLElement): Dispose {
     }
   };
 
-  const hoverable =
-    mediaQuery('(hover: hover) and (pointer: fine)')?.matches ?? false;
+  const hoverable = mediaQuery('(hover: hover) and (pointer: fine)')?.matches ?? false;
 
   cards.forEach((card) => {
     if (hoverable) {
@@ -323,127 +319,48 @@ export function initServiceScenes(host: HTMLElement): Dispose {
   };
 }
 
-/* --- Два шарика на общей линии ------------------------------------------ */
+/* --- Тандем дизайнера и разработчика ------------------------------------ */
 
-const randomBetween = (min: number, max: number): number => min + Math.random() * (max - min);
-
-/**
- * По линии, соединяющей роли, медленно ездят два лаймовых шарика. Движение
- * не по циклу: каждый раз новая случайная цель, новая длительность и пауза
- * перед следующим броском, поэтому шарики не выглядят «включёнными на повтор».
- *
- * Покой задан стилями — шарики нарисованы, линия нарисована. Анимация только
- * оживляет их, поэтому движок, не отдавший кадров, пропущенное пересечение
- * или уничтожение компонента оставляют блок в готовом виде.
- */
-export function initTeamScene(host: HTMLElement): Dispose {
-  const strip = host.querySelector<HTMLElement>('.team__strip');
-  if (!strip || prefersReduced()) return noop;
-
-  const balls = all<HTMLElement>(strip, '.team__ball');
-  if (balls.length === 0) return noop;
-
-  const active = new Set<JSAnimation>();
-  const walking = new Set<HTMLElement>();
-  const timers: number[] = [];
-  let inView = false;
-  let started = false;
-  let stopped = false;
-
-  const stop = (): void => {
-    if (stopped) return;
-    stopped = true;
-    timers.forEach((timer) => window.clearTimeout(timer));
-    timers.length = 0;
-    active.forEach((step) => step.pause());
-    active.clear();
-    // Возврат к состоянию из стилей: шарики стоят на своих местах.
-    utils.remove(balls);
-    balls.forEach((ball) => ball.removeAttribute('style'));
+/** CSS сохраняет фазу дыхания при паузе; observers только управляют видимостью. */
+function initAmbientMotion(root: HTMLElement | null, target?: Element | null): Dispose {
+  if (!root) return noop;
+  const reduced = mediaQuery('(prefers-reduced-motion: reduce)');
+  let visible = false;
+  const sync = (): void => {
+    root.classList.toggle('is-alive', visible && !document.hidden && !reduced?.matches);
+    root.classList.toggle('is-active', visible && !document.hidden && !reduced?.matches);
   };
-
-  /**
-   * Один случайный бросок и планирование следующего.
-   *
-   * Двигается `translateX`, а не `left`. `left` — свойство раскладки: пока
-   * шарик ехал, каждый кадр пересчитывал геометрию, а сам блок линейки
-   * перерисовывался. Замерено на телефоне: за 73 кадра `left` принял 54
-   * разных значения, `transform` не менялся ни разу. С `translateX` кадр
-   * уходит композитору, раскладка не трогается, а картинка та же.
-   *
-   * Чтобы `translateX` считался от текущего места, позиция шарика один раз
-   * «запекается» в `left` в пикселях, и дальше едет только смещение. Печём мы
-   * не чаще одного раза на бросок (3–7 с), а не раз в кадр.
-   */
-  const wander = (ball: HTMLElement): void => {
-    if (stopped || !inView || walking.has(ball)) return;
-
-    const stripBox = strip.getBoundingClientRect();
-    const ballBox = ball.getBoundingClientRect();
-    if (stripBox.width <= 0) return;
-
-    walking.add(ball);
-
-    // Куда шарик едет в этот раз: та же логика 12–88 %, что и раньше.
-    const targetPx = (randomBetween(12, 88) / 100) * stripBox.width;
-
-    // Текущее место в пикселях от левого края линейки, включая уже наложенное
-    // смещение, — от него и считаем расстояние. Так бросок корректен и после
-    // поворота экрана, когда ширина полосы изменилась.
-    const halfBall = ballBox.width / 2;
-    const currentPx = ballBox.left - stripBox.left + halfBall;
-
-    // Печём позицию и обнуляем смещение: дальше анимируется только transform.
-    ball.style.left = `${currentPx}px`;
-    ball.style.transform = 'translateX(0px)';
-
-    const step = animate(ball, {
-      translateX: targetPx - currentPx,
-      duration: () => Math.round(randomBetween(3200, 7200)),
-      ease: 'inOutSine',
-      onComplete: (): void => {
-        active.delete(step);
-        walking.delete(ball);
-        if (stopped) return;
-        timers.push(window.setTimeout(() => wander(ball), randomBetween(600, 2600)));
+  let observer: IntersectionObserver | null = null;
+  if ('IntersectionObserver' in window) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        visible = entries.some((entry) => entry.isIntersecting);
+        sync();
       },
-    });
-
-    active.add(step);
-  };
-
-  const start = (): void => {
-    if (stopped || started) return;
-    started = true;
-    balls.forEach(wander);
-  };
-
-  if (!('IntersectionObserver' in window)) {
-    start();
-    return stop;
+      { threshold: 0.08 },
+    );
+    observer.observe(target ?? root);
+  } else {
+    visible = true;
+    sync();
   }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      // Пока блок на экране — шарики едут, ушёл с экрана — замирают.
-      inView = entries.some((entry) => entry.isIntersecting);
-      if (inView) {
-        start();
-        active.forEach((step) => step.play());
-        // Шарик, который отдыхал или остановился вне экрана, снова трогается.
-        balls.forEach((ball) => wander(ball));
-      } else {
-        active.forEach((step) => step.pause());
-      }
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -4% 0px' },
-  );
-  observer.observe(strip);
-
+  document.addEventListener('visibilitychange', sync);
+  reduced?.addEventListener('change', sync);
   return () => {
-    observer.disconnect();
-    stop();
+    observer?.disconnect();
+    document.removeEventListener('visibilitychange', sync);
+    reduced?.removeEventListener('change', sync);
+    root.classList.remove('is-alive', 'is-active');
   };
+}
+
+export function initTeamScene(host: HTMLElement): Dispose {
+  const root = host.querySelector<HTMLElement>('[data-tandem]');
+  return initAmbientMotion(root, root?.querySelector('.tandem__people'));
+}
+
+export function initHeroPresence(host: HTMLElement): Dispose {
+  return initAmbientMotion(host.querySelector<HTMLElement>('.hero'));
 }
 
 /* --- Иллюстрации этапов работы ------------------------------------------- */
@@ -466,53 +383,85 @@ const setArtHidden = (art: SVGSVGElement, index: number): void => {
 
 const addArt = (tl: Timeline, art: SVGSVGElement, at: number, index: number): void => {
   if (index === 0) {
-    tl.add(all<SVGGElement>(art, '.art-bubble'), {
-      opacity: 1,
-      translateY: 0,
-      duration: 340,
-      ease: 'outQuad',
-      delay: stagger(300),
-    }, at).add(all<SVGCircleElement>(art, '.art-dot'), {
-      scale: 1,
-      duration: 240,
-      ease: 'outQuad',
-      delay: stagger(90),
-    }, at + 420);
+    tl.add(
+      all<SVGGElement>(art, '.art-bubble'),
+      {
+        opacity: 1,
+        translateY: 0,
+        duration: 340,
+        ease: 'outQuad',
+        delay: stagger(300),
+      },
+      at,
+    ).add(
+      all<SVGCircleElement>(art, '.art-dot'),
+      {
+        scale: 1,
+        duration: 240,
+        ease: 'outQuad',
+        delay: stagger(90),
+      },
+      at + 420,
+    );
   } else if (index === 1) {
-    tl.add(all<SVGRectElement>(art, '.art-bullet'), {
-      opacity: 1,
-      translateX: 0,
-      duration: 260,
-      ease: 'outQuad',
-      delay: stagger(170),
-    }, at).add(all<SVGPathElement>(art, '.art-line'), {
-      strokeDashoffset: 0,
-      duration: 420,
-      ease: 'inOutQuad',
-      delay: stagger(170),
-    }, at + 60);
+    tl.add(
+      all<SVGRectElement>(art, '.art-bullet'),
+      {
+        opacity: 1,
+        translateX: 0,
+        duration: 260,
+        ease: 'outQuad',
+        delay: stagger(170),
+      },
+      at,
+    ).add(
+      all<SVGPathElement>(art, '.art-line'),
+      {
+        strokeDashoffset: 0,
+        duration: 420,
+        ease: 'inOutQuad',
+        delay: stagger(170),
+      },
+      at + 60,
+    );
   } else if (index === 2) {
-    tl.add(el<SVGRectElement>(art, '.art-page'), {
-      strokeDashoffset: 0,
-      duration: 420,
-      ease: 'inOutQuad',
-    }, at).add(all<SVGRectElement>(art, '.art-block'), {
-      opacity: 1,
-      scale: 1,
-      duration: 300,
-      ease: 'outQuad',
-      delay: stagger(150),
-    }, at + 260);
+    tl.add(
+      el<SVGRectElement>(art, '.art-page'),
+      {
+        strokeDashoffset: 0,
+        duration: 420,
+        ease: 'inOutQuad',
+      },
+      at,
+    ).add(
+      all<SVGRectElement>(art, '.art-block'),
+      {
+        opacity: 1,
+        scale: 1,
+        duration: 300,
+        ease: 'outQuad',
+        delay: stagger(150),
+      },
+      at + 260,
+    );
   } else {
-    tl.add(el<SVGPathElement>(art, '.art-check'), {
-      strokeDashoffset: 0,
-      duration: 560,
-      ease: 'inOutQuad',
-    }, at).add(el<SVGPathElement>(art, '.art-done'), {
-      strokeDashoffset: 0,
-      duration: 300,
-      ease: 'outQuad',
-    }, at + 560);
+    tl.add(
+      el<SVGPathElement>(art, '.art-check'),
+      {
+        strokeDashoffset: 0,
+        duration: 560,
+        ease: 'inOutQuad',
+      },
+      at,
+    ).add(
+      el<SVGPathElement>(art, '.art-done'),
+      {
+        strokeDashoffset: 0,
+        duration: 300,
+        ease: 'outQuad',
+      },
+      at + 560,
+    );
   }
 };
 
@@ -538,8 +487,7 @@ export function initStepsSequence(host: HTMLElement): Dispose {
     return noop;
   }
 
-  const isVertical = (): boolean =>
-    mediaQuery('(max-width: 760px)')?.matches ?? false;
+  const isVertical = (): boolean => mediaQuery('(max-width: 760px)')?.matches ?? false;
 
   let tl: Timeline | null = null;
   let vertical = false;
@@ -627,11 +575,15 @@ function buildStepsTimeline(
   const railAt = [380, 1240, 2080];
 
   steps.forEach((_, index) => {
-    tl.add(cores[index], {
-      scale: 1,
-      duration: 260,
-      ease: 'outQuad',
-    }, markAt[index]);
+    tl.add(
+      cores[index],
+      {
+        scale: 1,
+        duration: 260,
+        ease: 'outQuad',
+      },
+      markAt[index],
+    );
     addArt(tl, arts[index], artAt[index], index);
   });
 

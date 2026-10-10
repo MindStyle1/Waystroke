@@ -1,5 +1,22 @@
-import { Component, DestroyRef, ElementRef, OnDestroy, afterNextRender, inject, signal } from '@angular/core';
-import { initServiceScenes, initStepsSequence, initTeamScene, type Dispose } from './motion';
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  Injector,
+  OnDestroy,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
+import { EventPhase } from '@angular/core/primitives/event-dispatch';
+import {
+  initServiceScenes,
+  initStepsSequence,
+  initTeamScene,
+  initHeroPresence,
+  type Dispose,
+} from './motion';
+import { initDisclosureMotion } from './disclosure-motion';
 import { initConversions } from './tracking';
 import { DesignDemo } from './design-demo/design-demo';
 
@@ -26,15 +43,22 @@ export class App implements OnDestroy {
   protected readonly menuOpen = signal(false);
   protected readonly instantMenu = signal(false);
   protected readonly scrolled = signal(false);
+  protected readonly bookingEnhanced = signal(false);
+  protected readonly bookingOpen = signal(false);
+  protected readonly calendarExpanded = signal(false);
   protected readonly calendarLoaded = signal(false);
   protected readonly calendarFailed = signal(false);
 
+  private readonly injector = inject(Injector);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
   private observer: IntersectionObserver | null = null;
+  private bookingAnimation: Animation | null = null;
+  private bookingPanel: HTMLDetailsElement | null = null;
   private bookingTimer: number | null = null;
   private bookingObserver: IntersectionObserver | null = null;
   private readonly motionDisposers: Dispose[] = [];
+  private scrollMotion: ReturnType<typeof import('./scroll-motion').initScrollMotion> | null = null;
   private sweepScheduled = false;
   private headerFrame: number | null = null;
   private cleanedUp = false;
@@ -49,6 +73,7 @@ export class App implements OnDestroy {
   private initBrowser(): void {
     if (this.cleanedUp) return;
     this.browserInitialized = true;
+    this.bookingEnhanced.set(true);
     const host = this.host.nativeElement as HTMLElement;
 
     // Контент и календарь не зависят от декоративного intro.
@@ -58,9 +83,7 @@ export class App implements OnDestroy {
     window.requestAnimationFrame(() => {
       if (!this.cleanedUp) document.documentElement.classList.add('motion-ready');
     });
-    this.initBooking();
     window.dispatchEvent(new CustomEvent('waystroke:app-ready'));
-
     // Первый кадр завершает layout после hydration и app-ready. Чтение
     // позиции шапки происходит в следующем, до её изменения состояния.
     this.headerFrame = window.requestAnimationFrame(() => {
@@ -68,11 +91,51 @@ export class App implements OnDestroy {
       this.scheduleHeaderUpdate();
     });
     this.motionDisposers.push(
+      initDisclosureMotion(host),
       initServiceScenes(host),
       initTeamScene(host),
+      initHeroPresence(host),
       initStepsSequence(host),
       initConversions(host),
     );
+
+    // Утверждённый синтез — основной вход; query оставляет отдельные
+    // варианты доступными для сравнения и ревью.
+    const requestedHero = new URLSearchParams(window.location.search).get('hero');
+    const heroStudy =
+      requestedHero === 'wave' ||
+      requestedHero === 'paper' ||
+      requestedHero === 'lime' ||
+      requestedHero === 'hybrid'
+        ? requestedHero
+        : 'hybrid';
+    if (
+      heroStudy === 'wave' ||
+      heroStudy === 'paper' ||
+      heroStudy === 'lime' ||
+      heroStudy === 'hybrid'
+    ) {
+      void import('./hero-wave')
+        .then(({ initHeroWave }) => {
+          if (!this.cleanedUp) this.motionDisposers.push(initHeroWave(host, heroStudy));
+        })
+        .catch(() => {});
+    }
+
+    if (typeof window.matchMedia === 'function' && typeof ResizeObserver !== 'undefined') {
+      void import('./scroll-motion')
+        .then(({ initScrollMotion }) => {
+          if (this.cleanedUp) return;
+          this.scrollMotion = initScrollMotion(host);
+          this.motionDisposers.push(() => {
+            this.scrollMotion?.dispose();
+            this.scrollMotion = null;
+          });
+        })
+        .catch(() => {
+          /* Native scrolling and CSS reveals remain usable. */
+        });
+    }
 
     window.addEventListener('scroll', this.handleScroll, { passive: true });
     window.addEventListener('resize', this.handleResize);
@@ -97,13 +160,79 @@ export class App implements OnDestroy {
     this.syncMenu();
   }
 
+  /** Держим details открытым до конца закрытия, чтобы браузер не убрал контент. */
+  protected onBookingClick(event: MouseEvent): void {
+    const summary = event.currentTarget as HTMLElement;
+    const panel = summary.closest('details') as HTMLDetailsElement;
+    // До hydration браузер уже выполнил нативное открытие: replay не повторяет его.
+    if (event.eventPhase === EventPhase.REPLAY) {
+      this.bookingOpen.set(panel.open);
+      if (panel.open) this.loadBooking();
+      return;
+    }
+    event.preventDefault();
+    const opening = !this.bookingOpen();
+    const from = panel.getBoundingClientRect().height;
+    this.bookingAnimation?.cancel();
+    this.bookingAnimation = null;
+    this.bookingPanel = panel;
+    this.bookingOpen.set(opening);
+
+    if (prefersReduced() || typeof panel.animate !== 'function') {
+      panel.open = opening;
+      panel.classList.remove('is-booking-animating');
+      return;
+    }
+
+    if (opening) panel.open = true;
+    const style = window.getComputedStyle(panel);
+    const closedHeight =
+      summary.getBoundingClientRect().height +
+      parseFloat(style.paddingTop) +
+      parseFloat(style.paddingBottom) +
+      parseFloat(style.borderTopWidth) +
+      parseFloat(style.borderBottomWidth);
+    const to = opening ? panel.getBoundingClientRect().height : closedHeight;
+    panel.classList.add('is-booking-animating');
+    const animation = panel.animate([{ height: `${from}px` }, { height: `${to}px` }], {
+      duration: opening ? 540 : 480,
+      easing: 'cubic-bezier(.4, 0, .2, 1)',
+      fill: 'both',
+    });
+    this.bookingAnimation = animation;
+    animation.onfinish = () => {
+      if (this.bookingAnimation !== animation) return;
+      panel.open = opening;
+      panel.classList.remove('is-booking-animating');
+      animation.cancel();
+      this.bookingAnimation = null;
+    };
+  }
+
+  protected onBookingToggle(event: Event): void {
+    const open = (event.target as HTMLDetailsElement).open;
+    if (!this.bookingAnimation) this.bookingOpen.set(open);
+    if (open) this.loadBooking();
+  }
+
+  private loadBooking(): void {
+    if (this.calendarExpanded()) return;
+    this.calendarExpanded.set(true);
+    afterNextRender(
+      () => {
+        if (!this.cleanedUp) this.initBooking();
+      },
+      { injector: this.injector },
+    );
+  }
+
   protected onCalendarLoad(): void {
     this.calendarLoaded.set(true);
   }
 
   private readonly handleScroll = (): void => {
     this.scheduleHeaderUpdate();
-    this.scheduleSweep();
+    if (!this.scrollMotion) this.scheduleSweep();
   };
 
   /**
@@ -147,7 +276,11 @@ export class App implements OnDestroy {
     const origin = event.target as Element | null;
     const trigger = origin?.closest<HTMLElement>('[data-scroll-to]');
     if (!trigger || !this.host.nativeElement.contains(trigger)) return;
-    if (event instanceof MouseEvent && (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)) return;
+    if (
+      event instanceof MouseEvent &&
+      (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey)
+    )
+      return;
     // Без JS работает href; с JS сохраняем прокрутку без изменения URL.
     event.preventDefault();
     this.scrollToKey(trigger.dataset['scrollTo'] ?? '');
@@ -175,7 +308,7 @@ export class App implements OnDestroy {
 
         // Логотип возвращает к позиции 0 — обычным скроллом, без перезагрузки.
         if (key === 'top') {
-          window.scrollTo({ top: 0, behavior });
+          if (!this.scrollMotion?.scrollTo(0)) window.scrollTo({ top: 0, behavior });
           return;
         }
 
@@ -184,7 +317,8 @@ export class App implements OnDestroy {
         );
         if (!section) return;
 
-        section.scrollIntoView({ behavior, block: 'start' });
+        if (!this.scrollMotion?.scrollTo(section))
+          section.scrollIntoView({ behavior, block: 'start' });
         section.focus({ preventScroll: true });
       } finally {
         this.instantMenu.set(false);
@@ -312,6 +446,9 @@ export class App implements OnDestroy {
 
     this.bookingObserver?.disconnect();
     this.bookingObserver = null;
+    this.bookingAnimation?.cancel();
+    this.bookingAnimation = null;
+    this.bookingPanel?.classList.remove('is-booking-animating');
 
     if (this.bookingTimer !== null) {
       window.clearTimeout(this.bookingTimer);

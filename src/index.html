@@ -149,7 +149,7 @@
     <script>
       document.documentElement.classList.replace('no-js', 'js');
 
-      // Повторный визит и reduced-motion пропускают декоративное intro.
+      // Первый экран доступен сразу; отдельное intro оставлено в режиме просмотра.
       (function () {
         var root = document.documentElement;
 
@@ -164,24 +164,10 @@
           return;
         }
 
-        try {
-          if (window.sessionStorage.getItem('waystroke:booted')) {
-            root.dataset.bootState = 'off';
-            root.classList.add('boot-skip');
-            return;
-          }
-        } catch (err) {
-          // Хранилище может быть недоступно (приватный режим, отключённые
-          // куки). Тогда загрузчик просто покажется — он уходит по таймеру.
-        }
-
-        var reduced =
-          typeof window.matchMedia === 'function' &&
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (reduced) {
-          root.dataset.bootState = 'off';
-          root.classList.add('boot-skip');
-        }
+        // Вход теперь принадлежит первому экрану. Старую сцену сохраняем
+        // только для отдельного просмотра ?preview=loader.
+        root.dataset.bootState = 'off';
+        root.classList.add('boot-skip');
       })();
     </script>
 
@@ -210,7 +196,6 @@
       маскированной группы и закрывает начало штриха.
     -->
     <div class="boot" data-boot>
-
       <div class="boot__scene">
         <svg
           class="boot__svg"
@@ -299,9 +284,17 @@
           activate();
           return;
         }
-        observer = new IntersectionObserver(function (entries) {
-          if (entries.some(function (entry) { return entry.isIntersecting; })) activate();
-        }, { rootMargin: '80px 0px' });
+        observer = new IntersectionObserver(
+          function (entries) {
+            if (
+              entries.some(function (entry) {
+                return entry.isIntersecting;
+              })
+            )
+              activate();
+          },
+          { rootMargin: '80px 0px' },
+        );
         observer.observe(section);
       })();
     </script>
