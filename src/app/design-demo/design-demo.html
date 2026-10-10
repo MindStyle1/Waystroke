@@ -1,97 +1,119 @@
-<div class="panel">
-  <div class="demo__head">
-    <p class="label label--accent reveal">Авторские концепты</p>
-
-    <div class="demo__title-row">
-      <h2 class="demo__title reveal" id="design-title">
-        <span class="demo__title-line">Разные задачи.</span>
-        <span class="demo__title-line demo__title-line--serif">Разный характер.</span>
-      </h2>
-      <p class="demo__note reveal">
-        Вымышленные проекты для разных ниш. Двигайте границу, чтобы посмотреть два визуальных
-        подхода.
-      </p>
-    </div>
+<div class="portfolio">
+  <div class="portfolio__head">
+    <h2 id="design-title">Разные задачи.<br /><em>Разный характер.</em></h2>
+    <p>
+      Шесть авторских концептов для разных ниш. Выберите работу, чтобы рассмотреть дизайн целиком.
+    </p>
   </div>
-
-  <div class="demo__switch reveal" role="group" aria-label="Пара концептов для сравнения">
-    <span class="demo__switch-label">Сравнить пару</span>
-    @for (item of pairs; track item.key) {
+  <div class="works">
+    @for (work of works; track work.key) {
       <button
-        class="demo__tab"
+        class="work"
+        [attr.data-concept]="work.key"
         type="button"
-        [class.is-active]="pairKey() === item.key"
-        [attr.aria-pressed]="pairKey() === item.key"
-        (click)="selectPair(item.key)"
+        (click)="open(work, viewer, $event)"
+        [attr.aria-label]="'Посмотреть концепт ' + work.name"
       >
-        {{ item.label }}
+        <div class="work__preview" aria-hidden="true" inert>
+          <div class="work__scene">
+            <div class="work__canvas">
+              @switch (work.key) {
+                @case ('sdvig') {
+                  <div class="cover cover--sdvig">
+                    <span class="cover__eyebrow">Независимый музыкальный лейбл</span>
+                    <div class="cover__sound">ЗВУК<br />ВНЕ<br /><em>ПРАВИЛ.</em></div>
+                    <div class="cover__record">
+                      <span>СДВИГ<br /><small>33 RPM</small></span>
+                    </div>
+                    <span class="cover__side">Электроника / Ночные релизы</span>
+                  </div>
+                }
+                @case ('miora') {
+                  <div class="cover cover--miora">
+                    <img
+                      src="images/concept-miora-v2.webp"
+                      width="1200"
+                      height="800"
+                      loading="lazy"
+                      alt=""
+                    />
+                    <span class="cover__beauty-name">miora</span>
+                    <div class="cover__beauty-copy">Меньше.<br /><em>Но лучше.</em></div>
+                    <span class="cover__beauty-note"
+                      >Ежедневный ритуал<br />Формулы ухода — коллекция 03</span
+                    >
+                  </div>
+                }
+                @case ('moto') {
+                  <div class="cover cover--moto"><app-site-mock concept="moto" /></div>
+                }
+                @case ('kroshka') {
+                  <div class="cover cover--kroshka">
+                    <span class="cover__cafe-name">крошка</span>
+                    <img
+                      src="images/concept-coffee-960.webp"
+                      width="960"
+                      height="640"
+                      loading="lazy"
+                      alt=""
+                    />
+                    <div class="cover__cafe-copy">Заходите<br /><em>на чашку.</em></div>
+                    <span class="cover__cafe-note">Кофе. Выпечка.<br />Хорошие соседи.</span>
+                  </div>
+                }
+                @case ('exhibit') {
+                  <div class="cover cover--exhibit">
+                    <span class="cover__eyebrow">Выставка современного искусства</span>
+                    <div class="cover__art-name">ВНЕ<br /><em>РАМКИ</em></div>
+                    <img
+                      src="images/concept-exhibit-960.webp"
+                      width="960"
+                      height="720"
+                      loading="lazy"
+                      alt=""
+                    />
+                    <span class="cover__art-date">12.09<br />30.11</span>
+                  </div>
+                }
+                @case ('saldo') {
+                  <div class="cover cover--saldo"><app-site-mock concept="saldo" /></div>
+                }
+              }
+            </div>
+          </div>
+          <span class="work__open"
+            >Рассмотреть <svg viewBox="0 0 24 24"><path d="M5 19 19 5M5 5h14v14" /></svg
+          ></span>
+        </div>
+        <div class="work__caption">
+          <h3>{{ work.name }}</h3>
+          <span>{{ work.niche }}</span
+          ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14" /></svg>
+        </div>
       </button>
     }
   </div>
-
-  <div class="cmp reveal">
-    <div class="cmp__labels">
-      <span class="cmp__badge cmp__badge--left">{{ pair().leftName }}</span>
-      <span class="cmp__badge cmp__badge--right">{{ pair().rightName }}</span>
-    </div>
-
-    <p class="visually-hidden" id="cmp-hint">
-      Слева концепт «{{ pair().leftName }}», справа — «{{ pair().rightName }}». Это независимые
-      проекты разных ниш, а не редизайн одного сайта: сравниваются типографика, композиция, цвет,
-      масштаб и работа с контентом.
-    </p>
-
-    <div
-      class="cmp__frame"
-      #frame
-      (pointerdown)="onFramePointerDown($event)"
-      (pointermove)="onFramePointerMove($event)"
-      (pointerup)="onFramePointerUp($event)"
-      (pointercancel)="onFramePointerCancel($event)"
-      (dragstart)="onDragStart($event)"
-    >
-      <div class="cmp__stage">
-        <!-- Нижний слой: правый концепт пары, виден справа от границы. -->
-        <div class="cmp__layer">
-          <app-site-mock [concept]="pair().right" />
-        </div>
-
-        <!-- Верхний слой: левый концепт пары, открывается обрезкой слева. -->
-        <div class="cmp__layer cmp__layer--left" [style.clip-path]="clipPath()">
-          <app-site-mock [concept]="pair().left" />
-        </div>
-      </div>
-
-      <span class="cmp__rule" aria-hidden="true" [style.left.%]="split()"></span>
-
-      <button
-        class="cmp__handle"
-        type="button"
-        #handle
-        role="slider"
-        tabindex="0"
-        aria-label="Граница сравнения концептов"
-        aria-orientation="horizontal"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        [attr.aria-valuenow]="split()"
-        [attr.aria-valuetext]="valueText()"
-        aria-describedby="cmp-hint"
-        [style.left.%]="split()"
-        (keydown)="onHandleKeydown($event)"
-      >
-        <span class="cmp__grip" aria-hidden="true">
-          <svg class="cmp__handle-glyph" viewBox="0 0 24 24" focusable="false">
-            <path d="M9.5 6.5 5 12l4.5 5.5M14.5 6.5 19 12l-4.5 5.5" />
-          </svg>
-        </span>
-      </button>
-    </div>
-  </div>
-
-  <ul class="demo__foot reveal">
-    <li class="demo__point">Композиция</li>
-    <li class="demo__point">Типографика</li>
-    <li class="demo__point">Акценты</li>
-  </ul>
 </div>
+<dialog
+  #viewer
+  class="work-dialog"
+  data-lenis-prevent
+  aria-labelledby="work-title"
+  (close)="onClose()"
+  (cancel)="onCancel($event, viewer)"
+  (click)="backdrop($event, viewer)"
+>
+  @if (selected(); as work) {
+    <header class="work-dialog__head">
+      <div>
+        <h2 id="work-title">{{ work.name }}</h2>
+        <p>{{ work.niche }}</p>
+      </div>
+      <button type="button" autofocus (click)="close(viewer)" aria-label="Закрыть просмотр">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M6 18 18 6" /></svg>
+      </button>
+    </header>
+    <p class="work-dialog__direction">{{ work.direction }}</p>
+    <div class="work-dialog__site"><app-site-mock [concept]="work.key" /></div>
+  }
+</dialog>

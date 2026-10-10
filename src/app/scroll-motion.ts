@@ -18,11 +18,14 @@ export function initScrollMotion(host: HTMLElement) {
         // Lenis stream. Bypassing it mid-inertia lets native wheel events
         // compete with the unfinished Lenis target and stalls the page.
         prevent: (node) =>
-          node.closest('.cal, .menu') !== null ||
+          node.closest('.cal, .menu, .work-dialog') !== null ||
           document.body.classList.contains('menu-open'),
       });
       const current = lenis;
       const tick = (seconds: number) => current.raf(seconds * 1000);
+      const galleryToggle = (event: Event) =>
+        (event as CustomEvent<boolean>).detail ? current.stop() : current.start();
+      window.addEventListener('waystroke:gallery-toggle', galleryToggle);
       current.on('scroll', ScrollTrigger.update);
       gsap.ticker.add(tick);
       document.documentElement.classList.add('scroll-motion');
@@ -54,6 +57,19 @@ export function initScrollMotion(host: HTMLElement) {
           },
         );
       });
+      host.querySelectorAll<HTMLElement>('.work').forEach((card) => {
+        gsap.fromTo(
+          card,
+          { clipPath: 'inset(12% 0 0 0)', y: 28 },
+          {
+            clipPath: 'inset(0% 0 0 0)',
+            y: 0,
+            duration: 1.15,
+            ease: 'power3.out',
+            scrollTrigger: { trigger: card, start: 'top 94%', once: true },
+          },
+        );
+      });
       // Refresh after fonts, embeds and disclosure height changes, without per-frame layout reads.
       let frame: number | null = null;
       const observer = new ResizeObserver(() => {
@@ -68,6 +84,7 @@ export function initScrollMotion(host: HTMLElement) {
         observer.disconnect();
         if (frame !== null) window.clearTimeout(frame);
         gsap.ticker.remove(tick);
+        window.removeEventListener('waystroke:gallery-toggle', galleryToggle);
         current.destroy();
         lenis = null;
         document.documentElement.classList.remove('scroll-motion');

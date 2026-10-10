@@ -1,61 +1,34 @@
 <article class="mock">
   <header class="nav">
-    <span class="nav__brand">крошка</span>
-
-    <span class="nav__links" aria-hidden="true">
-      <span class="nav__link">Меню</span>
-      <span class="nav__link">Доставка</span>
-      <span class="nav__link">Кофейни</span>
-      <span class="nav__link">Контакты</span>
-    </span>
-
-    <span class="nav__pill">Заказать</span>
+    <span class="brand">крошка</span><span>Кофейня у дома</span><span>07:00 — 22:00</span>
   </header>
-
-  <section class="hero">
-    <div class="hero__copy">
-      <p class="hero__kicker">Кофейня у дома</p>
-      <h3 class="hero__title">Кофе, который будит добротой.</h3>
-      <p class="hero__lead">
-        Обжариваем каждую неделю, молоко берём у фермеров, а печенье не делим
-        на всех.
-      </p>
-
-      <div class="hero__actions">
-        <span class="btn">Смотреть меню</span>
-        <span class="hours">07:00 — 22:00, ежедневно</span>
-      </div>
-    </div>
-
-    <figure class="visual">
+  <section class="cafe">
+    <div class="cafe__photo">
       <img
-        class="visual__img"
         src="images/concept-coffee-960.webp"
-        srcset="images/concept-coffee-480.webp 480w, images/concept-coffee-960.webp 960w"
-        sizes="(max-width: 700px) 92vw, 46vw"
         width="960"
         height="640"
-        alt="Бариста наливает латте с рисунком из молочной пены"
         loading="lazy"
-        decoding="async"
-        draggable="false"
-      />
-      <figcaption class="sticker">свежая<br />обжарка</figcaption>
-      <span class="visual__stripe" aria-hidden="true"></span>
-    </figure>
+        alt="Бариста готовит латте"
+      /><span>заходите<br /><em>на чашку.</em></span>
+    </div>
+    <div class="cafe__menu">
+      <p>Меню дня</p>
+      <h3>Кофе, который<br /><em>будит добротой.</em></h3>
+      <ul>
+        @for (item of menu; track item.name) {
+          <li>
+            <span
+              >{{ item.name }}<small>{{ item.note }}</small></span
+            ><b>{{ item.price }}</b>
+          </li>
+        }
+      </ul>
+      <p class="cafe__note">
+        Обжариваем каждую неделю, молоко берём у фермеров, а печенье не делим на всех.
+      </p>
+      <span class="order">Смотреть меню ↗</span>
+    </div>
   </section>
-
-  <section class="band">
-    <p class="band__label">Меню дня</p>
-
-    <ul class="menu">
-      @for (item of menu; track item.name) {
-        <li class="menu__item">
-          <span class="menu__name">{{ item.name }}</span>
-          <span class="menu__note">{{ item.note }}</span>
-          <span class="menu__price">{{ item.price }}</span>
-        </li>
-      }
-    </ul>
-  </section>
+  <footer>Кофе. Выпечка. Хорошие соседи.<span>Каждый день, рядом с вами.</span></footer>
 </article>

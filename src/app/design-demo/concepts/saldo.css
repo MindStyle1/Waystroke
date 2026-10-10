@@ -1,595 +1,272 @@
-/* Концепт «saldo» — финтех-дашборд: светлая панель, синий акцент, карточки. */
-
 :host {
   display: block;
   height: 100%;
   container-type: inline-size;
 }
-
-.mock {
-  display: flex;
+.finance {
   height: 100%;
-  min-height: clamp(500px, 56cqw, 740px);
-  overflow: hidden;
-  background: #f4f6fa;
-  color: #10131a;
+  min-height: 680px;
+  padding: 0 38px;
+  background: #252337;
+  color: #f2f0eb;
   font-family: var(--font-sans);
-  line-height: 1.45;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Арты внутри концепта ничего не перехватывают: drag живёт на рамке сравнения. */
-.mock,
-.mock :where(*) {
+  overflow: hidden;
   pointer-events: none;
 }
-
-/* --- Левая панель --------------------------------------------------------- */
-
-.side {
-  flex: none;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(10px, 1.4cqw, 18px);
-  width: clamp(150px, 17cqw, 232px);
-  padding: clamp(16px, 2.2cqw, 30px) clamp(12px, 1.6cqw, 22px);
-  background: #ffffff;
-  border-right: 1px solid rgba(16, 19, 26, 0.08);
-}
-
-.side__brand {
-  font-size: clamp(17px, 2cqw, 26px);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #10131a;
-}
-
-.side__dot {
-  color: #2b59ff;
-}
-
-.side__caption {
-  font-size: clamp(9.5px, 0.9cqw, 12px);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(16, 19, 26, 0.45);
-}
-
-.side__nav {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(4px, 0.6cqw, 8px);
-  margin-top: clamp(6px, 1cqw, 14px);
-}
-
-.side__item {
+.finance__nav {
+  height: 88px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.6em 0.85em;
-  border-radius: clamp(8px, 1cqw, 12px);
-  font-size: clamp(11px, 1.1cqw, 14px);
-  color: rgba(16, 19, 26, 0.62);
-  white-space: nowrap;
-}
-
-.side__item.is-active {
-  background: #eaefff;
-  color: #2b59ff;
-  font-weight: 600;
-}
-
-.side__promo {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: auto;
-  padding: clamp(10px, 1.4cqw, 18px);
-  border-radius: clamp(10px, 1.4cqw, 16px);
-  background: linear-gradient(160deg, #2b59ff 0%, #1c3fd1 100%);
-  color: #ffffff;
-}
-
-.side__promo-title {
-  font-size: clamp(11px, 1.1cqw, 14px);
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.side__promo-text {
-  font-size: clamp(9.5px, 0.95cqw, 12px);
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.side__promo-btn {
-  margin-top: 4px;
-  padding: 0.55em 1em;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #1c3fd1;
-  font-size: clamp(9.5px, 0.95cqw, 12px);
-  font-weight: 700;
-  text-align: center;
-}
-
-/* --- Главная область ------------------------------------------------------ */
-
-.main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(12px, 1.8cqw, 24px);
-  padding: clamp(16px, 2.2cqw, 30px) clamp(14px, 2.2cqw, 30px);
-}
-
-.head {
-  display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: clamp(10px, 1.6cqw, 24px);
+  border-bottom: 1px solid #514c63;
 }
-
-.head__kicker {
-  font-size: clamp(9.5px, 0.9cqw, 12px);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(16, 19, 26, 0.45);
+.finance__brand {
+  font-family: var(--font-serif);
+  font-size: 38px;
+  letter-spacing: -0.04em;
 }
-
-.head__title {
-  margin-top: 4px;
-  font-size: clamp(24px, 3.4cqw, 46px);
-  font-weight: 700;
+.finance__brand > span {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  margin-left: 8px;
+  color: #c2afd8;
+}
+.finance__nav nav {
+  display: flex;
+  gap: 30px;
+  font-size: 12px;
+  color: #a8a2b7;
+}
+.finance__nav .active {
+  color: #f2f0eb;
+}
+.finance__profile {
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  background: #494258;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+}
+.finance__hero {
+  height: calc(100% - 288px);
+  min-height: 350px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  padding: 32px 0;
+}
+.finance__balance > p {
+  font-size: 11px;
+  color: #bcb3ca;
+}
+.finance__balance h3 {
+  font-size: clamp(32px, 4.3cqw, 54px);
+  font-weight: 400;
   line-height: 1.05;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
+  margin: 22px 0 28px;
 }
-
-.head__lead {
-  max-width: 56ch;
-  margin-top: clamp(6px, 0.9cqw, 12px);
-  font-size: clamp(11px, 1.1cqw, 14.5px);
-  color: rgba(16, 19, 26, 0.6);
+.finance__balance em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  color: #d1bde6;
 }
-
-.head__badge {
-  flex: none;
-  padding: 0.5em 1em;
-  border: 1px solid rgba(43, 89, 255, 0.4);
-  border-radius: 999px;
-  background: #eaefff;
-  color: #2b59ff;
-  font-size: clamp(9.5px, 0.95cqw, 12px);
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-/* --- Карточки ------------------------------------------------------------- */
-
-.cards {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: clamp(10px, 1.4cqw, 18px);
-}
-
-.card {
-  min-width: 0;
-  padding: clamp(12px, 1.6cqw, 20px);
-  border: 1px solid rgba(16, 19, 26, 0.08);
-  border-radius: clamp(12px, 1.6cqw, 20px);
-  background: #ffffff;
-}
-
-.card__head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.card__label {
-  font-size: clamp(9.5px, 0.95cqw, 12.5px);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(16, 19, 26, 0.5);
-}
-
-.card__hint {
-  font-size: clamp(9.5px, 0.95cqw, 12px);
-  color: rgba(16, 19, 26, 0.4);
-  white-space: nowrap;
-}
-
-.card--balance {
-  grid-column: span 2;
-}
-
-.card--wallet {
-  grid-column: span 2;
-}
-
-.card--donut {
-  grid-column: span 2;
-}
-
-.card--ops {
-  grid-column: span 4;
-}
-
-.card--goals {
-  grid-column: span 2;
-}
-
-/* Баланс + спарклайн */
-
-.balance__value {
-  margin-top: clamp(6px, 1cqw, 12px);
-  font-size: clamp(24px, 3.2cqw, 44px);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-.balance__value span {
-  font-size: 0.6em;
-  color: rgba(16, 19, 26, 0.5);
-}
-
-.balance__delta {
-  display: inline-block;
-  margin-top: clamp(6px, 0.9cqw, 12px);
-  padding: 0.35em 0.8em;
-  border-radius: 999px;
-  background: #e6f7ef;
-  color: #16865a;
-  font-size: clamp(9.5px, 0.95cqw, 12.5px);
-  font-weight: 600;
-}
-
-.spark {
+.finance__label {
   display: block;
+  font-size: 11px;
+  color: #bcb3ca;
+}
+.finance__amount {
+  font-size: clamp(44px, 6cqw, 74px);
+  letter-spacing: -0.055em;
+  line-height: 1.25;
+}
+.finance__amount > span {
+  font-size: 0.45em;
+  margin-left: 12px;
+  color: #bcb3ca;
+}
+.finance__delta {
+  font-size: 11px;
+  color: #b9d7bd;
+}
+.finance__chart {
+  align-self: center;
+}
+.finance__chart header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  font-size: 11px;
+  color: #bcb3ca;
+}
+.finance__chart svg {
   width: 100%;
-  height: clamp(34px, 4.4cqw, 62px);
-  margin-top: clamp(8px, 1.2cqw, 16px);
-}
-
-.spark path {
+  height: 225px;
+  overflow: visible;
+  margin-top: 20px;
   fill: none;
-  stroke: #2b59ff;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  vector-effect: non-scaling-stroke;
 }
-
-/* Карта */
-
-.card--wallet {
-  padding: clamp(12px, 1.6cqw, 20px);
+.finance__grid {
+  stroke: #514c63;
+  stroke-width: 0.8;
 }
-
-.wallet {
-  position: relative;
+.finance__area {
+  fill: #b7a0d6;
+  opacity: 0.09;
+}
+.finance__line {
+  stroke: #ceb4e7;
+  stroke-width: 3;
+}
+.finance__chart circle {
+  fill: #d1bde6;
+  stroke: #252337;
+  stroke-width: 3;
+}
+.finance__axis {
   display: flex;
-  flex-direction: column;
-  gap: clamp(6px, 1cqw, 12px);
-  height: 100%;
-  min-height: clamp(140px, 15cqw, 210px);
-  padding: clamp(12px, 1.6cqw, 22px);
-  border-radius: clamp(10px, 1.4cqw, 18px);
-  background: linear-gradient(150deg, #2b59ff 0%, #16267a 62%, #101a4d 100%);
-  color: #ffffff;
-}
-
-.wallet__brand {
-  font-size: clamp(13px, 1.5cqw, 19px);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-}
-
-.wallet__chip {
-  position: absolute;
-  top: clamp(38px, 4.6cqw, 64px);
-  right: clamp(12px, 1.6cqw, 22px);
-  width: clamp(22px, 2.6cqw, 36px);
-  height: clamp(16px, 2cqw, 26px);
-  border-radius: 5px;
-  background: linear-gradient(140deg, #ffd98a, #d9a94a);
-}
-
-.wallet__num {
-  margin-top: auto;
-  font-size: clamp(12px, 1.5cqw, 20px);
-  letter-spacing: 0.14em;
-}
-
-.wallet__row {
-  display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
-  font-size: clamp(9.5px, 1cqw, 13px);
-  color: rgba(255, 255, 255, 0.76);
+  color: #928a9f;
+  font-size: 10px;
 }
-
-.wallet__row b {
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.finance__flow {
+  display: flex;
+  gap: 45px;
+  margin-top: 22px;
+  font-size: 10px;
+  color: #a8a2b7;
 }
-
-.wallet__sum {
-  font-size: clamp(13px, 1.7cqw, 22px);
-  font-weight: 700;
+.finance__flow b {
+  display: block;
+  font-size: 17px;
+  font-weight: 400;
+  color: #f2f0eb;
+  margin-top: 6px;
 }
-
-/* Кольцевая диаграмма */
-
-.card--donut {
+.finance__bottom {
+  height: 200px;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
-  align-items: center;
-  column-gap: clamp(8px, 1.2cqw, 16px);
+  grid-template-columns: 1.2fr 1fr;
+  gap: 65px;
+  padding-top: 24px;
+  border-top: 1px solid #514c63;
 }
-
-.card--donut .card__label {
-  grid-column: 1 / -1;
-  margin-bottom: clamp(6px, 1cqw, 12px);
-}
-
-.donut {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: clamp(84px, 9.6cqw, 132px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: conic-gradient(#e8ecf6 0 100%);
-}
-
-.donut__hole {
-  display: grid;
-  place-items: center;
-  width: 62%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #ffffff;
-  font-size: clamp(11px, 1.2cqw, 15px);
-  font-weight: 700;
-  line-height: 1.1;
-  text-align: center;
-}
-
-.donut__hole b {
-  font-size: 0.75em;
-  font-weight: 600;
-  color: rgba(16, 19, 26, 0.5);
-}
-
-.legend {
+.finance__bottom header {
   display: flex;
-  flex-direction: column;
-  gap: clamp(4px, 0.7cqw, 9px);
-  min-width: 0;
-}
-
-.legend__item {
-  display: flex;
-  align-items: center;
-  gap: clamp(5px, 0.7cqw, 9px);
-  font-size: clamp(9.5px, 1cqw, 13px);
-}
-
-.legend__dot {
-  flex: none;
-  width: clamp(7px, 0.8cqw, 11px);
-  aspect-ratio: 1;
-  border-radius: 3px;
-}
-
-.legend__name {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgba(16, 19, 26, 0.72);
-}
-
-.legend__share {
-  margin-left: auto;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* Операции */
-
-.ops {
-  display: flex;
-  flex-direction: column;
-  margin-top: clamp(8px, 1.2cqw, 14px);
-}
-
-.ops__row {
-  display: flex;
-  align-items: center;
-  gap: clamp(8px, 1.2cqw, 16px);
-  padding: clamp(7px, 1cqw, 12px) 0;
-  border-bottom: 1px solid rgba(16, 19, 26, 0.07);
-  font-size: clamp(11px, 1.15cqw, 15px);
-}
-
-.ops__row:last-child {
-  border-bottom: 0;
-}
-
-.ops__avatar {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: clamp(22px, 2.6cqw, 34px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #eaefff;
-  color: #2b59ff;
-  font-size: clamp(9.5px, 1cqw, 13px);
-  font-weight: 700;
-}
-
-.ops__name {
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ops__category {
-  color: rgba(16, 19, 26, 0.5);
-  font-size: clamp(9.5px, 1cqw, 13px);
-  white-space: nowrap;
-}
-
-.ops__amount {
-  margin-left: auto;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.ops__amount--in {
-  color: #16865a;
-}
-
-/* Цели */
-
-.goal + .goal {
-  margin-top: clamp(9px, 1.3cqw, 16px);
-}
-
-.card--goals .goal:first-of-type {
-  margin-top: clamp(8px, 1.2cqw, 14px);
-}
-
-.goal__row {
-  display: flex;
-  align-items: baseline;
   justify-content: space-between;
-  gap: 8px;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
 }
-
-.goal__name {
-  font-size: clamp(11px, 1.15cqw, 15px);
-  font-weight: 600;
+.finance__bottom h4 {
+  font-size: 14px;
+  font-weight: 400;
 }
-
-.goal__percent {
-  font-size: clamp(9.5px, 1cqw, 13px);
-  color: #2b59ff;
-  font-weight: 700;
+.finance__bottom header > span {
+  font-size: 10px;
+  color: #bcb3ca;
 }
-
-.goal__bar {
-  height: clamp(6px, 0.8cqw, 10px);
-  margin-top: clamp(5px, 0.7cqw, 9px);
-  border-radius: 999px;
-  background: #e8ecf6;
-  overflow: hidden;
+.finance__operation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 0;
+  border-top: 1px solid #514c63;
+  font-size: 12px;
 }
-
-.goal__fill {
+.finance__operation small {
   display: block;
+  color: #a8a2b7;
+  font-size: 9px;
+  margin-top: 5px;
+}
+.finance__operation b {
+  font-weight: 400;
+}
+.finance__operation .income {
+  color: #b9d7bd;
+}
+.finance__goal > p {
+  font-size: 10px;
+  color: #bcb3ca;
+}
+.finance__goal h4 {
+  font-size: 28px;
+  font-family: var(--font-serif);
+  margin: 10px 0 15px;
+}
+.finance__goal > span {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #bcb3ca;
+}
+.finance__goal b {
+  font-weight: 400;
+  color: #f2f0eb;
+}
+.finance__progress {
+  height: 3px;
+  background: #514c63;
+  margin: 12px 0;
+}
+.finance__progress i {
+  display: block;
+  width: 60%;
   height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #2b59ff, #6b8bff);
+  background: #b9d7bd;
 }
-
-.goal__value {
-  display: block;
-  margin-top: 4px;
-  font-size: clamp(9.5px, 0.95cqw, 12.5px);
-  color: rgba(16, 19, 26, 0.5);
+.finance__goal > small {
+  font-size: 9px;
+  color: #a8a2b7;
 }
-
-/* --- Телефон -------------------------------------------------------------- */
-
-@container (max-width: 700px) {
-  .mock {
-    flex-direction: column;
+@container (max-width:600px) {
+  .finance {
+    height: auto;
     min-height: 0;
+    padding: 0 20px;
   }
-
-  .side {
-    width: auto;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 14px;
-    border-right: 0;
-    border-bottom: 1px solid rgba(16, 19, 26, 0.08);
+  .finance__nav {
+    height: 80px;
   }
-
-  .side__caption,
-  .side__promo {
+  .finance__nav nav {
+    gap: 14px;
+    font-size: 10px;
+  }
+  .finance__brand {
+    font-size: 30px;
+  }
+  .finance__profile {
     display: none;
   }
-
-  .side__nav {
-    flex-direction: row;
-    margin-top: 0;
-    margin-left: auto;
-    gap: 6px;
+  .finance__hero {
+    height: auto;
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 28px 0;
   }
-
-  .side__item {
-    display: none;
-    padding: 0.45em 0.9em;
-    background: #eaefff;
-    color: #2b59ff;
-    font-weight: 600;
+  .finance__balance h3 {
+    font-size: 42px;
   }
-
-  .side__item.is-active {
-    display: flex;
+  .finance__amount {
+    font-size: 66px;
   }
-
-  .main {
-    padding: 14px;
-    gap: 12px;
+  .finance__chart svg {
+    height: 210px;
   }
-
-  .head__title {
-    font-size: clamp(24px, 8cqw, 34px);
+  .finance__bottom {
+    height: auto;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding: 26px 0 35px;
   }
-
-  .head__badge {
-    display: none;
+  .finance__bottom h4 {
+    font-size: 15px;
   }
-
-  .cards {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .card--balance,
-  .card--wallet {
-    grid-column: span 1;
-  }
-
-  .card--donut,
-  .card--ops,
-  .card--goals {
-    grid-column: span 2;
-  }
-
-  .wallet {
-    min-height: 0;
-  }
-
-  .wallet__num {
-    font-size: 12px;
-  }
-
-  .ops__category {
-    display: none;
+  .finance__goal h4 {
+    font-size: 30px;
   }
 }

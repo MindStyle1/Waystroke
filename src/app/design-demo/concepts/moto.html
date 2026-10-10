@@ -1,63 +1,51 @@
-<article class="mock">
-  <header class="hero">
-    <div class="nav">
-      <span class="nav__brand">
-        ТОЧКА·МОТОР
-        <span class="nav__sub">Профессиональный автосервис</span>
-      </span>
-
-      <span class="nav__links" aria-hidden="true">
-        <span class="nav__link">Услуги</span>
-        <span class="nav__link">Мастерская</span>
-        <span class="nav__link">Контакты</span>
-      </span>
-
-      <span class="nav__mark" aria-hidden="true"></span>
-    </div>
-
-    <div class="hero__photo">
-      <img
-        src="images/concept-moto-960.webp"
-        srcset="images/concept-moto-480.webp 480w, images/concept-moto-960.webp 960w"
-        sizes="(max-width: 700px) 100vw, 70vw"
-        width="960"
-        height="640"
-        alt="Автомобиль в защитной плёнке внутри покрасочной камеры автосервиса"
-        loading="lazy"
-        decoding="async"
-        draggable="false"
-      />
-      <span class="hero__shade" aria-hidden="true"></span>
-    </div>
-
-    <div class="hero__body">
-      <div class="hero__copy">
-        <p class="hero__kicker">Москва · обслуживание всех марок</p>
-        <h3 class="hero__title">
-          Точность,<br />в каждой<br />детали<span class="hero__accent">.</span>
-        </h3>
-        <p class="hero__lead">
-          Экспертное обслуживание современных автомобилей: диагностика,
-          двигатель, ходовая, кузов.
-        </p>
-        <span class="btn">
-          Записаться в сервис
-          <span class="btn__arrow" aria-hidden="true">→</span>
-        </span>
-      </div>
-    </div>
+<article class="workshop">
+  <header class="workshop__nav">
+    <span class="workshop__brand">ТОЧКА<span>МОТОР</span></span
+    ><span>Мастерская точной механики</span><span>Москва ↗</span>
   </header>
-
-  <section class="band">
-    @for (item of services; track item.title) {
-      <article class="service">
-        <svg class="service__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path [attr.d]="item.icon" />
-        </svg>
-        <h4 class="service__title">{{ item.title }}</h4>
-        <p class="service__text">{{ item.text }}</p>
-        <span class="service__arrow" aria-hidden="true">→</span>
-      </article>
-    }
+  <section class="workshop__hero">
+    <div class="workshop__copy">
+      <p>Диагностика / Ремонт / Регламент</p>
+      <h3>Механика.<br /><em>Без догадок.</em></h3>
+      <p class="workshop__lead">
+        Сначала находим причину. Затем возвращаем автомобилю точность — от одного узла до всей
+        системы.
+      </p>
+      <span class="workshop__cta">Записаться на диагностику <b>↗</b></span>
+    </div>
+    <div class="engine">
+      <span class="engine__label">Устройство имеет значение</span>
+      <svg viewBox="0 0 440 460" aria-hidden="true">
+        <g class="engine__guides">
+          <path d="M220 15v420M35 110h370M35 210h370M35 325h370" />
+          <circle cx="220" cy="230" r="180" />
+        </g>
+        <g class="engine__metal">
+          <path
+            d="m123 75 155-28 70 45-155 31zM123 75v70l70 46 155-31V92M193 123v68M143 88l132-23 46 29-132 25z"
+          />
+          <path d="m141 162 136-25 46 30-136 27zM141 162v85l46 31 136-27v-84M187 194v84" />
+          <path d="m158 250 77-14 48 30-77 15zM158 250v42l48 31 77-15v-42M206 281v42" />
+          <path d="m181 321 39-7 24 15v59l-39 8-24-15zM205 336v60" />
+          <path d="m143 389 142-27 57 37-142 29zM143 389v25l57 29 142-27v-17M200 428v15" />
+          <ellipse cx="246" cy="92" rx="22" ry="10" />
+          <ellipse cx="236" cy="177" rx="22" ry="10" />
+        </g>
+        <g class="engine__signal">
+          <path d="M340 113h65M116 220H46M285 296h112" />
+          <circle cx="340" cy="113" r="5" />
+          <circle cx="116" cy="220" r="5" />
+          <circle cx="285" cy="296" r="5" />
+        </g>
+      </svg>
+      <span class="engine__tag engine__tag--a">Головка блока</span
+      ><span class="engine__tag engine__tag--b">Точность сборки</span
+      ><span class="engine__tag engine__tag--c">Ничего лишнего</span>
+    </div>
   </section>
+  <footer class="workshop__services">
+    <div><span>Диагностика</span><small>Причина, а не симптом</small></div>
+    <div><span>Двигатель и ходовая</span><small>Работа по регламенту</small></div>
+    <div><span>Прозрачная смета</span><small>До начала ремонта</small></div>
+  </footer>
 </article>

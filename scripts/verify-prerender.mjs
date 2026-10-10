@@ -15,7 +15,7 @@ assert.equal(root.querySelectorAll('h1').length, 1);
 assert.match(root.querySelector('h1').textContent, /Сайты, которые удобно/);
 assert.match(root.querySelector('.lead').textContent, /Waystroke начинает со структуры/);
 assert.deepEqual(
-  [...root.querySelectorAll('.service__title')].map((el) => el.textContent.trim()),
+  [...root.querySelectorAll('#services .service__title')].map((el) => el.textContent.trim()),
   ['Новый сайт', 'Адаптивная вёрстка', 'Доработка'],
 );
 assert.equal(root.querySelectorAll('.faq__item').length, 6);

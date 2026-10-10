@@ -1,119 +1,61 @@
-<article class="mock">
-  <aside class="side">
-    <span class="side__brand">saldo<span class="side__dot">.</span></span>
-    <span class="side__caption">Личные финансы</span>
-
-    <nav class="side__nav" aria-hidden="true">
-      <span class="side__item is-active">Обзор</span>
-      <span class="side__item">Операции</span>
-      <span class="side__item">Цели</span>
-      <span class="side__item">Категории</span>
-      <span class="side__item">Настройки</span>
-    </nav>
-
-    <div class="side__promo">
-      <span class="side__promo-title">Больше возможностей в Pro</span>
-      <span class="side__promo-text">Аналитика, лимиты и совместные счета.</span>
-      <span class="side__promo-btn">Узнать больше</span>
+<article class="finance">
+  <header class="finance__nav">
+    <span class="finance__brand">saldo<span>↗</span></span>
+    <nav><span class="active">Обзор</span><span>Движение</span><span>Планы</span></nav>
+    <span class="finance__profile">АИ</span>
+  </header>
+  <section class="finance__hero">
+    <div class="finance__balance">
+      <p>Ваше финансовое пространство</p>
+      <h3>Всё приходит<br /><em>в равновесие.</em></h3>
+      <span class="finance__label">Общий баланс</span>
+      <div class="finance__amount">124 500<span>₽</span></div>
+      <span class="finance__delta">↗ 12 400 ₽ за сентябрь</span>
     </div>
-  </aside>
-
-  <main class="main">
-    <header class="head">
-      <div class="head__copy">
-        <p class="head__kicker">Обзор за сентябрь</p>
-        <h3 class="head__title">Финансы под контролем.</h3>
-        <p class="head__lead">
-          Расходы, цели и накопления в одном спокойном интерфейсе. Все данные
-          вымышлены.
-        </p>
+    <div class="finance__chart">
+      <header><span>Движение средств</span><span>Сентябрь ⌄</span></header>
+      <svg viewBox="0 0 460 300" aria-hidden="true">
+        <g class="finance__grid"><path d="M0 40h460M0 115h460M0 190h460M0 265h460" /></g>
+        <path
+          class="finance__area"
+          d="M0 245C30 245 30 215 65 220S110 240 140 190S195 175 220 185S260 85 295 100S340 125 365 65S410 68 440 36L440 280H0Z"
+        />
+        <path
+          class="finance__line"
+          d="M0 245C30 245 30 215 65 220S110 240 140 190S195 175 220 185S260 85 295 100S340 125 365 65S410 68 440 36"
+        />
+        <circle cx="440" cy="36" r="6" />
+      </svg>
+      <div class="finance__axis">
+        <span>01</span><span>10</span><span>20</span><span>30 сен</span>
       </div>
-      <span class="head__badge">Демо-данные</span>
-    </header>
-
-    <div class="cards">
-      <section class="card card--balance">
-        <p class="card__label">Баланс</p>
-        <p class="balance__value">124 500 <span>₽</span></p>
-        <span class="balance__delta">+12 400 ₽ за месяц</span>
-        <svg class="spark" viewBox="0 0 120 34" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-          <path d="M0 29 L15 25 L30 27 L45 19 L60 22 L75 13 L90 16 L105 7 L120 4" />
-        </svg>
-      </section>
-
-      <section class="card card--wallet">
-        <div class="wallet">
-          <span class="wallet__brand">saldo<span class="side__dot">.</span></span>
-          <span class="wallet__chip" aria-hidden="true"></span>
-          <span class="wallet__num">•••• •••• •••• 4218</span>
-          <span class="wallet__row">
-            <b>А. Иванова</b>
-            <span>12 / 29</span>
-          </span>
-          <span class="wallet__sum">124 500 ₽</span>
-        </div>
-      </section>
-
-      <section class="card card--donut">
-        <p class="card__label">Расходы по категориям</p>
-
-        <div class="donut" [style.background]="donutGradient">
-          <span class="donut__hole">
-            63 200
-            <b>₽</b>
-          </span>
-        </div>
-
-        <ul class="legend">
-          @for (item of legend; track item.name) {
-            <li class="legend__item">
-              <span class="legend__dot" [style.background]="item.color"></span>
-              <span class="legend__name">{{ item.name }}</span>
-              <span class="legend__share">{{ item.share }} %</span>
-            </li>
-          }
-        </ul>
-      </section>
-
-      <section class="card card--ops">
-        <div class="card__head">
-          <p class="card__label">Последние операции</p>
-          <span class="card__hint">Сентябрь</span>
-        </div>
-
-        <ul class="ops">
-          @for (item of operations; track item.name) {
-            <li class="ops__row">
-              <span class="ops__avatar" aria-hidden="true">{{ item.initial }}</span>
-              <span class="ops__name">{{ item.name }}</span>
-              <span class="ops__category">{{ item.category }}</span>
-              <span class="ops__amount" [class.ops__amount--in]="item.income">
-                {{ item.amount }}
-              </span>
-            </li>
-          }
-        </ul>
-      </section>
-
-      <section class="card card--goals">
-        <div class="card__head">
-          <p class="card__label">Мои цели</p>
-          <span class="card__hint">3 активные</span>
-        </div>
-
-        @for (item of goals; track item.name) {
-          <div class="goal">
-            <div class="goal__row">
-              <span class="goal__name">{{ item.name }}</span>
-              <span class="goal__percent">{{ item.percent }} %</span>
-            </div>
-            <div class="goal__bar">
-              <span class="goal__fill" [style.width.%]="item.percent"></span>
-            </div>
-            <span class="goal__value">{{ item.value }}</span>
-          </div>
-        }
-      </section>
+      <div class="finance__flow">
+        <span>Поступления<b>+75 600 ₽</b></span
+        ><span>Расходы<b>−63 200 ₽</b></span>
+      </div>
     </div>
-  </main>
+  </section>
+  <footer class="finance__bottom">
+    <section>
+      <header>
+        <h4>Последние движения</h4>
+        <span>Все операции ↗</span>
+      </header>
+      <div class="finance__operation">
+        <span>Кофейня «Пена»<small>Сегодня · Еда и напитки</small></span
+        ><b>−320 ₽</b>
+      </div>
+      <div class="finance__operation">
+        <span>Фриланс-проект<small>Вчера · Работа</small></span
+        ><b class="income">+18 000 ₽</b>
+      </div>
+    </section>
+    <section class="finance__goal">
+      <p>Следующая цель</p>
+      <h4>Выше города.</h4>
+      <span>Отпуск в горах <b>60%</b></span>
+      <div class="finance__progress"><i></i></div>
+      <small>72 000 ₽ из 120 000 ₽</small>
+    </section>
+  </footer>
 </article>

@@ -2042,3 +2042,5 @@ html.scroll-motion.motion-ready .reveal.is-visible {
   transition: none;
   will-change: auto;
 }
+
+body.work-open { overflow: hidden; }
