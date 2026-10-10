@@ -143,27 +143,6 @@ export function initHeroWave(
   gl.viewport(0, 0, canvas.width, canvas.height);
   hero.prepend(canvas);
   hero.classList.add('hero--wave', `hero--${variant}`);
-  const animations: Animation[] = [];
-  hero.querySelectorAll<HTMLElement>('.hero__word').forEach((word, i) => {
-    animations.push(
-      word.animate(
-        [
-          {
-            transform: `translateY(${paperMotion ? 12 : 36}px)`,
-            opacity: 0.12,
-            clipPath: paperMotion ? 'inset(0 100% 0 0)' : 'inset(0)',
-          },
-          { transform: 'translateY(0)', opacity: 1, clipPath: 'inset(0)' },
-        ],
-        {
-          duration: paperMotion ? 1800 : 1450,
-          delay: 280 + i * 200,
-          easing: 'cubic-bezier(.22,1,.36,1)',
-          fill: 'backwards',
-        },
-      ),
-    );
-  });
   let frame = 0,
     started = performance.now(),
     last = 0,
@@ -172,7 +151,6 @@ export function initHeroWave(
     if (disposed) return;
     disposed = true;
     cancelAnimationFrame(frame);
-    animations.forEach((a) => a.cancel());
     canvas.remove();
     gl.deleteBuffer(buffer);
     gl.deleteProgram(program);

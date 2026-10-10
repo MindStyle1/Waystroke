@@ -287,17 +287,14 @@ summary[aria-expanded='true'] span {
   fill: var(--accent);
 }
 @media (prefers-reduced-motion: no-preference) {
-  :host-context(.js) .hero__grid {
-    animation: hero-field-open 1.55s cubic-bezier(0.76, 0, 0.24, 1) both;
-  }
   :host-context(.js) .hero__word {
-    animation: hero-entrance 1.55s 0.25s cubic-bezier(0.65, 0, 0.25, 1) both;
+    animation: hero-ink-reveal 1.8s 0.28s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
   :host-context(.js) .hero__line:nth-child(2) .hero__word {
-    animation-delay: 0.4s;
+    animation-delay: 0.48s;
   }
   :host-context(.js) .hero__line--serif .hero__word {
-    animation: hero-serif-entrance 1.65s 0.55s cubic-bezier(0.65, 0, 0.25, 1) both;
+    animation-delay: 0.68s;
   }
   :host-context(.js) .hero__aside {
     animation: hero-aside 1.2s 0.75s cubic-bezier(0.4, 0, 0.2, 1) both;
@@ -341,32 +338,16 @@ summary[aria-expanded='true'] span {
     animation-play-state: running;
   }
 }
-@keyframes hero-field-open {
+@keyframes hero-ink-reveal {
   from {
-    clip-path: inset(0 0 100% 0);
+    transform: translateY(12px);
+    opacity: 0.12;
+    clip-path: inset(0 100% 0 0);
   }
   to {
+    transform: translateY(0);
+    opacity: 1;
     clip-path: inset(0);
-  }
-}
-@keyframes hero-serif-entrance {
-  from {
-    transform: translateX(-70px);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
-}
-@keyframes hero-entrance {
-  from {
-    transform: translateY(-110%);
-    opacity: 1;
-  }
-  to {
-    transform: none;
-    opacity: 1;
   }
 }
 @keyframes hero-aside {
@@ -489,10 +470,6 @@ summary[aria-expanded='true'] span {
   height: 100%;
   pointer-events: none;
   z-index: 0;
-}
-:host-context(.js) .hero--wave .hero__grid,
-:host-context(.js) .hero--wave .hero__word {
-  animation: none;
 }
 
 .hero--lime::before,
