@@ -23,8 +23,9 @@
   --tone-a: #c2d7d8;
   --tone-b: #efcfc4;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  --font-sans:
+    'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
   --font-serif: 'Playfair Display', 'Iowan Old Style', 'Times New Roman', serif;
 
   --container: 1280px;
@@ -889,46 +890,265 @@ app-root .services__note {
 }
 
 app-root .services__grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: clamp(14px, 1.6vw, 24px);
+  display: grid;
+  gap: 0;
   margin-top: clamp(34px, 4.5vw, 60px);
 }
 
 app-root .service {
-  flex: 1 1 270px;
   min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+  padding: 32px 0;
+  border-top: 1px solid var(--line);
+}
+
+app-root .service__details {
+  min-width: 0;
+}
+app-root .service__title {
+  font-size: clamp(1.65rem, 3vw, 2.7rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+app-root .service__text {
+  max-width: 43ch;
+}
+app-root .service__visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: clamp(240px, 24vw, 310px);
+  overflow: hidden;
+  border-radius: 16px;
+}
+app-root .service__visual--site {
+  background: #dce0cc;
+  padding: 30px 58px;
+}
+.study-page {
+  width: 100%;
+  max-width: 355px;
+  height: 245px;
+  padding: 20px 24px;
+  background: #f9f7ee;
+  color: var(--ink);
+  border: 1px solid #788165;
+  position: relative;
+  z-index: 1;
+}
+.study-page__nav,
+.study-page__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+}
+.study-page__nav {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 12px;
+  font-weight: 600;
+}
+.study-page__title {
+  font-size: clamp(32px, 3.3vw, 46px);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  margin: 19px 0;
+}
+.study-page__title em,
+.study-screen__title em,
+.study-after__title em {
+  font-family: var(--font-serif);
+  font-weight: 400;
+}
+.study-page__action {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.study-guide {
+  position: absolute;
+  background: #9aa487;
+}
+.study-guide--x {
+  height: 1px;
+  left: 0;
+  right: 0;
+  top: 53px;
+}
+.study-guide--y {
+  width: 1px;
+  top: 0;
+  bottom: 0;
+  left: 42px;
+}
+app-root .service__visual--responsive {
+  background: #252c28;
+  padding: 36px;
+  align-items: end;
+  gap: 0;
+}
+.study-screen {
+  background: #f1eee5;
+  border: 1px solid #a9b3a4;
+  padding: 16px;
+  color: var(--ink);
+}
+.study-screen--desktop {
+  width: 80%;
+  height: 215px;
+  margin-right: -24px;
+  margin-bottom: 6px;
+}
+.study-screen--phone {
+  position: relative;
+  width: 110px;
+  flex-shrink: 0;
+  height: 215px;
+  border: 5px solid #141614;
+  border-radius: 16px;
+  padding: 12px 8px;
+}
+.study-screen__brand {
+  font-size: 9px;
+  font-weight: 600;
+}
+.study-screen__title {
+  font-size: clamp(18px, 2vw, 28px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 18px 0;
+}
+.study-screen--phone .study-screen__title {
+  font-size: 17px;
+  margin: 12px 0;
+}
+.study-screen__tiles {
+  display: flex;
+  gap: 6px;
+}
+.study-screen__tiles i {
+  height: 44px;
+  flex: 1;
+  background: #c8d1ba;
+}
+.study-screen__tiles i:first-child {
+  background: var(--accent);
+}
+.study-screen--phone .study-screen__tiles {
+  flex-direction: column;
+  gap: 4px;
+}
+.study-screen--phone .study-screen__tiles i {
+  height: 8px;
+  flex: auto;
+}
+.study-size {
+  position: absolute;
+  bottom: 12px;
+  left: 36px;
+  color: #c8d0c3;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+app-root .service__visual--refine {
+  background: #e2d8d0;
+  padding: 28px;
+  gap: 12px;
+  align-items: center;
+}
+.study-before,
+.study-after {
+  width: 50%;
+  height: 235px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--line-soft);
-  border-radius: var(--radius-md);
-  padding: clamp(18px, 1.8vw, 28px);
-  transition:
-    transform 0.4s var(--ease),
-    box-shadow 0.4s var(--ease);
 }
-
-app-root .service.is-visible:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 22px 44px rgba(23, 25, 26, 0.11);
+.study-before {
+  background: #d2c9c0;
+  color: #626159;
 }
-
-/* Равная область под сцену в каждой карточке. */
-app-root .service__scene {
-  display: block;
-  height: clamp(116px, 11vw, 140px);
-  margin-bottom: clamp(14px, 1.6vw, 22px);
-  background: var(--bg);
-  border: 1px solid var(--line-soft);
-  border-radius: 16px;
-  overflow: hidden;
+.study-after {
+  background: #f9f7ee;
+  color: var(--ink);
 }
-
-app-root .service__scene .scene {
-  display: block;
-  width: 100%;
-  height: 100%;
+.study-state {
+  font-size: 10px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid currentColor;
+  opacity: 0.8;
+}
+.study-before__title {
+  font-size: 21px;
+  line-height: 1.1;
+  margin: 18px 0;
+}
+.study-before__blocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.study-before__blocks i {
+  height: 24px;
+  background: #b2aca3;
+}
+.study-after__title {
+  font-size: clamp(23px, 2.4vw, 32px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 16px 0;
+}
+.study-before__blocks i:nth-child(2) {
+  transform: translateY(-6px);
+}
+.study-before__blocks i:nth-child(3) {
+  transform: translateX(5px);
+}
+.study-before__button {
+  font-size: 9px;
+  padding-top: 9px;
+}
+.study-after__blocks {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  margin-top: auto;
+  margin-bottom: 10px;
+}
+.study-after__blocks i {
+  height: 10px;
+  background: #dde1d3;
+}
+.study-after__blocks i:first-child {
+  background: #c8d1ba;
+}
+.study-after__button {
+  font-size: 9px;
+  background: var(--accent);
+  padding: 8px 10px;
+  margin-top: auto;
+  align-self: start;
+  border-radius: 20px;
+}
+.services .heading {
+  max-width: none;
+  font-size: clamp(34px, 4.4vw, 62px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+.services .heading em {
+  font-family: var(--font-serif);
+  font-weight: 400;
 }
 
 /*
@@ -1029,13 +1249,6 @@ app-root .c-accent {
   stroke-linecap: round;
 }
 
-app-root .service__title {
-  font-size: clamp(1.1rem, 1.5vw, 1.32rem);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  margin-bottom: 10px;
-}
-
 app-root .service__text {
   font-size: 14.5px;
   line-height: 1.55;
@@ -1051,7 +1264,7 @@ app-root .service__text {
 app-root .service__rates {
   display: flex;
   flex-direction: column;
-  margin: auto 0 0;
+  margin: 24px 0 0;
   padding: 14px 0 0;
   list-style: none;
 }
@@ -1085,8 +1298,8 @@ app-root .rate__term {
 app-root .rate__value {
   grid-column: 2;
   grid-row: 1;
-  font-size: 15.5px;
-  font-weight: 600;
+  font-size: clamp(18px, 1.8vw, 24px);
+  font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--ink);
   white-space: nowrap;
@@ -1118,7 +1331,19 @@ app-root .services__cta {
 }
 
 app-root .approach {
-  margin-top: clamp(34px, 4.5vw, 64px);
+  margin-top: clamp(64px, 8vw, 112px);
+}
+
+app-root .approach__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: end;
+  margin-bottom: 44px;
+}
+app-root .approach__head > p {
+  color: var(--ink-2);
+  max-width: 38ch;
 }
 
 /* Связная последовательность этапов: линия проходит через маркеры. */
@@ -1871,7 +2096,6 @@ app-root .cal__foot a {
   .no-js .site-header {
     position: static;
   }
-
 }
 
 @media (max-width: 760px) {
@@ -2047,9 +2271,16 @@ html.concept-fonts-fallback #design .cmp__stage * {
 }
 
 /* ScrollTrigger owns section transforms after its lazy module is ready. */
-html.lenis, html.lenis body { height: auto; }
-html.lenis { scroll-behavior: auto; }
-html.lenis.lenis-stopped { overflow: clip; }
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+html.lenis {
+  scroll-behavior: auto;
+}
+html.lenis.lenis-stopped {
+  overflow: clip;
+}
 html.scroll-motion.motion-ready .reveal,
 html.scroll-motion.motion-ready .reveal:not(.is-visible),
 html.scroll-motion.motion-ready .reveal.is-visible {
@@ -2059,4 +2290,65 @@ html.scroll-motion.motion-ready .reveal.is-visible {
   will-change: auto;
 }
 
-body.work-open { overflow: hidden; }
+body.work-open {
+  overflow: hidden;
+}
+
+/* Local proposal: service studies and the connected delivery route. */
+@media (max-width: 760px) {
+  app-root .service {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    padding: 28px 0 36px;
+  }
+  app-root .service__visual {
+    height: 270px;
+  }
+  app-root .service__visual--site {
+    padding: 24px 34px;
+  }
+  app-root .service__visual--responsive {
+    padding: 30px 24px;
+  }
+  app-root .service__visual--refine {
+    padding: 20px 14px;
+    gap: 10px;
+  }
+  .study-page__title {
+    font-size: 42px;
+  }
+  .study-screen__title {
+    font-size: 24px;
+  }
+  .study-screen--phone {
+    width: 102px;
+  }
+  .study-before,
+  .study-after {
+    padding: 14px;
+  }
+  .study-after__title {
+    font-size: 26px;
+  }
+  app-root .service__text {
+    font-size: 15px;
+  }
+  app-root .approach__head {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  app-root .step {
+    padding-bottom: 24px;
+  }
+  app-root .step__art {
+    float: right;
+    margin-top: 0;
+    margin-left: 12px;
+  }
+  app-root .step__art .art {
+    width: 64px;
+  }
+  app-root .step__text {
+    min-height: 0;
+  }
+}

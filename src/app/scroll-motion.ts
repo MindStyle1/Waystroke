@@ -2,6 +2,210 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 
+/** Each study has one owner and keeps its readable composition throughout. */
+function initServiceStudies(host: HTMLElement): () => void {
+  const active = new Set<gsap.core.Timeline>();
+  host.querySelectorAll<HTMLElement>('.service__visual').forEach((visual) => {
+    visual.dataset['motionState'] = 'ready';
+    ScrollTrigger.create({
+      trigger: visual,
+      start: 'center 72%',
+      once: true,
+      onEnter: () => {
+        visual.dataset['motionState'] = 'playing';
+        const timeline = gsap.timeline({
+          defaults: { duration: 1, ease: 'power2.inOut' },
+          onComplete: () => {
+            visual.dataset['motionState'] = 'done';
+            active.delete(timeline);
+          },
+        });
+        active.add(timeline);
+        const select = (selector: string) => visual.querySelector(selector)!;
+        const elements = visual.querySelectorAll<HTMLElement>(
+          '.study-page, .study-page__nav, .study-page__title, .study-page__bottom, .study-screen, .study-screen__tiles i, .study-after, .study-after__title, .study-after__blocks i, .study-after__button',
+        );
+        gsap.set(elements, { force3D: true });
+        if (visual.classList.contains('service__visual--site')) {
+          const page = select('.study-page');
+          const nav = select('.study-page__nav');
+          const title = select('.study-page__title');
+          const bottom = select('.study-page__bottom');
+          const xGuide = select('.study-guide--x');
+          const yGuide = select('.study-guide--y');
+          gsap.set(page, { y: 34, scale: 0.88, rotation: -3, opacity: 0.5 });
+          gsap.set(nav, { y: -14, opacity: 0 });
+          gsap.set(title, { y: 36, opacity: 0 });
+          gsap.set(bottom, { y: 22, opacity: 0 });
+          gsap.set(xGuide, { scaleX: 0.15, transformOrigin: 'left' });
+          gsap.set(yGuide, { scaleY: 0.15, transformOrigin: 'top' });
+          timeline
+            .to(
+              [xGuide, yGuide],
+              { scaleX: 1, scaleY: 1, duration: 0.8, ease: 'power2.out', clearProps: 'transform' },
+              0,
+            )
+            .to(
+              page,
+              {
+                y: 0,
+                scale: 1,
+                rotation: 0,
+                opacity: 1,
+                duration: 1.1,
+                ease: 'power3.out',
+                clearProps: 'opacity,transform',
+              },
+              0.2,
+            )
+            .to(
+              nav,
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.65,
+                ease: 'power2.out',
+                clearProps: 'opacity,transform',
+              },
+              0.55,
+            )
+            .to(
+              title,
+              {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out',
+                clearProps: 'opacity,transform',
+              },
+              0.85,
+            )
+            .to(
+              bottom,
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: 'power2.out',
+                clearProps: 'opacity,transform',
+              },
+              1.4,
+            );
+        } else if (visual.classList.contains('service__visual--responsive')) {
+          const desktop = select('.study-screen--desktop');
+          const phone = select('.study-screen--phone');
+          const phoneTiles = visual.querySelectorAll('.study-screen--phone .study-screen__tiles i');
+          // Compose two fixed-layout views; no animated width or text reflow.
+          gsap.set(desktop, { x: 42, scale: 1.06, transformOrigin: 'left center' });
+          gsap.set(phone, { y: 95, x: -20, rotation: -7, opacity: 0 });
+          gsap.set(phoneTiles, { x: 32, opacity: 0 });
+          timeline
+            .to(
+              desktop,
+              { x: 0, scale: 1, duration: 1.4, ease: 'power2.out', clearProps: 'transform' },
+              0,
+            )
+            .to(
+              phone,
+              {
+                y: 0,
+                x: 0,
+                rotation: 0,
+                opacity: 1,
+                duration: 1.35,
+                ease: 'power3.out',
+                clearProps: 'opacity,transform',
+              },
+              0.5,
+            )
+            .to(
+              phoneTiles,
+              {
+                x: 0,
+                opacity: 1,
+                duration: 0.7,
+                stagger: 0.16,
+                ease: 'power2.out',
+                clearProps: 'opacity,transform',
+              },
+              1.25,
+            );
+        } else {
+          const after = select('.study-after');
+          const title = select('.study-after__title');
+          const blocks = visual.querySelectorAll('.study-after__blocks i');
+          const button = select('.study-after__button');
+          gsap.set(after, { x: 28, rotation: 3, opacity: 0.5 });
+          gsap.set(title, { x: -16, y: 12, opacity: 0.4 });
+          gsap.set(blocks, {
+            x: (i: number) => (i % 2 ? 24 : -14),
+            y: (i: number) => (i % 2 ? -16 : 14),
+            rotation: (i: number) => (i % 2 ? -8 : 6),
+          });
+          gsap.set(button, { y: 22, scale: 0.85, opacity: 0.3 });
+          timeline
+            .to(
+              after,
+              {
+                x: 0,
+                rotation: 0,
+                opacity: 1,
+                duration: 1,
+                ease: 'power3.out',
+                clearProps: 'opacity,transform',
+              },
+              0,
+            )
+            .to(
+              title,
+              {
+                x: 0,
+                y: 0,
+                opacity: 1,
+                duration: 0.85,
+                ease: 'power2.out',
+                clearProps: 'opacity,transform',
+              },
+              0.35,
+            )
+            .to(
+              blocks,
+              {
+                x: 0,
+                y: 0,
+                rotation: 0,
+                duration: 0.9,
+                stagger: 0.14,
+                ease: 'power3.out',
+                clearProps: 'transform',
+              },
+              0.7,
+            )
+            .to(
+              button,
+              {
+                y: 0,
+                scale: 1,
+                opacity: 1,
+                duration: 0.85,
+                ease: 'power3.out',
+                clearProps: 'opacity,transform',
+              },
+              1.65,
+            );
+        }
+      },
+    });
+  });
+  return () => {
+    active.forEach((timeline) => {
+      timeline.progress(1);
+      timeline.kill();
+    });
+    active.clear();
+  };
+}
+
 export function initScrollMotion(host: HTMLElement) {
   gsap.registerPlugin(ScrollTrigger);
   const media = gsap.matchMedia();
@@ -72,6 +276,7 @@ export function initScrollMotion(host: HTMLElement) {
           },
         );
       });
+      const disposeStudies = initServiceStudies(host);
       // Refresh after fonts, embeds and disclosure height changes, without per-frame layout reads.
       let frame: number | null = null;
       const observer = new ResizeObserver(() => {
@@ -83,6 +288,7 @@ export function initScrollMotion(host: HTMLElement) {
       });
       observer.observe(host);
       return () => {
+        disposeStudies();
         observer.disconnect();
         if (frame !== null) window.clearTimeout(frame);
         gsap.ticker.remove(tick);
