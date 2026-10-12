@@ -119,9 +119,9 @@ export class App implements OnDestroy {
       heroStudy === 'lime' ||
       heroStudy === 'hybrid'
     ) {
-      void import('./hero-wave')
-        .then(({ initHeroWave }) => {
-          if (!this.cleanedUp) this.motionDisposers.push(initHeroWave(host, heroStudy));
+      void import('./hero-background')
+        .then(({ initHeroBackground }) => {
+          if (!this.cleanedUp) this.motionDisposers.push(initHeroBackground(host, heroStudy));
         })
         .catch(() => {});
     }

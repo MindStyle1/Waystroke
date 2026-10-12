@@ -440,22 +440,15 @@ summary[aria-expanded='true'] span {
   }
 }
 
-/* Persistent first-screen background; variants remain available via ?hero=. */
+/* First-screen DOM background; variants remain available via ?hero=. */
 .hero {
   position: relative;
   isolation: isolate;
+  background: #e9e5da;
 }
 .hero > .container {
   position: relative;
   z-index: 1;
-}
-.hero-wave {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .hero--lime::before,
