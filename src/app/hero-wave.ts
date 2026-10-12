@@ -51,7 +51,7 @@ export function initHeroWave(
       ink+=exp(-dot(delta,delta)*22.)*.24;
       float d=uv.x+uv.y*.20-(.55+.72*sin(t));
       float light=exp(-d*d*24.)*.24;
-      float shadow=exp(-pow(d+.21,2.)*19.)*.08;
+      float shadow=exp(-(d+.21)*(d+.21)*19.)*.08;
       vec3 paper=mix(vec3(.37,.30,.22),vec3(1.,.99,.94),light/(light+shadow+.001));
       float alpha=ink+light+shadow;
       vec3 color=(vec3(.73,.91,.30)*ink+paper*(light+shadow))/(alpha+.001);
@@ -65,7 +65,7 @@ export function initHeroWave(
       float sweep=mix(-.55,1.65,progress);
       float d=uv.x+uv.y*.20-sweep;
       float light=exp(-d*d*24.);
-      float shadow=exp(-pow(d+.21,2.)*19.);
+      float shadow=exp(-(d+.21)*(d+.21)*19.);
       float fiber=grain(uv*vec2(900.,620.));
       float fade=sin(progress*3.14159);
       float brightness=light*.72;
