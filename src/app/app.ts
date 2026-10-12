@@ -14,6 +14,7 @@ import {
   initStepsSequence,
   initTeamScene,
   initHeroPresence,
+  initHeroEntrance,
   type Dispose,
 } from './motion';
 import { initDisclosureMotion } from './disclosure-motion';
@@ -97,6 +98,7 @@ export class App implements OnDestroy {
       initServiceScenes(host),
       initTeamScene(host),
       initHeroPresence(host),
+      initHeroEntrance(host),
       initStepsSequence(host),
       initConversions(host),
     );

@@ -217,7 +217,8 @@ export function initScrollMotion(host: HTMLElement) {
         lerp: 0.11,
         smoothWheel: true,
         syncTouch: false,
-        anchors: true,
+        // App owns anchor navigation, including the fixed header logo.
+        anchors: false,
         // Comparison has no nested vertical scroll: keep the page on one
         // Lenis stream. Bypassing it mid-inertia lets native wheel events
         // compete with the unfinished Lenis target and stalls the page.
@@ -235,7 +236,11 @@ export function initScrollMotion(host: HTMLElement) {
       document.documentElement.classList.add('scroll-motion');
 
       host.querySelectorAll<HTMLElement>('.reveal').forEach((block) => {
-        if (block.closest('.hero') || block.getBoundingClientRect().top < window.innerHeight * 0.72)
+        if (
+          block.closest('.hero') ||
+          block.matches('.contact__panel') ||
+          block.getBoundingClientRect().top < window.innerHeight * 0.72
+        )
           return;
         const panel = block.matches('.cmp, .contact__panel, .tandem__person');
         gsap.fromTo(
@@ -261,21 +266,48 @@ export function initScrollMotion(host: HTMLElement) {
           },
         );
       });
-      host.querySelectorAll<HTMLElement>('.work').forEach((card) => {
-        gsap.fromTo(
-          card,
-          { clipPath: 'inset(12% 0 0 0)', y: 28 },
-          {
-            clipPath: 'inset(0% 0 0 0)',
-            y: 0,
-            duration: 1.15,
-            ease: 'power3.out',
-            // The one-shot reveal must not retain a clipping/compositing layer.
-            clearProps: 'clipPath,transform',
-            scrollTrigger: { trigger: card, start: 'top 94%', once: true },
-          },
-        );
-      });
+      const contact = host.querySelector('.contact__panel');
+      if (contact) {
+        gsap
+          .timeline({ scrollTrigger: { trigger: contact, start: 'top 82%', once: true } })
+          .fromTo(
+            contact,
+            { y: 24 },
+            { y: 0, duration: 1.1, ease: 'power3.out', clearProps: 'transform' },
+            0,
+          )
+          .fromTo(
+            contact.querySelectorAll('.contact__title-line'),
+            { y: 20, opacity: 0.55 },
+            {
+              y: 0,
+              opacity: 1,
+              stagger: 0.16,
+              duration: 1,
+              ease: 'power3.out',
+              clearProps: 'opacity,transform',
+            },
+            0.15,
+          )
+          .fromTo(
+            contact.querySelector('.contact__rule'),
+            { scaleX: 0.08, transformOrigin: 'left' },
+            { scaleX: 1, duration: 1.2, ease: 'power2.out', clearProps: 'transform' },
+            0.35,
+          )
+          .fromTo(
+            contact.querySelector('.contact__row'),
+            { y: 12, opacity: 0.6 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.9,
+              ease: 'power2.out',
+              clearProps: 'opacity,transform',
+            },
+            0.5,
+          );
+      }
       const disposeStudies = initServiceStudies(host);
       // Refresh after fonts, embeds and disclosure height changes, without per-frame layout reads.
       let frame: number | null = null;
@@ -304,7 +336,8 @@ export function initScrollMotion(host: HTMLElement) {
   return {
     scrollTo(target: HTMLElement | number) {
       if (!lenis) return false;
-      lenis.scrollTo(target, { offset: typeof target === 'number' ? 0 : -88, duration: 1.1 });
+      // Lenis already reads the document's scroll-padding-top.
+      lenis.scrollTo(target, { offset: 0, duration: 1.1 });
       return true;
     },
     dispose: () => media.revert(),

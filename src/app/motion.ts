@@ -359,6 +359,34 @@ export function initTeamScene(host: HTMLElement): Dispose {
   return initAmbientMotion(root, root?.querySelector('.tandem__people'));
 }
 
+/** Start the entrance only in a visible tab, after hydration has settled. */
+export function initHeroEntrance(host: HTMLElement): Dispose {
+  const hero = host.querySelector<HTMLElement>('.hero');
+  if (!hero || prefersReduced()) return noop;
+  let first = 0;
+  let second = 0;
+  let started = false;
+  let disposed = false;
+  const start = () => {
+    if (document.hidden || started || disposed) return;
+    started = true;
+    first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(() => {
+        if (!disposed) hero.classList.add('hero--enter');
+      });
+    });
+  };
+  document.addEventListener('visibilitychange', start);
+  start();
+  return () => {
+    disposed = true;
+    cancelAnimationFrame(first);
+    cancelAnimationFrame(second);
+    document.removeEventListener('visibilitychange', start);
+    hero.classList.remove('hero--enter');
+  };
+}
+
 export function initHeroPresence(host: HTMLElement): Dispose {
   return initAmbientMotion(host.querySelector<HTMLElement>('.hero'));
 }

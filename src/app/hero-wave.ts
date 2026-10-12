@@ -37,6 +37,7 @@ export function initHeroWave(
     variant === 'hybrid'
       ? `precision mediump float;
     varying vec2 uv; uniform float progress; uniform float aspect;
+    uniform float spotlightPhase; uniform vec2 spotlightOrigin; uniform vec2 spotlightTravel;
     void main(){
       float t=progress*6.283185;
       vec2 p=vec2(uv.x*aspect,uv.y);
@@ -44,6 +45,10 @@ export function initHeroWave(
       vec2 b=vec2(aspect*(.68-.04*sin(t)),.46+.09*sin(t));
       float field=exp(-dot(p-a,p-a)*11.)+exp(-dot(p-b,p-b)*17.)*.7;
       float ink=smoothstep(.25,1.22,field)*.32;
+      float orbit=spotlightPhase*6.283185;
+      vec2 spot=spotlightOrigin+spotlightTravel*vec2(sin(orbit),cos(orbit));
+      vec2 delta=p-vec2(spot.x*aspect,spot.y);
+      ink+=exp(-dot(delta,delta)*22.)*.24;
       float d=uv.x+uv.y*.20-(.55+.72*sin(t));
       float light=exp(-d*d*24.)*.24;
       float shadow=exp(-pow(d+.21,2.)*19.)*.08;
@@ -127,6 +132,9 @@ export function initHeroWave(
   gl.enableVertexAttribArray(position);
   gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
   const progress = gl.getUniformLocation(program, 'progress');
+  const spotlightPhase = gl.getUniformLocation(program, 'spotlightPhase');
+  const spotlightOrigin = gl.getUniformLocation(program, 'spotlightOrigin');
+  const spotlightTravel = gl.getUniformLocation(program, 'spotlightTravel');
   gl.uniform1f(
     gl.getUniformLocation(program, 'aspect'),
     hero.getBoundingClientRect().width / hero.getBoundingClientRect().height,
@@ -177,6 +185,19 @@ export function initHeroWave(
     canvas.height = Math.max(1, Math.round(bounds.height * scale));
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform1f(gl.getUniformLocation(program, 'aspect'), bounds.width / bounds.height);
+    const title = hero.querySelector<HTMLElement>('.hero__title')?.getBoundingClientRect();
+    if (title) {
+      gl.uniform2f(
+        spotlightOrigin,
+        (title.left - bounds.left + title.width * 0.5) / bounds.width,
+        1 - (title.top - bounds.top + title.height * 0.5) / bounds.height,
+      );
+      gl.uniform2f(
+        spotlightTravel,
+        (title.width * 0.28) / bounds.width,
+        (title.height * 0.23) / bounds.height,
+      );
+    }
   });
   resize.observe(hero);
   document.addEventListener('visibilitychange', onVisibility);
@@ -192,6 +213,7 @@ export function initHeroWave(
     if (now - last >= 32) {
       last = now;
       gl.uniform1f(progress, p);
+      gl.uniform1f(spotlightPhase, (elapsed % 28000) / 28000);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
     frame = requestAnimationFrame(render);
