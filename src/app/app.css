@@ -454,7 +454,7 @@ summary[aria-expanded='true'] span {
   }
 }
 
-/* Isolated first-screen study: ?hero=wave. No canvas remains after 2.6s. */
+/* Persistent first-screen background; variants remain available via ?hero=. */
 .hero {
   position: relative;
   isolation: isolate;

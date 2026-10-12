@@ -742,8 +742,8 @@ html.boot-skip .boot,
 }
 
 .hero__title {
-  font-size: clamp(2.35rem, 5.4vw, 4.5rem);
-  line-height: 1.03;
+  font-size: clamp(2.35rem, 4.8vw, 4rem);
+  line-height: 0.98;
   letter-spacing: -0.035em;
   font-weight: 500;
 }
@@ -757,7 +757,7 @@ html.boot-skip .boot,
   font-style: italic;
   font-weight: 400;
   letter-spacing: -0.01em;
-  margin-top: 0.14em;
+  margin-top: 0.04em;
 }
 
 .hero__aside {
@@ -1474,11 +1474,12 @@ app-root .contact .container {
 }
 
 app-root .contact .label {
-  color: rgba(23, 25, 26, 0.7);
+  color: #c6c8c0;
 }
 
 app-root .contact__panel {
-  background: var(--accent);
+  background: #353a34;
+  color: #f4f1e8;
   border-radius: var(--radius-lg);
   padding: clamp(26px, 3.6vw, 52px);
 }
@@ -1496,6 +1497,7 @@ app-root .contact__title-line {
 }
 
 app-root .contact__title-line--serif {
+  color: #f4f1e8;
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 400;
@@ -1507,7 +1509,7 @@ app-root .contact__rule {
   display: block;
   height: 1px;
   margin-top: clamp(20px, 3vw, 34px);
-  background: rgba(23, 25, 26, 0.32);
+  background: rgba(244, 241, 232, 0.24);
 }
 
 app-root .contact__row {
@@ -1521,7 +1523,7 @@ app-root .contact__row {
 
 app-root .contact__text {
   max-width: 36ch;
-  color: rgba(23, 25, 26, 0.85);
+  color: #d3d5cc;
 }
 
 app-root .contact__actions {
@@ -1529,6 +1531,20 @@ app-root .contact__actions {
   flex-wrap: wrap;
   align-items: center;
   gap: 14px 26px;
+}
+
+app-root .contact__actions .btn--dark {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+app-root .contact__actions .btn--dark:hover {
+  background: #d7fa79;
+}
+
+app-root .contact__actions .btn--dark:focus-visible {
+  outline: 2px solid #f4f1e8;
+  outline-offset: 4px;
 }
 
 /* Стрелка сдвигается внутри кнопки — размеры кнопки не меняются. */
@@ -1547,9 +1563,9 @@ app-root .btn--arrow:focus-visible .btn__arrow {
 app-root .contact__secondary {
   font-size: 15px;
   font-weight: 500;
-  color: var(--ink);
+  color: #f4f1e8;
   text-decoration: none;
-  border-bottom: 1px solid rgba(23, 25, 26, 0.4);
+  border-bottom: 1px solid rgba(244, 241, 232, 0.45);
   padding-bottom: 3px;
   transition:
     border-color 0.3s var(--ease),
@@ -1557,11 +1573,11 @@ app-root .contact__secondary {
 }
 
 app-root .contact__secondary:hover {
-  border-color: var(--ink);
+  border-color: #f4f1e8;
 }
 
 app-root .contact__secondary:focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--accent);
   outline-offset: 4px;
   border-radius: 2px;
 }

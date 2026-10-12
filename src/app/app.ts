@@ -57,6 +57,7 @@ export class App implements OnDestroy {
   private bookingPanel: HTMLDetailsElement | null = null;
   private bookingTimer: number | null = null;
   private bookingObserver: IntersectionObserver | null = null;
+  private bookingAutoObserver: IntersectionObserver | null = null;
   private readonly motionDisposers: Dispose[] = [];
   private scrollMotion: ReturnType<typeof import('./scroll-motion').initScrollMotion> | null = null;
   private sweepScheduled = false;
@@ -75,6 +76,7 @@ export class App implements OnDestroy {
     this.browserInitialized = true;
     this.bookingEnhanced.set(true);
     const host = this.host.nativeElement as HTMLElement;
+    this.initBookingAutoOpen(host);
 
     // Контент и календарь не зависят от декоративного intro.
     this.initReveal();
@@ -160,6 +162,22 @@ export class App implements OnDestroy {
     this.syncMenu();
   }
 
+  private initBookingAutoOpen(host: HTMLElement): void {
+    const panel = host.querySelector<HTMLDetailsElement>('details.cal');
+    const summary = panel?.querySelector<HTMLElement>('summary');
+    if (!panel || !summary || !('IntersectionObserver' in window)) return;
+    this.bookingAutoObserver = new IntersectionObserver(
+      (entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        this.bookingAutoObserver?.disconnect();
+        this.bookingAutoObserver = null;
+        if (!panel.open && !this.bookingOpen()) summary.click();
+      },
+      { threshold: 0.25 },
+    );
+    this.bookingAutoObserver.observe(panel);
+  }
+
   /** Держим details открытым до конца закрытия, чтобы браузер не убрал контент. */
   protected onBookingClick(event: MouseEvent): void {
     const summary = event.currentTarget as HTMLElement;
@@ -171,6 +189,9 @@ export class App implements OnDestroy {
       return;
     }
     event.preventDefault();
+    // Ручное действие отменяет предстоящее автоматическое раскрытие.
+    this.bookingAutoObserver?.disconnect();
+    this.bookingAutoObserver = null;
     const opening = !this.bookingOpen();
     const from = panel.getBoundingClientRect().height;
     this.bookingAnimation?.cancel();
@@ -446,6 +467,8 @@ export class App implements OnDestroy {
 
     this.bookingObserver?.disconnect();
     this.bookingObserver = null;
+    this.bookingAutoObserver?.disconnect();
+    this.bookingAutoObserver = null;
     this.bookingAnimation?.cancel();
     this.bookingAnimation = null;
     this.bookingPanel?.classList.remove('is-booking-animating');

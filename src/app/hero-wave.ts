@@ -1,15 +1,10 @@
-/** One-shot GLSL study; the readable HTML is independent of the canvas. */
+/** Looping GLSL background; the readable HTML is independent of the canvas. */
 export function initHeroWave(
   host: HTMLElement,
   variant: 'wave' | 'paper' | 'lime' | 'hybrid' = 'wave',
 ): () => void {
   const hero = host.querySelector<HTMLElement>('.hero');
-  if (
-    !hero ||
-    matchMedia('(prefers-reduced-motion: reduce)').matches ||
-    hero.getBoundingClientRect().bottom < 0
-  )
-    return () => {};
+  if (!hero || matchMedia('(prefers-reduced-motion: reduce)').matches) return () => {};
   const canvas = document.createElement('canvas');
   canvas.className = 'hero-wave';
   canvas.style.cssText =
@@ -43,19 +38,19 @@ export function initHeroWave(
       ? `precision mediump float;
     varying vec2 uv; uniform float progress; uniform float aspect;
     void main(){
-      float t=progress*3.14159;
+      float t=progress*6.283185;
       vec2 p=vec2(uv.x*aspect,uv.y);
       vec2 a=vec2(aspect*(.49+.06*sin(t)),.62+.07*cos(t));
       vec2 b=vec2(aspect*(.68-.04*sin(t)),.46+.09*sin(t));
       float field=exp(-dot(p-a,p-a)*11.)+exp(-dot(p-b,p-b)*17.)*.7;
-      float ink=smoothstep(.25,1.22,field)*.43;
-      float d=uv.x+uv.y*.20-mix(-.55,1.65,progress);
-      float light=exp(-d*d*24.)*.38;
-      float shadow=exp(-pow(d+.21,2.)*19.)*.12;
+      float ink=smoothstep(.25,1.22,field)*.32;
+      float d=uv.x+uv.y*.20-(.55+.72*sin(t));
+      float light=exp(-d*d*24.)*.24;
+      float shadow=exp(-pow(d+.21,2.)*19.)*.08;
       vec3 paper=mix(vec3(.37,.30,.22),vec3(1.,.99,.94),light/(light+shadow+.001));
       float alpha=ink+light+shadow;
       vec3 color=(vec3(.73,.91,.30)*ink+paper*(light+shadow))/(alpha+.001);
-      gl_FragColor=vec4(color,alpha*sin(t));
+      gl_FragColor=vec4(color,alpha);
     }`
       : variant === 'paper'
         ? `precision mediump float;
@@ -144,7 +139,8 @@ export function initHeroWave(
   hero.prepend(canvas);
   hero.classList.add('hero--wave', `hero--${variant}`);
   let frame = 0,
-    started = performance.now(),
+    elapsed = 0,
+    previous = performance.now(),
     last = 0,
     disposed = false;
   const stop = () => {
@@ -158,24 +154,41 @@ export function initHeroWave(
     gl.deleteShader(fragment);
     gl.getExtension('WEBGL_lose_context')?.loseContext();
     document.removeEventListener('visibilitychange', onVisibility);
+    observer.disconnect();
+    resize.disconnect();
     reduced.removeEventListener('change', stop);
   };
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  let visible = true;
   const onVisibility = () => {
-    if (document.hidden) stop();
+    previous = performance.now();
+    cancelAnimationFrame(frame);
+    if (!document.hidden && visible && !disposed) frame = requestAnimationFrame(render);
   };
+  const observer = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    onVisibility();
+  });
+  observer.observe(hero);
+  const resize = new ResizeObserver(() => {
+    const bounds = hero.getBoundingClientRect();
+    const scale = Math.min(1, 1200 / bounds.width);
+    canvas.width = Math.max(1, Math.round(bounds.width * scale));
+    canvas.height = Math.max(1, Math.round(bounds.height * scale));
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.uniform1f(gl.getUniformLocation(program, 'aspect'), bounds.width / bounds.height);
+  });
+  resize.observe(hero);
   document.addEventListener('visibilitychange', onVisibility);
   reduced.addEventListener('change', stop);
+  const cycleDuration =
+    variant === 'hybrid' ? 16000 : paperMotion ? 8000 : variant === 'lime' ? 7200 : 6000;
   const render = (now: number) => {
-    if (disposed) return;
-    const p = Math.min(
-      1,
-      (now - started) / (paperMotion ? 3600 : variant === 'lime' ? 3400 : 2600),
-    );
-    if (p === 1) {
-      stop();
-      return;
-    }
+    if (disposed || document.hidden || !visible) return;
+    elapsed += now - previous;
+    previous = now;
+    // Hybrid uses a full periodic orbit; the phase wraps without fading or jumping.
+    const p = (elapsed % cycleDuration) / cycleDuration;
     if (now - last >= 32) {
       last = now;
       gl.uniform1f(progress, p);

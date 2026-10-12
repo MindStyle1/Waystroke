@@ -15,6 +15,43 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
+  it('automatically opens once on entering the viewport and allows manual closing', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const descriptor = Object.getOwnPropertyDescriptor(window, 'IntersectionObserver');
+    let callback: IntersectionObserverCallback | undefined;
+    const disconnect = vi.fn();
+    window.IntersectionObserver = class {
+      constructor(handler: IntersectionObserverCallback) {
+        callback = handler;
+      }
+      observe = vi.fn();
+      disconnect = disconnect;
+    } as unknown as typeof IntersectionObserver;
+    try {
+      const host = fixture.nativeElement as HTMLElement;
+      const panel = host.querySelector<HTMLDetailsElement>('details.cal')!;
+      panel.animate = undefined as unknown as typeof panel.animate;
+      fixture.componentInstance['initBookingAutoOpen'](host);
+      expect(panel.open).toBe(false);
+      callback!(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+      await fixture.whenStable();
+      expect(panel.open).toBe(true);
+      expect(disconnect).toHaveBeenCalled();
+      panel.querySelector<HTMLElement>('summary')!.click();
+      await fixture.whenStable();
+      expect(panel.open).toBe(false);
+      expect(fixture.componentInstance['bookingAutoObserver']).toBeNull();
+    } finally {
+      fixture.destroy();
+      if (descriptor) Object.defineProperty(window, 'IntersectionObserver', descriptor);
+      else Reflect.deleteProperty(window, 'IntersectionObserver');
+    }
+  });
+
   it('loads the booking embed only after opening the calendar', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
@@ -128,7 +165,9 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Сайты, которые удобно');
+    expect(compiled.querySelector('h1')?.textContent?.replace(/\s+/g, ' ').trim()).toContain(
+      'Сайты, которые удобно',
+    );
     expect(compiled.querySelector('.lead')?.textContent).toContain(
       'Waystroke начинает со структуры',
     );
