@@ -451,20 +451,13 @@ summary[aria-expanded='true'] span {
   z-index: 1;
 }
 
-.hero--lime::before,
 .hero--paper::before,
-.hero--hybrid::before,
 .hero--hybrid::after {
   content: '';
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 0;
-}
-.hero--lime::before,
-.hero--hybrid::before {
-  background: radial-gradient(ellipse at 62% 38%, rgba(200, 240, 84, 0.24), transparent 44%);
-  animation: hero-lime-rest 2.6s ease-out both;
 }
 .hero--paper {
   background: #e7e1d5;
@@ -474,15 +467,6 @@ summary[aria-expanded='true'] span {
   opacity: 0.38;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.76' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' opacity='.32' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-@keyframes hero-lime-rest {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .hero--hybrid {
   background: #e9e5da;
 }
