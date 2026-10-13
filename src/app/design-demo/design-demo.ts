@@ -1,19 +1,24 @@
 import {
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   Injector,
   afterNextRender,
   inject,
+  input,
   signal,
 } from '@angular/core';
 import { SiteMock, type Concept } from './site-mock';
+import { galleryCopy, type SiteLanguage } from '../translations';
 
 interface Work {
   key: Concept;
   name: string;
   niche: string;
+  nicheEn: string;
   direction: string;
+  directionEn: string;
 }
 @Component({
   selector: 'app-design-demo',
@@ -22,42 +27,56 @@ interface Work {
   styleUrl: './design-demo.css',
 })
 export class DesignDemo {
+  readonly language = input<SiteLanguage>('ru');
+  protected readonly copy = computed(() => galleryCopy[this.language()]);
   protected readonly works: Work[] = [
     {
       key: 'sdvig',
       name: 'СДВИГ',
       niche: 'Музыкальный лейбл',
+      nicheEn: 'Music label',
       direction: 'Типографика как звук. Контраст, ритм и винил.',
+      directionEn: 'Typography as sound: contrast, rhythm and vinyl.',
     },
     {
       key: 'miora',
       name: 'miora',
       niche: 'Уход за кожей',
+      nicheEn: 'Skincare',
       direction: 'Предметная композиция. Спокойный цвет и внимание к упаковке.',
+      directionEn: 'Product-focused composition, calm colours and thoughtful packaging.',
     },
     {
       key: 'moto',
       name: 'ТОЧКА МОТОР',
       niche: 'Автомастерская',
+      nicheEn: 'Auto repair shop',
       direction: 'Техническая иллюстрация, инженерная сетка и спокойная типографика.',
+      directionEn: 'Technical illustration, an engineered grid and restrained typography.',
     },
     {
       key: 'kroshka',
       name: 'крошка',
       niche: 'Кофейня',
+      nicheEn: 'Coffee shop',
       direction: 'Меню на первом плане. Тёплая бумага, красный и живая антиква.',
+      directionEn: 'A menu-led design with warm paper, red accents and expressive serif type.',
     },
     {
       key: 'exhibit',
       name: 'ВНЕ РАМКИ',
       niche: 'Выставка искусства',
+      nicheEn: 'Art exhibition',
       direction: 'Сайт как афиша. Большая типографика и кураторская сетка.',
+      directionEn: 'A website conceived as a poster, with bold type and a curatorial grid.',
     },
     {
       key: 'saldo',
       name: 'saldo',
       niche: 'Личные финансы',
+      nicheEn: 'Personal finance',
       direction: 'Финансовое пространство: баланс, движение средств и личные планы.',
+      directionEn: 'A space for balances, transactions and personal plans.',
     },
   ];
   protected readonly selected = signal<Work | null>(null);

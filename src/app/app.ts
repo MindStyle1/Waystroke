@@ -1,5 +1,6 @@
 import {
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   Injector,
@@ -20,6 +21,7 @@ import {
 import { initDisclosureMotion } from './disclosure-motion';
 import { initConversions } from './tracking';
 import { DesignDemo } from './design-demo/design-demo';
+import { siteCopy, type SiteLanguage } from './translations';
 
 /** Прокрутка без анимации, когда пользователь просит уменьшить движение. */
 const prefersReduced = (): boolean =>
@@ -41,6 +43,8 @@ const prefersReduced = (): boolean =>
   templateUrl: './app.html',
 })
 export class App implements OnDestroy {
+  protected readonly language = signal<SiteLanguage>('ru');
+  protected readonly copy = computed(() => siteCopy[this.language()]);
   protected readonly menuOpen = signal(false);
   protected readonly instantMenu = signal(false);
   protected readonly scrolled = signal(false);
@@ -75,6 +79,9 @@ export class App implements OnDestroy {
   private initBrowser(): void {
     if (this.cleanedUp) return;
     this.browserInitialized = true;
+    if (new URLSearchParams(window.location.search).get('lang') === 'en') {
+      this.setLanguage('en', false);
+    }
     this.bookingEnhanced.set(true);
     const host = this.host.nativeElement as HTMLElement;
     this.initBookingAutoOpen(host);
@@ -149,6 +156,22 @@ export class App implements OnDestroy {
 
   ngOnDestroy(): void {
     this.cleanup();
+  }
+
+  protected setLanguage(language: SiteLanguage, updateUrl = true): void {
+    this.language.set(language);
+    if (typeof document === 'undefined') return;
+    document.documentElement.lang = language;
+    document.title = siteCopy[language].pageTitle;
+    document
+      .querySelector<HTMLMetaElement>('meta[name="description"]')
+      ?.setAttribute('content', siteCopy[language].pageDescription);
+    if (updateUrl) {
+      const url = new URL(window.location.href);
+      if (language === 'en') url.searchParams.set('lang', 'en');
+      else url.searchParams.delete('lang');
+      window.history.replaceState(window.history.state, '', url);
+    }
   }
 
   protected toggleMenu(): void {

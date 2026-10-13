@@ -33,10 +33,10 @@ function initServiceStudies(host: HTMLElement): () => void {
           const bottom = select('.study-page__bottom');
           const xGuide = select('.study-guide--x');
           const yGuide = select('.study-guide--y');
-          gsap.set(page, { y: 34, scale: 0.88, rotation: -3, opacity: 0.5 });
-          gsap.set(nav, { y: -14, opacity: 0 });
-          gsap.set(title, { y: 36, opacity: 0 });
-          gsap.set(bottom, { y: 22, opacity: 0 });
+          gsap.set(page, { y: 20, scale: 0.94, rotation: -2, opacity: 0.85 });
+          gsap.set(nav, { y: -8, opacity: 0.65 });
+          gsap.set(title, { y: 12 });
+          gsap.set(bottom, { y: 10, opacity: 0.65 });
           gsap.set(xGuide, { scaleX: 0.15, transformOrigin: 'left' });
           gsap.set(yGuide, { scaleY: 0.15, transformOrigin: 'top' });
           timeline
@@ -56,7 +56,7 @@ function initServiceStudies(host: HTMLElement): () => void {
                 ease: 'power3.out',
                 clearProps: 'opacity,transform',
               },
-              0.2,
+              0,
             )
             .to(
               nav,
@@ -67,18 +67,17 @@ function initServiceStudies(host: HTMLElement): () => void {
                 ease: 'power2.out',
                 clearProps: 'opacity,transform',
               },
-              0.55,
+              0.15,
             )
             .to(
               title,
               {
                 y: 0,
-                opacity: 1,
-                duration: 1,
+                duration: 0.75,
                 ease: 'power3.out',
-                clearProps: 'opacity,transform',
+                clearProps: 'transform',
               },
-              0.85,
+              0,
             )
             .to(
               bottom,
@@ -89,7 +88,7 @@ function initServiceStudies(host: HTMLElement): () => void {
                 ease: 'power2.out',
                 clearProps: 'opacity,transform',
               },
-              1.4,
+              0.3,
             );
         } else if (visual.classList.contains('service__visual--responsive')) {
           const desktop = select('.study-screen--desktop');

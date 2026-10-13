@@ -15,6 +15,36 @@ describe('App', () => {
     expect(app).toBeTruthy();
   });
 
+  it('switches the site copy, prices and document language in both directions', async () => {
+    const originalUrl = window.location.href;
+    const originalTitle = document.title;
+    const originalLanguage = document.documentElement.lang;
+    const fixture = TestBed.createComponent(App);
+    try {
+      await fixture.whenStable();
+      const host = fixture.nativeElement as HTMLElement;
+      host.querySelector<HTMLButtonElement>('.language-switch button[lang="en"]')!.click();
+      await fixture.whenStable();
+      expect(document.documentElement.lang).toBe('en');
+      expect(host.querySelector('#hero-title')?.textContent).toContain('easy to use');
+      expect(host.querySelector('.rate__primary')?.textContent).toContain('$420–775');
+      expect(host.querySelector('#faq-title')?.textContent).toBe('The essentials, explained.');
+      expect(window.location.search).toContain('lang=en');
+
+      host.querySelector<HTMLButtonElement>('.language-switch button[lang="ru"]')!.click();
+      await fixture.whenStable();
+      expect(document.documentElement.lang).toBe('ru');
+      expect(host.querySelector('#hero-title')?.textContent).toContain('удобно использовать');
+      expect(host.querySelector('.rate__primary')?.textContent).toContain('35–65 тыс. ₽');
+      expect(window.location.search).not.toContain('lang=en');
+    } finally {
+      fixture.destroy();
+      window.history.replaceState(window.history.state, '', originalUrl);
+      document.title = originalTitle;
+      document.documentElement.lang = originalLanguage;
+    }
+  });
+
   it('automatically opens once on entering the viewport and allows manual closing', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
