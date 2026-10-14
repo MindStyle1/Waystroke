@@ -651,15 +651,16 @@
               >
             </div>
 
-            @if (calendarExpanded() && !calendarFailed()) {
+            @if (calendarExpanded()) {
               <iframe
                 class="cal__frame"
                 data-booking-frame
+                [attr.aria-hidden]="calendarLoaded() ? null : 'true'"
+                [attr.inert]="calendarLoaded() ? null : ''"
                 [title]="copy().bookingTitle"
                 src="https://cal.com/mind-style-00/waystroke-call?embed=true&amp;theme=dark"
                 loading="lazy"
                 referrerpolicy="no-referrer-when-downgrade"
-                (load)="onCalendarLoad()"
               ></iframe>
             }
           </div>

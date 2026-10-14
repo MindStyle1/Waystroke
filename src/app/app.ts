@@ -150,6 +150,7 @@ export class App implements OnDestroy {
 
     window.addEventListener('scroll', this.handleScroll, { passive: true });
     window.addEventListener('resize', this.handleResize);
+    window.addEventListener('message', this.handleCalendarMessage);
     document.addEventListener('keydown', this.handleKeydown);
     host.addEventListener('click', this.handleNavClick);
   }
@@ -163,9 +164,25 @@ export class App implements OnDestroy {
     if (typeof document === 'undefined') return;
     document.documentElement.lang = language;
     document.title = siteCopy[language].pageTitle;
+    const { pageTitle, pageDescription } = siteCopy[language];
+    for (const selector of [
+      'meta[name="description"]',
+      'meta[property="og:description"]',
+      'meta[name="twitter:description"]',
+    ]) {
+      document.querySelector<HTMLMetaElement>(selector)?.setAttribute('content', pageDescription);
+    }
+    for (const selector of [
+      'meta[property="og:title"]',
+      'meta[name="twitter:title"]',
+      'meta[property="og:image:alt"]',
+      'meta[name="twitter:image:alt"]',
+    ]) {
+      document.querySelector<HTMLMetaElement>(selector)?.setAttribute('content', pageTitle);
+    }
     document
-      .querySelector<HTMLMetaElement>('meta[name="description"]')
-      ?.setAttribute('content', siteCopy[language].pageDescription);
+      .querySelector<HTMLMetaElement>('meta[property="og:locale"]')
+      ?.setAttribute('content', language === 'en' ? 'en_US' : 'ru_RU');
     if (updateUrl) {
       const url = new URL(window.location.href);
       if (language === 'en') url.searchParams.set('lang', 'en');
@@ -272,9 +289,36 @@ export class App implements OnDestroy {
     );
   }
 
-  protected onCalendarLoad(): void {
-    this.calendarLoaded.set(true);
-  }
+  private readonly handleCalendarMessage = (event: MessageEvent): void => {
+    const frame = this.host.nativeElement.querySelector<HTMLIFrameElement>('[data-booking-frame]');
+    if (
+      !frame?.contentWindow ||
+      event.origin !== 'https://cal.com' ||
+      event.source !== frame.contentWindow
+    )
+      return;
+    const message = event.data;
+    if (!message || message.originator !== 'CAL') return;
+    if (message.type === '__iframeReady') {
+      // Cal keeps embedded content hidden until its parent acknowledges readiness.
+      frame.contentWindow.postMessage(
+        { originator: 'CAL', method: 'parentKnowsIframeReady' },
+        'https://cal.com',
+      );
+      return;
+    }
+    if (message.type === 'linkReady') {
+      this.calendarLoaded.set(true);
+      this.calendarFailed.set(false);
+      if (this.bookingTimer !== null) window.clearTimeout(this.bookingTimer);
+      this.bookingTimer = null;
+      this.bookingObserver?.disconnect();
+      this.bookingObserver = null;
+    } else if (message.type === 'linkFailed') {
+      this.calendarLoaded.set(false);
+      this.calendarFailed.set(true);
+    }
+  };
 
   private readonly handleScroll = (): void => {
     this.scheduleHeaderUpdate();
@@ -484,6 +528,7 @@ export class App implements OnDestroy {
 
     window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener('message', this.handleCalendarMessage);
     document.removeEventListener('keydown', this.handleKeydown);
     (this.host.nativeElement as HTMLElement).removeEventListener('click', this.handleNavClick);
 

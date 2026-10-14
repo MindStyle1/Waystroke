@@ -335,6 +335,9 @@ export function initScrollMotion(host: HTMLElement) {
   return {
     scrollTo(target: HTMLElement | number) {
       if (!lenis) return false;
+      // Native focus/scrollIntoView can move the browser before its scroll event
+      // reaches Lenis. Sync actual scroll before resolving an element target.
+      lenis.resize();
       // Lenis already reads the document's scroll-padding-top.
       lenis.scrollTo(target, { offset: 0, duration: 1.1 });
       return true;

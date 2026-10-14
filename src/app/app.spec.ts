@@ -86,6 +86,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const host = fixture.nativeElement as HTMLElement;
+    document.body.append(host);
     const calendar = host.querySelector<HTMLDetailsElement>('details.cal')!;
     expect(calendar.open).toBe(false);
     expect(host.querySelector('[data-booking-frame]')).toBeNull();
@@ -97,7 +98,58 @@ describe('App', () => {
     expect(frame.getAttribute('src')).toContain('cal.com/mind-style-00/waystroke-call');
     frame.dispatchEvent(new Event('load'));
     await fixture.whenStable();
+    expect(calendar.classList.contains('is-loaded')).toBe(false);
+    const acknowledge = vi.spyOn(frame.contentWindow!, 'postMessage').mockImplementation(() => {});
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        origin: 'https://cal.com',
+        source: frame.contentWindow,
+        data: { originator: 'CAL', type: '__iframeReady' },
+      }),
+    );
+    await fixture.whenStable();
+    expect(acknowledge).toHaveBeenCalledWith(
+      { originator: 'CAL', method: 'parentKnowsIframeReady' },
+      'https://cal.com',
+    );
+    expect(calendar.classList.contains('is-loaded')).toBe(false);
+    acknowledge.mockRestore();
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        origin: 'https://cal.com',
+        source: frame.contentWindow,
+        data: {
+          originator: 'CAL',
+          type: 'linkReady',
+        },
+      }),
+    );
+    await fixture.whenStable();
     expect(calendar.classList.contains('is-loaded')).toBe(true);
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        origin: 'https://cal.com',
+        source: frame.contentWindow,
+        data: { originator: 'CAL', type: 'linkFailed' },
+      }),
+    );
+    await fixture.whenStable();
+    expect(calendar.classList.contains('is-loaded')).toBe(false);
+    expect(host.querySelector('.cal__error')).not.toBeNull();
+    expect(frame.getAttribute('aria-hidden')).toBe('true');
+    expect(frame.hasAttribute('inert')).toBe(true);
+    window.dispatchEvent(
+      new MessageEvent('message', {
+        origin: 'https://cal.com',
+        source: frame.contentWindow,
+        data: { originator: 'CAL', type: 'linkReady' },
+      }),
+    );
+    await fixture.whenStable();
+    expect(calendar.classList.contains('is-loaded')).toBe(true);
+    expect(host.querySelector('.cal__error')).toBeNull();
+    expect(frame.hasAttribute('aria-hidden')).toBe(false);
+    expect(frame.hasAttribute('inert')).toBe(false);
 
     calendar.open = false;
     calendar.dispatchEvent(new Event('toggle'));
@@ -107,6 +159,54 @@ describe('App', () => {
     await fixture.whenStable();
     expect(host.querySelector('[data-booking-frame]')).toBe(frame);
     fixture.destroy();
+    host.remove();
+  });
+
+  it('rejects readiness messages from other origins, windows and booking events', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const host = fixture.nativeElement as HTMLElement;
+    document.body.append(host);
+    const panel = host.querySelector<HTMLDetailsElement>('details.cal')!;
+    panel.open = true;
+    panel.dispatchEvent(new Event('toggle'));
+    await fixture.whenStable();
+    const frame = host.querySelector<HTMLIFrameElement>('iframe')!;
+    try {
+      for (const invalid of [
+        {
+          origin: 'https://example.com',
+          source: frame.contentWindow,
+          data: { originator: 'CAL', type: 'linkReady' },
+        },
+        {
+          origin: 'https://cal.com',
+          source: window,
+          data: { originator: 'CAL', type: 'linkReady' },
+        },
+        {
+          origin: 'https://cal.com',
+          source: frame.contentWindow,
+          data: {
+            originator: 'CAL',
+            type: 'availabilityLoaded',
+            data: { eventSlug: 'another-event' },
+          },
+        },
+        {
+          origin: 'https://cal.com',
+          source: frame.contentWindow,
+          data: { originator: 'CAL', type: '__iframeReady' },
+        },
+      ]) {
+        window.dispatchEvent(new MessageEvent<unknown>('message', invalid));
+        await fixture.whenStable();
+        expect(panel.classList.contains('is-loaded')).toBe(false);
+      }
+    } finally {
+      fixture.destroy();
+      host.remove();
+    }
   });
 
   it('keeps the calendar visible until collapse finishes and reverses an interrupted collapse', async () => {
